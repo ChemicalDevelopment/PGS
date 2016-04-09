@@ -1,7 +1,7 @@
 # PGS
 
 ## What is this?
-This is a project that searches for functions that are prime for certain values of the input. It is a *P*rime *G*enerator *S*earch. It looks through polynomials, and tests some of the input, and then spits out some info.
+This is a project that searches for functions that are prime for certain values of the input. It is a **P**rime **G**enerator **S**earch. It looks through polynomials, and tests some of the input, and then spits out some info.
 
 ## Why do this?
 I believe that this question is not always relevant to research. Researching in maths, or any subject may lend itself to other problems in the future. Understanding the world around us and how it works is often priceless.
