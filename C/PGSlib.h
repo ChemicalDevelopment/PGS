@@ -5,10 +5,10 @@
 #include <stdlib.h>
 
 //Finds primes and stores up to this number
-#define BS_CUTOFF 1000000
+#define BS_CUTOFF 200000000
 
 //Stores a smaller array with this many
-#define BS_SHORT_CUTOFF 50000
+#define BS_SHORT_CUTOFF 300000
 
 //Where do we just divide?
 #define DIV_CUTOFF 20
@@ -60,8 +60,8 @@ void init() {
     }
 
     free(firstArr);
-    bs_max = 1 + (int)ceil(log(BS_CUTOFF) / log(2));
-    bs_short_max = 1 + (int)ceil(log(BS_SHORT_CUTOFF) / log(2));
+    bs_max = (int)ceil(log(BS_CUTOFF) / log(2));
+    bs_short_max = (int)ceil(log(BS_SHORT_CUTOFF) / log(2));
     printf("Done sieving! There are %d primes under %d\n", cpi, BS_CUTOFF);
 }
 //Returns 1 if prime
@@ -104,11 +104,9 @@ int isprime_bs(int x) {
     int ind = BS_CUTOFF / 2;
     int primes_ind;
     int curMover = ind / 2;
-    for (i = 0; i <= BS_CUTOFF; ++i) {
+    for (i = 0; i < bs_max; ++i) {
         primes_ind = primes[ind];
-        if (primes_ind == x) {
-            return 1;
-        }
+        if (primes_ind == x) return 1;
         ind += sgn(x - primes_ind) * curMover;
         curMover /= 2;
         if (curMover < 1) curMover = 1;
