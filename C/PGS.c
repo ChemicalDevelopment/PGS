@@ -8,14 +8,14 @@
 #include "PGSlib.h"
 
 //Default max coefficient to search
-#define MAX_CO 10000
+#define MAX_CO 1000
 
 
 //How many x values to cap at?
-#define MAX_X 50
+#define MAX_X 20
 
 //How many primes in a notable function
-#define NOTABLE_PRIMES 30
+#define NOTABLE_PRIMES 10
 
 /* 
  * Copyright (C) 2016 ChemicalDevelopment
@@ -35,9 +35,15 @@
 void printfPolynomial(int p[], int l) {
     if (l == 0) return;
     printf("%d", p[0]);
-    int i;
+    int i, coef;
     for (i = 1; i < l; i++) {
-        printf(" + %dx^%d", p[i], i);
+        coef = p[i];
+        if (coef == 0) continue;
+        if (i == 1) {
+            printf(" + %dx", coef);
+        } else {
+            printf(" + %dx^%d", coef, i);
+        }
     }
 }
 
