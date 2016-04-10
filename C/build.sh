@@ -1,1 +1,1 @@
-gcc PGS.c PGSlib.h -lm -lgmp -o ./builds/PGS.o
+gcc PGS.c PGSlib.h -lm -o ./builds/PGS.o

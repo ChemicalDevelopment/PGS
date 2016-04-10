@@ -4,12 +4,8 @@
 //basic c math lib
 #include <math.h>
 
-//Our bignum library, for larger than long ints
-#include <gmp.h>
-
 //Our own math lib, in this same project
 #include "PGSlib.h"
-
 
 //Default max coefficient to search
 #define MAX_CO 10000

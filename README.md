@@ -33,7 +33,7 @@ More info can be found on our wiki (https://github.com/ChemicalDevelopment/PGS/w
 Basic program is written in C, and uses GMP for larger numbers. Written for performance over all platforms
 
 
-This is located in the /C/ folder, and requires GMP (https://gmplib.org/) to be ran.
+This is located in the /C/ folder.
 
 ### In Java (Not started)
 Less core performance, but will include an OpenCL (through JavaCL) program to run on GPUs
