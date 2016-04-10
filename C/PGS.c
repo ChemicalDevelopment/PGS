@@ -12,11 +12,11 @@
 
 
 //Default max coefficient to search
-#define MAX_CO 100
+#define MAX_CO 1000
 
 
 //How many x values to cap at?
-#define MAX_X 25
+#define MAX_X 26
 
 //How many primes in a notable function
 #define NOTABLE_PRIMES 20
@@ -36,19 +36,19 @@
  */
 
 //Prints out the polynomial
-void printfPolynomial(long int p[], int l) {
+void printfPolynomial(int p[], int l) {
     if (l == 0) return;
-    printf("%ld", p[0]);
+    printf("%d", p[0]);
     int i;
     for (i = 1; i < l; i++) {
-        printf(" + %ldx^%d", p[i], i);
+        printf(" + %dx^%d", p[i], i);
     }
 }
 
 
 //Start generating random quadratic polynomials with length pl
 void rand_3term() {
-    long int p[3];
+    int p[3];
     p[0] = 0;
     p[1] = 0;
     p[2] = 0;
@@ -67,17 +67,18 @@ void rand_3term() {
                 primesinarow = 0;
                 for (x = 0; x < MAX_X; ++x) {
                     p_x = eval(p, x, 3);
-                    if (isprime_bs(p_x) == 0) { //If it is prime
+                    if (isprime_div(p_x) == 1) { //If it is prime
                         ++primesinarow;
                     } else {
                         break;
                     }
                 }
-                if (primesinarow >= NOTABLE_PRIMES) {
+                if (primesinarow - 4 >= NOTABLE_PRIMES) { //The five is based on how we show it
                     printfPolynomial(p, 3);
-                    printf("   is prime for x = 0, 1, ... %d, %d", primesinarow - 2, primesinarow - 1);
+                    printf("  is prime for x = 0, 1, ... %d, %d", primesinarow - 6, primesinarow - 5);
                     printf("\n");
                 }
+                primesinarow = 0;
             }
         }
     }
@@ -88,7 +89,6 @@ void rand_3term() {
 
 //Main method
 int main(int argc, char *argv[]) {
-    printf("Sieving primes up to %d\n", MAX_PRIME_TEST);
     init();
     if (argc == 1) { //If no arguments
         printf("Now printing out quadratic functions that are prime for the first %d values of x.\n", NOTABLE_PRIMES);
