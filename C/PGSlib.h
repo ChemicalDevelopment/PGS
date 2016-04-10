@@ -5,13 +5,13 @@
 #include <stdlib.h>
 
 //Finds primes and stores up to this number
-#define BS_CUTOFF 10000000
+#define BS_CUTOFF 1000000
 
 //Stores a smaller array with this many
-#define BS_SHORT_CUTOFF 100000
+#define BS_SHORT_CUTOFF 50000
 
 //Where do we just divide?
-#define DIV_CUTOFF 100
+#define DIV_CUTOFF 20
 
 int *primes = NULL;
 
@@ -26,10 +26,6 @@ int sgn(int x) {
     return (x > 0) - (x < 0);
 }
 
-//Returns number of primes (overshot) to x
-int pi(int x) {
-    return (int)floor(.05077 * x + 100000);
-}
 
 //Finds primes and stores them
 void init() {

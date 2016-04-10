@@ -8,14 +8,14 @@
 #include "PGSlib.h"
 
 //Default max coefficient to search
-#define MAX_CO 1000
+#define MAX_CO 100
 
 
 //How many x values to cap at?
-#define MAX_X 20
+#define MAX_X 51
 
 //How many primes in a notable function
-#define NOTABLE_PRIMES 10
+#define NOTABLE_PRIMES 21
 
 /* 
  * Copyright (C) 2016 ChemicalDevelopment
@@ -69,7 +69,7 @@ void rand_3term() {
                 primesinarow = 0;
                 for (x = 0; x < MAX_X; ++x) {
                     p_x = eval(p, x, 3);
-                    if (isprime_div(p_x) == 1) { //If it is prime
+                    if (isprime(p_x) == 1) { //If it is prime
                         ++primesinarow;
                     } else {
                         break;
