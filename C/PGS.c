@@ -12,14 +12,14 @@
 
 
 //Default max coefficient to search
-#define MAX_CO 1000
+#define MAX_CO 10000
 
 
 //How many x values to cap at?
-#define MAX_X 26
+#define MAX_X 50
 
 //How many primes in a notable function
-#define NOTABLE_PRIMES 20
+#define NOTABLE_PRIMES 30
 
 /* 
  * Copyright (C) 2016 ChemicalDevelopment

@@ -7,7 +7,7 @@ This is a project that searches for functions that are prime for certain values 
 I believe that this question is not always relevant to research. Researching in maths, or any subject may lend itself to other problems in the future. Understanding the world around us and how it works is often priceless.
 
 ## Explanation
-For a more in-detail explanation, see our wiki, but here's a short explanation:
+For a more in-detail explanation, see our wiki (https://github.com/ChemicalDevelopment/PGS/wiki), but here's a short explanation:
 
 
 Primes are numbers that can't be made from multiplying two other integers together. The first few primes are 2, 3, 5, 7, 11, 13. A few example functions that return primes for the first few values are:
@@ -21,7 +21,11 @@ from x = 0 to 2
 from x = 0 to 39
 
 
-This program searches for more complex equations that generate more primes for the first few values.
+This program looks for larger and longer examples of this!
+
+## More Info
+More info can be found on our wiki (https://github.com/ChemicalDevelopment/PGS/wiki)
+
 
 ## Implementations
 

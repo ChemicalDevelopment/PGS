@@ -8,12 +8,12 @@
 #include <stdlib.h>
 
 //Finds primes up to 2^exp
-#define PRIMETEST_EXP 26
+#define PRIMETEST_EXP 23
 
-#define DIV_CUTOFF 400
+#define DIV_CUTOFF 200
 
 //2^exp for smaller arr
-#define SHORT_BS_CUTOFF_EXP 16
+#define SHORT_BS_CUTOFF_EXP 12
 
 int *primes = NULL;
 
