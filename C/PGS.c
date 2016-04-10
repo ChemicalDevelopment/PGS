@@ -75,9 +75,9 @@ void rand_3term() {
                         break;
                     }
                 }
-                if (primesinarow - 4 >= NOTABLE_PRIMES) { //The five is based on how we show it
+                if (primesinarow >= NOTABLE_PRIMES) { //The five is based on how we show it
                     printfPolynomial(p, 3);
-                    printf("  is prime for x = 0, 1, ... %d, %d", primesinarow - 6, primesinarow - 5);
+                    printf("  is prime for x = 0, 1, ... %d, %d", primesinarow - 2, primesinarow - 1);
                     printf("\n");
                 }
                 primesinarow = 0;
