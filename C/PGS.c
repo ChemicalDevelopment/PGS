@@ -75,7 +75,7 @@ void rand_3term() {
                 }
                 if (primesinarow >= NOTABLE_PRIMES) {
                     printfPolynomial(p, 3);
-                    printf("   is prime for the first %d values, starting at x = 0", primesinarow);
+                    printf("   is prime for the first %d values, starting at x = 0", primesinarow - 1);
                     printf("\n");
                 }
             }
@@ -89,7 +89,10 @@ void rand_3term() {
 //Main method
 int main(int argc, char *argv[]) {
     if (argc == 1) { //If no arguments
+        printf("Now printing out quadratic functions that are prime for the first %d values of x.\n", NOTABLE_PRIMES);
         rand_3term();
+    } else {
+
     }
 }
 
