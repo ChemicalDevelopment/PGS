@@ -12,14 +12,14 @@
 
 
 //Default max coefficient to search
-#define MAX_CO 500
+#define MAX_CO 1000
 
 
 //How many x values to cap at?
-#define MAX_X 60
+#define MAX_X 40
 
 //How many primes in a notable function
-#define NOTABLE_PRIMES 40
+#define NOTABLE_PRIMES 30
 
 /* 
  * Copyright (C) 2016 ChemicalDevelopment
@@ -67,7 +67,7 @@ void rand_3term() {
                 primesinarow = 0;
                 for (x = 0; x < MAX_X; ++x) {
                     p_x = eval(p, x, 3);
-                    if (isprime(p_x) == 0) { //If it is prime
+                    if (isprime_bs(p_x) == 0) { //If it is prime
                         ++primesinarow;
                     } else {
                         break;
@@ -88,6 +88,7 @@ void rand_3term() {
 
 //Main method
 int main(int argc, char *argv[]) {
+    init();
     if (argc == 1) { //If no arguments
         printf("Now printing out quadratic functions that are prime for the first %d values of x.\n", NOTABLE_PRIMES);
         rand_3term();
