@@ -27,6 +27,19 @@ This program looks for larger and longer examples of this!
 More info can be found on our wiki (https://github.com/ChemicalDevelopment/PGS/wiki)
 
 
+The thread on mersenneforums (http://mersenneforum.org/showthread.php?t=21200)
+
+
+## Findings
+
+Polynomials found by PGS:
+
+`113 + 17x^1 + 1x^2  is prime for x = 0, 1, ... 30, 31`
+`131 + 19x^1 + 1x^2  is prime for x = 0, 1, ... 29, 30`
+`151 + 21x^1 + 1x^2  is prime for x = 0, 1, ... 28, 29`
+`359 + 558x^1 + 36x^2  is prime for x = 0, 1, ... 28, 29`
+
+
 ## Implementations
 
 ### In C (WIP)
