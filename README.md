@@ -48,6 +48,9 @@ Polynomials found by PGS:
 
 `953 + 630x^1 + 36x^2  is prime for x = 0, 1, ... 27, 28`
 
+
+`1619 + 702x^1 + 36x^2  is prime for x = 0, 1, ... 26, 27`
+
 ## Implementations
 
 ### In C (WIP)
