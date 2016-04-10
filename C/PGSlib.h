@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MAX_PRIME_TEST 16000000
+#define MAX_PRIME_TEST 100000
 
 int *primes = NULL;
 
@@ -52,11 +52,7 @@ int isprime_div(long int x) {
     if (x == 1) return 1;
     int i;
     int max;
-    if (x > 24) {
-        max = floor(sqrt(x + 1));
-    } else {
-        max = x;
-    }
+    max = floor(sqrt(x));
     for (i = 2; i < max; i++) {
         if (x % i == 0) {
             return 1;
