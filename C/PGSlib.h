@@ -8,10 +8,16 @@
 #include <stdio.h>
 
 //Returns 0 if prime
+
 int isprime(long int x) {
-    int max = (int)floor(sqrt(x));
-    max += 2;
+    if (x == 1) return 1;
     int i;
+    int max;
+    if (x > 24) {
+        max = floor(sqrt(x + 1));
+    } else {
+        max = x;
+    }
     for (i = 2; i < max; i++) {
         if (x % i == 0) {
             return 1;
