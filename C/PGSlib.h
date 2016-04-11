@@ -117,10 +117,14 @@ int isprime_bs(int x) {
 
 //Endall isprime method, returns 1 if prime
 int isprime(int x) {
-    if (x <= DIV_CUTOFF) return isprime_div(x);
-    if (x <= BS_SHORT_CUTOFF) return isprime_bs_mn(x);
-    if (x <= BS_CUTOFF) return isprime_bs(x);
-    return isprime_div(x); //We start dividing to find if it is prime
+    int a_x = abs(x);
+    if (a_x == 0) return 0;
+    if (a_x == 1) return 0;
+    if (a_x == 2) return 1;
+    if (a_x <= DIV_CUTOFF) return isprime_div(a_x);
+    if (a_x <= BS_SHORT_CUTOFF) return isprime_bs_mn(a_x);
+    if (a_x <= BS_CUTOFF) return isprime_bs(a_x);
+    return isprime_div(a_x); //We start dividing to find if it is prime
 }
 
 //Evaluates p(int eval(long int p[], long int x, int terms) {
