@@ -34,25 +34,9 @@ The thread on mersenneforums (http://mersenneforum.org/showthread.php?t=21200)
 
 Polynomials found by PGS:
 
-`113 + 17x^1 + 1x^2  is prime for x = 0, 1, ... 30, 31`
+Brute force on all coefficients -100 <= x <= 100:
 
-
-`131 + 19x^1 + 1x^2  is prime for x = 0, 1, ... 29, 30`
-
-
-`151 + 21x^1 + 1x^2  is prime for x = 0, 1, ... 28, 29`
-
-
-`359 + 558x^1 + 36x^2  is prime for x = 0, 1, ... 28, 29`
-
-
-`953 + 630x^1 + 36x^2  is prime for x = 0, 1, ... 27, 28`
-
-
-`1619 + 702x^1 + 36x^2  is prime for x = 0, 1, ... 26, 27`
-
-
-`223 + -27x + 1x^2  is prime for x = 0, 1, ... 52, 53`
+![Bash output])(/screenshots/C/100_search.png)
 
 
 ## Implementations
