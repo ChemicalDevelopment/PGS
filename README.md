@@ -36,7 +36,7 @@ Polynomials found by PGS:
 
 Brute force on all coefficients -100 <= x <= 100:
 
-![Bash output])(/screenshots/C/100_search.png)
+![Bash output](/screenshots/C/100_search.png)
 
 
 ## Implementations
