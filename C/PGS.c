@@ -11,18 +11,18 @@
 #include "PGSlib.h"
 
 //Default max coefficient to search
-#define MAX_CO 250
+#define MAX_CO 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2
 
 
 //How many x values to cap at?
 #define MAX_X 101
 
 //How many primes in a notable function
-#define NOTABLE_PRIMES 51
+#define NOTABLE_PRIMES 62
 
-#define NOTABLE_DISTINCT_PRIMES 44
+#define NOTABLE_DISTINCT_PRIMES 51
 
-#define MIN_DIST_PRIMES 5
+#define MIN_DIST_PRIMES 3
 
 #define PRINT_POLY_DESC 0
 #define PRINT_POLY_END 1
@@ -156,12 +156,12 @@ void rand_3term() {
     int p0;
     int p1;
     int p2;
-    for (p0 = -MAX_CO; p0 < MAX_CO; ++p0) {
+    for (p0 = -MAX_CO; p0 <= MAX_CO; ++p0) {
         if (p0 == 0) continue;
         p[0] = p0;
-        for (p1 = -MAX_CO; p1 < MAX_CO; ++p1) {//This one can be zero
+        for (p1 = -MAX_CO; p1 <= MAX_CO; ++p1) {//This one can be zero
             p[1] = p1;
-            for (p2 = -MAX_CO; p2 < MAX_CO; ++p2) {
+            for (p2 = 0; p2 <= MAX_CO; ++p2) { //Negative for all = abs of pos inv
                 p[2] = p2;
                 testpoly(p, 3);
             }
