@@ -1,69 +1,75 @@
 //math lib
 #include <math.h>
+#include <stdint.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 
 //Finds primes and stores up to this number
-#define BS_CUTOFF 3000000
+#define ARR_SIZE 1000000
 
-//Stores a smaller array with this many
-#define BS_SHORT_CUTOFF 50000
-
-//Where do we just divide?
-#define DIV_CUTOFF 20
-
-int *primes = NULL;
-
-int *smallPrimes = NULL;
-
-int bs_max;
-
-int bs_short_max;
+//Very special structure
+//uint64_t *primes = NULL;
+short *primes = NULL;
 
 //returns signum
-int sgn(int x) {
+int sgn(uint64_t x) {
     return (x > 0) - (x < 0);
 }
 
 
+int get_prime(uint64_t x) {
+    return primes[x];
+}
+
+void set_prime(uint64_t x) {
+    primes[x] = 1;
+}
+
+void set_notprime(uint64_t x) {
+    primes[x] = 0;
+}
+
+/*
+int get_prime(uint64_t x) {
+    return ((primes[x / 64]) >> (x % 64)) & 1;
+}
+
+//Stores in our special structure
+void set_prime(uint64_t num) {
+    primes[(num / 64)] |= 1 << (num % 64);
+}
+
+void set_notprime(uint64_t num) {
+    primes[(num / 64)] &= ~(1 << (num % 64));
+}
+*/
+
 //Finds primes and stores them
 void init() {
-    int *firstArr = malloc(sizeof(int) * BS_CUTOFF);
-    int i, j, smallPrimes_l;
-    int cpi = 0; //current prime index
-    printf("Starting to sieve all numbers <= %d\n", BS_CUTOFF);
-    for (i = 0; i < BS_CUTOFF; ++i) { //Puts all integers
-        firstArr[i] = i + 2;
+    primes = malloc(sizeof(short) * ARR_SIZE);
+    uint64_t *firstArr  = malloc(sizeof(uint64_t) * ARR_SIZE);
+    uint64_t i, j, smallPrimes_l;
+    uint64_t cpi = 0; //current prime index
+    printf("Starting to sieve all numbers <= %d\n", ARR_SIZE);
+    for (i = 0; i < ARR_SIZE; ++i) { //Puts all integers
+        firstArr[i] = i;
     }
-    for (i = 0; i < BS_CUTOFF; ++i){
+    for (i = 2; i < ARR_SIZE; ++i){
         if (firstArr[i] != -1){
-            for (j= 2 * firstArr[i] - 2; j < BS_CUTOFF; j += firstArr[i]) {
+            set_prime(i);
+            for (j= 2 * firstArr[i]; j < ARR_SIZE; j += firstArr[i]) {
                 firstArr[j]=-1;
+                set_notprime(j);
             }
             ++cpi;
         }
-        if (i == BS_SHORT_CUTOFF) smallPrimes_l = cpi; 
     }
-    j = 0; //Used in next loop
-    primes = malloc(sizeof(int) * (cpi));
-    smallPrimes = malloc(sizeof(int) * (smallPrimes_l));
     
-    for (i = 0; i < BS_CUTOFF; ++i) {
-        if (firstArr[i] != -1) {
-            if (j < smallPrimes_l) { //store in small array as well
-                smallPrimes[j] = firstArr[i];
-            }
-            primes[j] = firstArr[i];
-            ++j;
-        }
-    }
-
     free(firstArr);
-    bs_max = (int)ceil(log(BS_CUTOFF) / log(2));
-    bs_short_max = (int)ceil(log(BS_SHORT_CUTOFF) / log(2));
-    printf("Done sieving! There are %d primes under %d\n", cpi, BS_CUTOFF);
+    printf("Done sieving! There are %lld primes under %d\n", (long long int)cpi, ARR_SIZE);
 }
+
 //Returns 1 if prime
 //For long computations, please use precomputed tables
 int isprime_div(int x) {
@@ -81,50 +87,16 @@ int isprime_div(int x) {
 }
 
 
-//Short binary search
-int isprime_bs_mn(int x) {
-    int i;
-    int ind = BS_SHORT_CUTOFF / 2;
-    int primes_ind;
-    int curMover = ind / 2;
-    for (i = 0; i < bs_short_max; ++i) {
-        primes_ind = primes[ind];
-        if (primes_ind == x) return 1;
-        ind += sgn(x - primes_ind) * curMover;
-        curMover /= 2;
-        if (curMover == 0) curMover = 1;
-    }
-    return 0;
-}
-
-
-//Binary searches the long list
-int isprime_bs(int x) {
-    int i;
-    int ind = BS_CUTOFF / 2;
-    int primes_ind;
-    int curMover = ind / 2;
-    for (i = 0; i < bs_max; ++i) {
-        primes_ind = primes[ind];
-        if (primes_ind == x) return 1;
-        ind += sgn(x - primes_ind) * curMover;
-        curMover /= 2;
-        if (curMover < 1) curMover = 1;
-    }
-    return 0; //if we couldn't find it             
+int isprime_pos_only(uint64_t x) {
+    if (x == 0 || x == 1) return 0;
+    if (x < ARR_SIZE) return get_prime(x);
+    else return 0; //todo implement miller rabin
 }
 
 
 //Endall isprime method, returns 1 if prime
-int isprime(int x) {
-    int a_x = abs(x);
-    if (a_x == 0) return 0;
-    if (a_x == 1) return 0;
-    if (a_x == 2) return 1;
-    if (a_x <= DIV_CUTOFF) return isprime_div(a_x);
-    if (a_x <= BS_SHORT_CUTOFF) return isprime_bs_mn(a_x);
-    if (a_x <= BS_CUTOFF) return isprime_bs(a_x);
-    return isprime_div(a_x); //We start dividing to find if it is prime
+int isprime(int64_t x) {
+    return isprime_pos_only((uint64_t)(x * sgn(x)));
 }
 
 //Evaluates p(int eval(long int p[], long int x, int terms) {

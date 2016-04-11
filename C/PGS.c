@@ -1,6 +1,9 @@
 //Standard io
 #include <stdio.h>
 
+//INtegers
+#include <stdint.h>
+
 //basic c math lib
 #include <math.h>
 
@@ -12,10 +15,10 @@
 
 
 //How many x values to cap at?
-#define MAX_X 61
+#define MAX_X 101
 
 //How many primes in a notable function
-#define NOTABLE_PRIMES 40
+#define NOTABLE_PRIMES 30
 
 /* 
  * Copyright (C) 2016 ChemicalDevelopment
@@ -47,6 +50,13 @@ void printfPolynomial(int p[], int l) {
     }
 }
 
+void print_primes_g_max(int primes) {
+    int i;
+    for (i = 0; i < primes; ++i) {
+        printf("%d is prime: %d\n", i, isprime(i));
+    }
+}
+
 
 //Returns 1 if a contains b, 0 if not
 int contains(int a[], int b, int len) {
@@ -59,21 +69,23 @@ int contains(int a[], int b, int len) {
 
 //Tests a polynomials and spits out info
 void testpoly(int p[], int l) {
-    int evals[MAX_X + 1]; //Create enough room to store results
-    int x, primes, distinctprimes = 0;
-    for (x = 0; x <= MAX_X; ++x) {
+    int evals[MAX_X]; //Create enough room to store results
+    int x;
+    int primes_ev = 0;
+    int distinctprimes = 0;
+    for (x = 0; x < MAX_X; ++x) {
         evals[x] = eval(p, x, l);
         if (isprime(evals[x]) == 1) {
-            ++primes;
+            ++primes_ev;
             if (contains(evals, evals[x], x) == 0) { //Don't check the most recent one
                 ++distinctprimes;
             }
-        }
+        } else break;
     }
-    if (primes >= NOTABLE_PRIMES) {
+    if (primes_ev >= NOTABLE_PRIMES) {
         printf("|");
         printfPolynomial(p, l);
-        printf("| is prime for x = [0, %d] (%d in a row) (%d unique)", primes - 1, primes, distinctprimes);
+        printf("| is prime for x = [0, %d] (%d in a row) (%d unique)", primes_ev - 1, primes_ev, distinctprimes);
         printf("\n");
     }
 }
@@ -102,17 +114,17 @@ void rand_3term() {
     }
 }
 
-
-
-
 //Main method
 int main(int argc, char *argv[]) {
     init();
     if (argc == 1) { //If no arguments
         printf("Now printing out quadratic functions that are prime for the first %d values of x.\n", NOTABLE_PRIMES);
         rand_3term();
-    } else {
-
+        int p[3];
+        p[0] = 41;
+        p[1] = 1;
+        p[2] = 1;
+        testpoly(p, 3);
     }
 }
 
