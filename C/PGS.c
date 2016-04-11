@@ -11,16 +11,18 @@
 #include "PGSlib.h"
 
 //Default max coefficient to search
-#define MAX_CO 1000
+#define MAX_CO 500
 
 
 //How many x values to cap at?
-#define MAX_X 61
+#define MAX_X 101
 
 //How many primes in a notable function
 #define NOTABLE_PRIMES 41
 
 #define NOTABLE_DISTINCT_PRIMES 36
+
+#define MIN_DIST_PRIMES 3
 
 /* 
  * Copyright (C) 2016 ChemicalDevelopment
@@ -76,7 +78,7 @@ void testpoly(int p[], int l) {
     int primes_ev = 0;
     int distinctprimes = 0;
     for (x = 0; x < MAX_X; ++x) {
-        evals[x] = eval(p, x, l);
+        evals[x] = abs(eval(p, x, l));
         if (isprime(evals[x]) == 1) {
             ++primes_ev;
             if (contains(evals, evals[x], x) == 0) { //Don't check the most recent one
@@ -84,7 +86,7 @@ void testpoly(int p[], int l) {
             }
         } else break;
     }
-    if (primes_ev >= NOTABLE_PRIMES || distinctprimes >= NOTABLE_DISTINCT_PRIMES) {
+    if ((primes_ev >= NOTABLE_PRIMES || distinctprimes >= NOTABLE_DISTINCT_PRIMES) && distinctprimes >= MIN_DIST_PRIMES) {
         printf("|");
         printfPolynomial(p, l);
         printf("| is prime for x = [0, %d] (%d in a row) (%d unique)", primes_ev - 1, primes_ev, distinctprimes);
@@ -107,8 +109,7 @@ void rand_3term() {
         p[0] = p0;
         for (p1 = -MAX_CO; p1 < MAX_CO; ++p1) {//This one can be zero
             p[1] = p1;
-            for (p2 = 0; p2 < MAX_CO; ++p2) {
-                if (p2 == 0 && p1 == 0) continue;
+            for (p2 = -MAX_CO; p2 < MAX_CO; ++p2) {
                 p[2] = p2;
                 testpoly(p, 3);
             }

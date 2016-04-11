@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 //Finds primes and stores up to this number
-#define ARR_SIZE 5000000
+#define ARR_SIZE 10000000
 
 //Very special structure
 //uint64_t *primes = NULL;
@@ -100,12 +100,12 @@ int isprime(int64_t x) {
 }
 
 //Evaluates p(int eval(long int p[], long int x, int terms) {
-int eval(int p[], int x, int terms) {
-    int sum = 0; //Our sum
+int64_t eval(int p[], int x, int terms) {
+    int64_t sum = 0; //Our sum
     int n; //Exponent
-    int x_n = 1; //x^n
+    int64_t x_n = 1; //x^n
     for (n = 0; n < terms; ++n) {
-        sum += x_n *p[n]; //Add our current place value
+        sum = sum + (x_n * p[n]); //Add our current place value
         x_n = x_n * x; //Multiply to get the next exponent
     }
     return sum;
