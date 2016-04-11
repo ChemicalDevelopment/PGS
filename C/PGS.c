@@ -8,14 +8,14 @@
 #include "PGSlib.h"
 
 //Default max coefficient to search
-#define MAX_CO 250
+#define MAX_CO 400
 
 
 //How many x values to cap at?
 #define MAX_X 101
 
 //How many primes in a notable function
-#define NOTABLE_PRIMES 40
+#define NOTABLE_PRIMES 31
 
 /* 
  * Copyright (C) 2016 ChemicalDevelopment

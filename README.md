@@ -51,6 +51,10 @@ Polynomials found by PGS:
 
 `1619 + 702x^1 + 36x^2  is prime for x = 0, 1, ... 26, 27`
 
+
+`223 + -27x + 1x^2  is prime for x = 0, 1, ... 52, 53`
+
+
 ## Implementations
 
 ### In C (WIP)
