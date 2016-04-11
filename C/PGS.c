@@ -64,10 +64,9 @@ void rand_3term() {
         if (p0 == 0) continue;
         p[0] = p0;
         for (p1 = -MAX_CO; p1 < MAX_CO; ++p1) {//This one can be zero
-            if (p1 == 0) continue;
             p[1] = p1;
-            for (p2 = -MAX_CO; p2 < MAX_CO; ++p2) {
-                if (p2 == 0) continue;
+            for (p2 = 0; p2 < MAX_CO; ++p2) {
+                if (p2 == 0 && p1 == 0) continue;
                 p[2] = p2;
                 primesinarow = 0;
                 for (x = 0; x <= MAX_X; ++x) {
