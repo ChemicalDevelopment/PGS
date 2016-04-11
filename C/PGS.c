@@ -11,18 +11,26 @@
 #include "PGSlib.h"
 
 //Default max coefficient to search
-#define MAX_CO 500
+#define MAX_CO 250
 
 
 //How many x values to cap at?
 #define MAX_X 101
 
 //How many primes in a notable function
-#define NOTABLE_PRIMES 41
+#define NOTABLE_PRIMES 51
 
-#define NOTABLE_DISTINCT_PRIMES 36
+#define NOTABLE_DISTINCT_PRIMES 44
 
-#define MIN_DIST_PRIMES 3
+#define MIN_DIST_PRIMES 5
+
+#define PRINT_POLY_DESC 0
+#define PRINT_POLY_END 1
+
+
+//Which one do we use?
+#define PRINT_POLY 0
+
 
 /* 
  * Copyright (C) 2016 ChemicalDevelopment
@@ -38,8 +46,46 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-//Prints out the polynomial
-void printfPolynomial(int p[], int l) {
+
+
+// Prints out the polynomial. Code 0
+void printfPolynomial_descending(int p[], int l) {
+    if (l == 0) return;
+    if (l == 1) {
+        printf("%d", p[0]);
+        return;
+    }
+    int i;
+    int leading = p[l-1];
+    if (leading == 1) {
+        printf("x");
+    } else if (leading == -1) {
+        printf("-x");
+    } else {
+        printf("%dx", leading);
+    }
+    if (l > 2) printf("^%d", l-1);
+   
+    for (i = l-2; i > 0; i--) {
+        if (p[i] == 0) continue;
+        if (p[i] > 1) {
+            printf(" + %dx", p[i]);
+        } else if (p[i] < -1) {
+            printf(" - %dx", -p[i]);
+        } else if (p[i] == 1) {
+            printf(" + x");
+        } else {
+            printf(" - x");
+        }
+        if (i > 1) printf("^%d", i);
+    }
+   
+    if (p[0] > 0) printf(" + %d", p[0]);
+    if (p[0] < 0) printf(" - %d", -p[0]);
+}
+
+//Prints out the polynomial. Code 1
+void printfPolynomial_endian(int p[], int l) {
     if (l == 0) return;
     printf("%d", p[0]);
     int i, coef;
@@ -53,6 +99,12 @@ void printfPolynomial(int p[], int l) {
         }
     }
 }
+
+void printfPolynomial(int p[], int l) {
+    if (PRINT_POLY == PRINT_POLY_DESC) printfPolynomial_descending(p, l);
+    if (PRINT_POLY == PRINT_POLY_END) printfPolynomial_endian(p, l);
+}
+
 
 void print_primes_g_max(int primes) {
     int i;
@@ -89,7 +141,7 @@ void testpoly(int p[], int l) {
     if ((primes_ev >= NOTABLE_PRIMES || distinctprimes >= NOTABLE_DISTINCT_PRIMES) && distinctprimes >= MIN_DIST_PRIMES) {
         printf("|");
         printfPolynomial(p, l);
-        printf("| is prime for x = [0, %d] (%d in a row) (%d unique)", primes_ev - 1, primes_ev, distinctprimes);
+        printf("| x = [0, %d] (%d in a row) (%d unique)", primes_ev - 1, primes_ev, distinctprimes);
         printf("\n");
     }
 }
