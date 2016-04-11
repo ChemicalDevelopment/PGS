@@ -11,7 +11,7 @@
 #include "PGSlib.h"
 
 //Default max coefficient to search
-#define MAX_CO 500
+#define MAX_CO 1000
 
 
 //How many x values to cap at?
@@ -19,6 +19,8 @@
 
 //How many primes in a notable function
 #define NOTABLE_PRIMES 41
+
+#define NOTABLE_DISTINCT_PRIMES 36
 
 /* 
  * Copyright (C) 2016 ChemicalDevelopment
@@ -82,7 +84,7 @@ void testpoly(int p[], int l) {
             }
         } else break;
     }
-    if (primes_ev >= NOTABLE_PRIMES) {
+    if (primes_ev >= NOTABLE_PRIMES || distinctprimes >= NOTABLE_DISTINCT_PRIMES) {
         printf("|");
         printfPolynomial(p, l);
         printf("| is prime for x = [0, %d] (%d in a row) (%d unique)", primes_ev - 1, primes_ev, distinctprimes);
@@ -120,11 +122,6 @@ int main(int argc, char *argv[]) {
     if (argc == 1) { //If no arguments
         printf("Now printing out quadratic functions that are prime for the first %d values of x.\n", NOTABLE_PRIMES);
         rand_3term();
-        int p[3];
-        p[0] = 41;
-        p[1] = 1;
-        p[2] = 1;
-        testpoly(p, 3);
     }
 }
 
