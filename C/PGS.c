@@ -8,14 +8,14 @@
 #include "PGSlib.h"
 
 //Default max coefficient to search
-#define MAX_CO 400
+#define MAX_CO 100
 
 
 //How many x values to cap at?
-#define MAX_X 101
+#define MAX_X 61
 
 //How many primes in a notable function
-#define NOTABLE_PRIMES 31
+#define NOTABLE_PRIMES 40
 
 /* 
  * Copyright (C) 2016 ChemicalDevelopment
@@ -48,6 +48,37 @@ void printfPolynomial(int p[], int l) {
 }
 
 
+//Returns 1 if a contains b, 0 if not
+int contains(int a[], int b, int len) {
+    int i;    
+    for (i = 0; i < len; ++i) {
+        if (a[i] == b) return 1; 
+    }
+    return 0;
+}
+
+//Tests a polynomials and spits out info
+void testpoly(int p[], int l) {
+    int evals[MAX_X + 1]; //Create enough room to store results
+    int x, primes, distinctprimes = 0;
+    for (x = 0; x <= MAX_X; ++x) {
+        evals[x] = eval(p, x, l);
+        if (isprime(evals[x]) == 1) {
+            ++primes;
+            if (contains(evals, evals[x], x) == 0) { //Don't check the most recent one
+                ++distinctprimes;
+            }
+        }
+    }
+    if (primes >= NOTABLE_PRIMES) {
+        printf("|");
+        printfPolynomial(p, l);
+        printf("| is prime for x = [0, %d] (%d in a row) (%d unique)", primes - 1, primes, distinctprimes);
+        printf("\n");
+    }
+}
+
+
 //Start generating random quadratic polynomials with length pl
 void rand_3term() {
     int p[3];
@@ -57,9 +88,6 @@ void rand_3term() {
     int p0;
     int p1;
     int p2;
-    int x;
-    int primesinarow = 0;
-    int p_x;
     for (p0 = -MAX_CO; p0 < MAX_CO; ++p0) {
         if (p0 == 0) continue;
         p[0] = p0;
@@ -68,20 +96,7 @@ void rand_3term() {
             for (p2 = 0; p2 < MAX_CO; ++p2) {
                 if (p2 == 0 && p1 == 0) continue;
                 p[2] = p2;
-                primesinarow = 0;
-                for (x = 0; x <= MAX_X; ++x) {
-                    p_x = eval(p, x, 3);
-                    if (isprime(p_x)) { //If it is prime
-                        ++primesinarow;
-                    } else {
-                        break;
-                    }
-                }
-                if (primesinarow >= NOTABLE_PRIMES) { //The five is based on how we show it
-                    printfPolynomial(p, 3);
-                    printf("  is prime for x = 0, 1, ... %d, %d", primesinarow - 2, primesinarow - 1);
-                    printf("\n");
-                }
+                testpoly(p, 3);
             }
         }
     }

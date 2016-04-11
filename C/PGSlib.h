@@ -5,10 +5,10 @@
 #include <stdlib.h>
 
 //Finds primes and stores up to this number
-#define BS_CUTOFF 10000000
+#define BS_CUTOFF 3000000
 
 //Stores a smaller array with this many
-#define BS_SHORT_CUTOFF 300000
+#define BS_SHORT_CUTOFF 50000
 
 //Where do we just divide?
 #define DIV_CUTOFF 20
