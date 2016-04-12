@@ -10,14 +10,14 @@ start is the first polynomials we try
 end is the last
 
 */
-__kernel void test(__global const bool *prime_arr, __global const int l, __global int *output, __global const int *pol, __global const int max_x) {
+__kernel void test(__global const bool *prime_arr, __global const int *l, __global int *output, __global const int *pol) {
     int i = get_global_id(0);
     int sum = 0;
     int inarow = 0;
     int x, n, x_n;
-    for (x = 0; x < max_x; ++x) {
+    for (x = 0; x < 101; ++x) {
         x_n = 1;
-        for (n = 0; n < l; ++n) {
+        for (n = 0; n < l[0]; ++n) {
             sum += x_n * pol[3 * i + n];
             x_n *= x;
         }
