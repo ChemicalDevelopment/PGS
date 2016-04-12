@@ -11,26 +11,25 @@
 #include "PGSlib.h"
 
 //Default max coefficient to search
-#define MAX_CO 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2
+#define MAX_CO 1000
 
 
 //How many x values to cap at?
 #define MAX_X 101
 
 //How many primes in a notable function
-#define NOTABLE_PRIMES 62
+#define NOTABLE_PRIMES 51
 
-#define NOTABLE_DISTINCT_PRIMES 51
+#define NOTABLE_DISTINCT_PRIMES 31
 
-#define MIN_DIST_PRIMES 3
+#define MIN_DIST_PRIMES 2
 
 #define PRINT_POLY_DESC 0
 #define PRINT_POLY_END 1
 
 
 //Which one do we use?
-#define PRINT_POLY 0
-
+int PRINT_POLY = 0;
 
 /* 
  * Copyright (C) 2016 ChemicalDevelopment
@@ -148,7 +147,7 @@ void testpoly(int p[], int l) {
 
 
 //Start generating random quadratic polynomials with length pl
-void rand_3term() {
+void rand_3term(int p0m, int p0n, int p1m, int p1n, int p2m, int p2n) { //min and maxes
     int p[3];
     p[0] = 0;
     p[1] = 0;
@@ -156,12 +155,11 @@ void rand_3term() {
     int p0;
     int p1;
     int p2;
-    for (p0 = -MAX_CO; p0 <= MAX_CO; ++p0) {
-        if (p0 == 0) continue;
+    for (p0 = p0m; p0 <= p0n; ++p0) {
         p[0] = p0;
-        for (p1 = -MAX_CO; p1 <= MAX_CO; ++p1) {//This one can be zero
+        for (p1 = p1m; p1 <=p1n; ++p1) {//This one can be zero
             p[1] = p1;
-            for (p2 = 0; p2 <= MAX_CO; ++p2) { //Negative for all = abs of pos inv
+            for (p2 = p2m; p2 <= p2n; ++p2) { //Negative for all = abs of pos inv
                 p[2] = p2;
                 testpoly(p, 3);
             }
@@ -171,10 +169,28 @@ void rand_3term() {
 
 //Main method
 int main(int argc, char *argv[]) {
-    init();
     if (argc == 1) { //If no arguments
+        init();
         printf("Now printing out quadratic functions that are prime for the first %d values of x.\n", NOTABLE_PRIMES);
-        rand_3term();
+        rand_3term(-MAX_CO, MAX_CO, -MAX_CO, MAX_CO, -MAX_CO, MAX_CO);
+    }
+    if (argc > 1) {
+        //The m and n are min and max for p0, p1 and p2
+        if (argc > 9) { //./a.out $mode $disp $sieve $p0m $p0n $p1m $p1n $p2m $p2n 
+            int mode = strtoul(argv[1], 0, 0);
+            int disp_mode = strtoul(argv[2], 0, 0);
+            int sieve = strtoul(argv[3], 0, 0);
+            int p0m = strtoul(argv[4], 0, 0);
+            int p0n = strtoul(argv[5], 0, 0);
+            int p1m = strtoul(argv[6], 0, 0);
+            int p1n = strtoul(argv[7], 0, 0);
+            int p2m = strtoul(argv[8], 0, 0);
+            int p2n = strtoul(argv[9], 0, 0);
+            PRINT_POLY = disp_mode;
+            ARR_SIZE = sieve;
+            init();
+            rand_3term(p0m, p0n, p1m, p1n, p2m, p2n);
+        }
     }
 }
 

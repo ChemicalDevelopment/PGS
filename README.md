@@ -47,5 +47,5 @@ Basic program is written in C, and uses GMP for larger numbers. Written for perf
 
 This is located in the /C/ folder.
 
-### In Java (Not started)
-Less core performance, but will include an OpenCL (through JavaCL) program to run on GPUs
+### In Java (WIP)
+Now written! Using OpenCL to quickly make work! Does a 1000 brute search (-1000 to 1000) in under 10 seconds on a laptop!

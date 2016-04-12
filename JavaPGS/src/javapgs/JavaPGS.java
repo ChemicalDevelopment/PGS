@@ -13,14 +13,36 @@
  */
 package javapgs;
 
+import java.io.IOException;
+import javapgs.Math.Prime;
+import javapgs.OpenCL.Functions;
+import javapgs.OpenCL.Lib;
+
 /**
  * Prime Generator Search!
+ *
  * @author cade
  */
 public class JavaPGS {
-    
-    public static void main(String args[]) {
-        
+
+    //Args format: java -jar -Xmx5G $jar $notable $notable_dist $p0m $p0n $p1m $p1n $p2m $p2n
+    public static void main(String args[]) throws IOException {
+        int[] min_max = new int[]{0, 100, -100, 100, -100, 100};
+        int notable = 26;
+        int notable_dist = 12;
+        if (args.length >= 8) {
+            notable = Integer.parseInt(args[0]);
+            notable_dist = Integer.parseInt(args[1]);
+            min_max[0] = Integer.parseInt(args[2]);
+            min_max[1] = Integer.parseInt(args[3]);
+            min_max[2] = Integer.parseInt(args[4]);
+            min_max[3] = Integer.parseInt(args[5]);
+            min_max[4] = Integer.parseInt(args[6]);
+            min_max[5] = Integer.parseInt(args[7]);
+            Prime.MAX = 75 * 75 * Math.max(min_max[0], min_max[1]);
+        }
+        Prime.init();
+        Lib.init();
+        Functions.test_quad(notable, notable_dist, min_max[0], min_max[1], min_max[2], min_max[3], min_max[4], min_max[5]);
     }
-    
 }

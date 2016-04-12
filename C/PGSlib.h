@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 //Finds primes and stores up to this number
-#define ARR_SIZE 1000000
+int ARR_SIZE = 1000000;
 
 //Very special structure
 //uint64_t *primes = NULL;
