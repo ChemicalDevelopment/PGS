@@ -47,8 +47,9 @@ public class JavaPGS {
             min_max[5] = Integer.parseInt(args[10]);
             Prime.MAX = 75 * 75 * Math.max(Math.abs(min_max[0]), Math.abs(min_max[1]));
         }
-        Prime.init();
         Lib.init();
+
+        Prime.init();
         Functions.test_quad(notable, notable_dist, min_max[0], min_max[1], min_max[2], min_max[3], min_max[4], min_max[5], p0d, p1d, p2d);
     }
 }

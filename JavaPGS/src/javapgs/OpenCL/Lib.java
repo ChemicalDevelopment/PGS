@@ -15,15 +15,16 @@ package javapgs.OpenCL;
 
 import com.nativelibs4java.opencl.CLBuffer;
 import com.nativelibs4java.opencl.CLContext;
+import com.nativelibs4java.opencl.CLDevice;
 import com.nativelibs4java.opencl.CLEvent;
 import com.nativelibs4java.opencl.CLKernel;
 import com.nativelibs4java.opencl.CLMem;
+import com.nativelibs4java.opencl.CLPlatform.DeviceFeature;
 import com.nativelibs4java.opencl.CLProgram;
 import com.nativelibs4java.opencl.CLQueue;
 import com.nativelibs4java.opencl.JavaCL;
 import com.nativelibs4java.util.IOUtils;
 import java.io.IOException;
-import java.util.HashMap;
 import org.bridj.Pointer;
 
 /**
@@ -35,24 +36,30 @@ public class Lib {
 
     //Our verification program
     public static CLProgram test;
-    
+
     //context for using OpenCl, normally a GPU
-    public static CLContext context = JavaCL.createBestContext();
+    public static CLContext context;
 
     //queues operations with a device
-    public static CLQueue queue = context.createDefaultQueue();
+    public static CLQueue queue;
 
     //Creates kernel refernces and compiles, saves time later
     public static void init() throws IOException {
+        context = JavaCL.createBestContext(DeviceFeature.CPU);
+        CLDevice[] dv = context.getDevices();
+        for (CLDevice v : dv) {
+            System.out.println(v.getName());
+        }
         
+        queue = context.createDefaultQueue();
         test = context.createProgram(IOUtils.readText(Lib.class.getResource("Kernels/test.cl")));
-    }  
-    
+    }
+
     /*
     
     Simple test code I found online. Just test whether OpenCL runs.
     
-    */
+     */
     public static void test_cl() {
         CLContext context = JavaCL.createBestContext();
         final CLQueue queue = context.createDefaultQueue();
