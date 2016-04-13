@@ -17,8 +17,7 @@ __kernel void test(__global const int *prefs, __global const short *prime_arr, _
     int j = get_global_id(1) + coef_offset[1];
     int k = get_global_id(2) + coef_offset[2];
     int sum;
-    int x;
-    int y;
+    int x, y;
     int evals[101];
     int inarow = 0;
     int distinct = 0;
@@ -27,18 +26,17 @@ __kernel void test(__global const int *prefs, __global const short *prime_arr, _
         sum = i + j * x + k * x * x;
         evals[x] = sum;
         if (hbdist == 1) {
-        for (y = 0; y < x; ++y) {
-            if (sum == evals[y]) {
-                hbdist = 0;
-                break;
-            } else if (hbdist == 1) {
+            for (y = 0; y < x; ++y) {
+                if (sum == evals[y]) {
+                    hbdist = 0;
+                    break;
+                } 
                 distinct = y;
             }
         }
-        }
         if (prime_arr[abs(sum)] == 1) { //If it is prime
             ++inarow;
-        } else { //If it isn't
+        } else {
             break;
         }
     }
