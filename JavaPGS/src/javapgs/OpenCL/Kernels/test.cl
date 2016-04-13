@@ -16,6 +16,9 @@ __kernel void test(__global const int *prefs, __global const short *prime_arr, _
     short hbdist = 1;
     for (x = 0; x < 101; ++x) {
         evals[x] = abs(i + j * x + k * x * x);
+        if (prime_arr[evals[x]] == 1) {
+            ++inarow;
+        } else break;
         if (hbdist == 1) {
             for (y = 0; y < x; ++y) {
                 if (evals[x] == evals[y]) {
@@ -24,11 +27,6 @@ __kernel void test(__global const int *prefs, __global const short *prime_arr, _
                 } 
                 distinct = y;
             }
-        }
-        if (prime_arr[evals[x]] == 1) {
-            ++inarow;
-        } else {
-            break;
         }
     }
     ++distinct;
