@@ -29,7 +29,7 @@ __kernel void test(__global const int *prefs, __global const short *prime_arr, _
             }
         }
     }
-    ++distinct;
+    distinct += 2;
     if ((inarow >= prefs[0]  || distinct >= prefs[1]) && inarow != 101) {
         printf("%d + %dx + %dx^2 is prime for %d (x = [0, %d]) (distinct for %d)\n", i, j, k, inarow, inarow - 1, distinct);
     }
