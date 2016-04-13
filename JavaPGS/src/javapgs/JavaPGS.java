@@ -45,7 +45,7 @@ public class JavaPGS {
             min_max[3] = Integer.parseInt(args[8]);
             min_max[4] = Integer.parseInt(args[9]);
             min_max[5] = Integer.parseInt(args[10]);
-            Prime.MAX = 75 * 75 * Math.max(Math.abs(min_max[0]), Math.abs(min_max[1]));
+            Prime.MAX = 100 * 100 * Math.max(Math.abs(min_max[0]), Math.abs(min_max[1])) + 100 * Math.max(Math.abs(min_max[2]), Math.abs(min_max[3])) + Math.max(Math.abs(min_max[4]), Math.abs(min_max[5]));
         }
         Lib.init();
 
