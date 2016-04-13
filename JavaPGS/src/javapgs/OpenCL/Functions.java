@@ -45,7 +45,6 @@ public class Functions {
 
         prefs.set(0, notable);
         prefs.set(1, notable_dist);
-        prefs.set(2, 101);
 
         coef_offset.set(0, p0m);
         coef_offset.set(1, p1m);
