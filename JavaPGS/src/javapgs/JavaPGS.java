@@ -20,14 +20,28 @@ import javapgs.OpenCL.Lib;
 
 /**
  * Prime Generator Search!
+ * Our github repo: https://github.com/ChemicalDevelopment/PGS
+ * Wiki: https://github.com/ChemicalDevelopment/PGS/wiki
  *
  * @author cade
  */
 public class JavaPGS {
 
-    //Args format: java -jar -Xmx5G $jar $notable $notable_dist $p0m $p0n $p1m $p1n $p2m $p2n
+    /*
+
+    Args format: java -jar -Xmx5G $jar $notable $notable_dist $p0d $p1d $p2d $p0m $p0n $p1m $p1n $p2m $p2n
+    And it searches 
+    ax^2 + bx + c for primality with
+    p0m <= c < p0n
+    p1m <= b < p1n
+    p2m <= a < p2n
+    
+    With workgroup sizes $p0d $p1d $p2d (refer to our wiki for help on workgroups
+    
+    */
+
     public static void main(String args[]) throws IOException {
-        int[] min_max = new int[]{0, 100, -100, 100, -100, 100};
+        int[] min_max = new int[]{-1000, 1000, -1000, 1000, -1000, 1000};
         int notable = 26;
         int notable_dist = 12;
         int p0d = 1;
@@ -45,7 +59,7 @@ public class JavaPGS {
             min_max[3] = Integer.parseInt(args[8]);
             min_max[4] = Integer.parseInt(args[9]);
             min_max[5] = Integer.parseInt(args[10]);
-            Prime.MAX = 100 * 100 * Math.max(Math.abs(min_max[0]), Math.abs(min_max[1])) + 100 * Math.max(Math.abs(min_max[2]), Math.abs(min_max[3])) + Math.max(Math.abs(min_max[4]), Math.abs(min_max[5]));
+            Prime.MAX = 100 * 100 * Math.max(Math.abs(min_max[4]), Math.abs(min_max[5])) + 100 * Math.max(Math.abs(min_max[2]), Math.abs(min_max[3])) + Math.max(Math.abs(min_max[0]), Math.abs(min_max[1]));
         }
         Lib.init();
 

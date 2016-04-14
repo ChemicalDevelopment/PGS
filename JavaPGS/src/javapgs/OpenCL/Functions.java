@@ -37,7 +37,7 @@ public class Functions {
 
         final Pointer<Integer> coef_offset = Pointer.allocateInts(3).order(Lib.context.getByteOrder());
 
-        final Pointer<Integer> prefs = Pointer.allocateInts(3).order(Lib.context.getByteOrder());
+        final Pointer<Integer> prefs = Pointer.allocateInts(2).order(Lib.context.getByteOrder());
 
         for (int i = 0; i < Prime.MAX; ++i) {
             prime_ptr.set(i, Prime.primes[i]);
@@ -61,7 +61,7 @@ public class Functions {
         CLProgram program = Lib.test;
         long start = System.nanoTime();
         {
-            CLKernel kernel = program.createKernel("test", prefs_buff, prime_buff, coef_buff); //, inp_p0, inp_p1, inp_p2);
+            CLKernel kernel = program.createKernel("test_quadratics_abs_consecutive_distinct_32", prefs_buff, prime_buff, coef_buff); //, inp_p0, inp_p1, inp_p2);
             CLEvent kernelCompletion = kernel.enqueueNDRange(Lib.queue, new int[]{p0r, p1r, p2r}, new int[]{p0d, p1d, p2d});
             kernelCompletion.waitFor();
         }
