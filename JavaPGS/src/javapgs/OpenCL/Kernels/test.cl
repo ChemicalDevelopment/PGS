@@ -16,7 +16,7 @@ coef_offset is where we start testing the polynomial coefficients
 
 */
 
-__kernel void test_quadratics_abs_consecutive_distinct_32(__global const int *prefs, __global const short *prime_arr, __global const int *coef_offset) {
+__kernel void test_quadratics_abs_consecutive_distinct_32(__constant int *prefs, __constant short *prime_arr, __constant int *coef_offset) {
     /*
 
     The following lines have to do with parallelism.

@@ -13,6 +13,8 @@
  */
 package javapgs.DataTypes;
 
+import javapgs.Flags.Kernel;
+
 /**
  * My data type for workload (optimized for quadratic searches) Stores what
  * range of coefficients to do, etc.
@@ -31,18 +33,21 @@ public class QuadraticWorkload {
      */
     public int a_offset, b_offset, c_offset;
     public int a_range, b_range, c_range;
+    
+    public Kernel[] specs;
 
     /*
     
     Default constructor, give us all the values.
     
     */
-    public QuadraticWorkload(int _a_offset, int _b_offset, int _c_offset,int _a_range, int _b_range, int _c_range) {
+    public QuadraticWorkload(int _a_offset, int _b_offset, int _c_offset,int _a_range, int _b_range, int _c_range, Kernel[] _specs) {
         a_offset = _a_offset;
         b_offset = _b_offset;
         c_offset = _c_offset;
         a_range = _a_range;
         b_range = _a_range;
         c_range = _a_range;
+        specs = _specs;
     }
 }
