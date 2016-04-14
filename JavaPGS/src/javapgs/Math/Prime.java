@@ -44,7 +44,7 @@ public class Prime {
         + 101 * Math.max(Math.abs(q.b_offset), Math.abs(q.b_offset + q.b_range))
         + Math.max(Math.abs(q.c_offset), Math.abs(q.c_offset + q.c_range));
         
-        sieve(Util.forceToNearest(max_needed, 500), 500);
+        sieve(Util.forceToNearest(max_needed, 100), 100);
     }
     
 
