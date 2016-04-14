@@ -1,3 +1,21 @@
+/*
+
+OpenCL kernel for sieving primes. Uses 1D parallelism, limited to 32 bit
+
+*/
+
+__kernel void sieve_32(__global short *primes, __global int *lim) {
+    int i = get_global_id(0);
+    if (i < 2) {
+        primes[i] = 0;   
+        return;
+    }
+    int cI;
+    for (cI = 2 * i; cI < lim[0]; cI += i) {
+        primes[cI] = 0;
+    }
+}
+
 
 /*
 

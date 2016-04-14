@@ -27,19 +27,18 @@ import org.bridj.Pointer;
  * @author cade
  */
 public class Functions {
+    
 
-    //The three on the end on dimension group size
+    /*
+    
+    Basic test for quadratics!
+    
+    */
     public static void test_quad(QuadraticWorkload q) {
-
-        final Pointer<Short> prime_ptr = Pointer.allocateShorts(Prime.MAX);
-
+        
         final Pointer<Integer> coef_offset = Pointer.allocateInts(3).order(Lib.context.getByteOrder());
 
         final Pointer<Integer> prefs = Pointer.allocateInts(2).order(Lib.context.getByteOrder());
-
-        for (int i = 0; i < Prime.MAX; ++i) {
-            prime_ptr.set(i, Prime.primes[i]);
-        }
 
         prefs.set(0, q.notable);
         prefs.set(1, q.notable_dist);
@@ -48,11 +47,11 @@ public class Functions {
         coef_offset.set(1, q.b_offset);
         coef_offset.set(2, q.a_offset);
 
-        CLBuffer<Short> prime_buff = Lib.context.createBuffer(CLMem.Usage.Input, prime_ptr);
+        CLBuffer<Short> prime_buff = Lib.context.createBuffer(CLMem.Usage.Input, Prime.primes);
         CLBuffer<Integer> prefs_buff = Lib.context.createBuffer(CLMem.Usage.Input, prefs);
         CLBuffer<Integer> coef_buff = Lib.context.createBuffer(CLMem.Usage.Input, coef_offset);
 
-        prime_buff.write(Lib.queue, prime_ptr, true);
+        prime_buff.write(Lib.queue, Prime.primes, true);
         prefs_buff.write(Lib.queue, prefs, true);
         coef_buff.write(Lib.queue, coef_offset, true);
 

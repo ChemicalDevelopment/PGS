@@ -1,0 +1,103 @@
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  SIGSEGV (0xb) at pc=0x00007f5740ee9de5, pid=10500, tid=140013390137088
+#
+# JRE version: OpenJDK Runtime Environment (8.0_45-b14) (build 1.8.0_45-internal-b14)
+# Java VM: OpenJDK 64-Bit Server VM (25.45-b02 mixed mode linux-amd64 compressed oops)
+# Problematic frame:
+# C  [libOpenCL.so.1+0x2de5]  clWaitForEvents+0x25
+#
+# Failed to write core dump. Core dumps have been disabled. To enable core dumping, try "ulimit -c unlimited" before starting Java again
+#
+# If you would like to submit a bug report, please visit:
+#   http://bugreport.java.com/bugreport/crash.jsp
+# The crash happened outside the Java Virtual Machine in native code.
+# See problematic frame for where to report the bug.
+#
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x00007f576000a000):  JavaThread "main" [_thread_in_native, id=10501, stack(0x00007f5768520000,0x00007f5768621000)]
+
+siginfo: si_signo: 11 (SIGSEGV), si_code: 1 (SEGV_MAPERR), si_addr: 0x0000000000000148
+
+Registers:
+RAX=0x0000000000000000, RBX=0x00007f57432c7c98, RCX=0x0000000000000018, RDX=0x00007f5760401ff0
+RSP=0x00007f576861f7b8, RBP=0x00007f576861f7c0, RSI=0x00007f576039ac00, RDI=0x0000000000000001
+R8 =0x00007f57432c7c98, R9 =0x0000000000000018, R10=0x00007f57510156a8, R11=0x00007f5767209f40
+R12=0x0000000000000000, R13=0x00007f57432c7c90, R14=0x00007f576861f868, R15=0x00007f576000a000
+RIP=0x00007f5740ee9de5, EFLAGS=0x0000000000010206, CSGSFS=0x0000000000000033, ERR=0x0000000000000004
+  TRAPNO=0x000000000000000e
+
+Top of Stack: (sp=0x00007f576861f7b8)
+0x00007f576861f7b8:   00007f57411013ff 00007f576861f830
+0x00007f576861f7c8:   00007f57510156d4 00007f576861f830
+0x00007f576861f7d8:   00007f5751015459 0000003b00000002
+0x00007f576861f7e8:   00007f5751015422 00007f576861f7f0
+0x00007f576861f7f8:   00007f57432c7c90 00007f576861f868
+0x00007f576861f808:   00007f57432d1798 0000000000000000
+0x00007f576861f818:   00007f57432c7c98 0000000000000000
+0x00007f576861f828:   00007f576861f850 00007f576861f8b0
+0x00007f576861f838:   00007f5751007415 0000000000000000
+0x00007f576861f848:   00007f575100f2b6 00007f576039ac00
+0x00007f576861f858:   0000000755ba9850 0000000000000001
+0x00007f576861f868:   0000000755d7bb28 00007f576861f870
+0x00007f576861f878:   00007f5743303980 00007f576861f8d8
+0x00007f576861f888:   00007f5743328a28 0000000000000000
+0x00007f576861f898:   00007f5743303a10 00007f576861f850
+0x00007f576861f8a8:   00007f576861f8d8 00007f576861f920
+0x00007f576861f8b8:   00007f575100798d 0000000755ba9850
+0x00007f576861f8c8:   0000000755ba1900 0000000755ba18b8
+0x00007f576861f8d8:   0000000755f782b8 00007f576861f8e0
+0x00007f576861f8e8:   00007f57433038b8 00007f576861f930
+0x00007f576861f8f8:   00007f5743328a28 0000000000000000
+0x00007f576861f908:   00007f57433038d0 00007f576861f8d8
+0x00007f576861f918:   00007f576861f930 00007f576861f978
+0x00007f576861f928:   00007f575100798d 0000000755f78270
+0x00007f576861f938:   00007f576861f938 00007f574331f82c
+0x00007f576861f948:   00007f576861f9c8 00007f574331f988
+0x00007f576861f958:   0000000000000000 00007f574331f900
+0x00007f576861f968:   00007f576861f930 00007f576861f9d0
+0x00007f576861f978:   00007f576861fa10 00007f575100798d
+0x00007f576861f988:   0000000755f78270 0000000755f780a0
+0x00007f576861f998:   0000364adb7f3c1e 0000000000000000
+0x00007f576861f9a8:   0000000755e1fbc8 0000000755e40ec8 
+
+Instructions: (pc=0x00007f5740ee9de5)
+0x00007f5740ee9dc5:   b8 e2 ff ff ff c3 0f 1f 44 00 00 85 ff 74 f1 48
+0x00007f5740ee9dd5:   8b 16 b8 c6 ff ff ff 48 85 d2 90 74 0e 48 8b 02
+0x00007f5740ee9de5:   48 8b 80 48 01 00 00 ff e0 66 90 f3 c3 66 66 66
+0x00007f5740ee9df5:   66 66 2e 0f 1f 84 00 00 00 00 00 48 85 ff 74 13 
+
+Register to memory mapping:
+
+RAX=0x0000000000000000 is an unknown value
+RBX={method} {0x00007f57432c7c98} 'clWaitForEvents' '(IJ)I' in 'com/nativelibs4java/opencl/library/OpenCLLibrary'
+RCX=0x0000000000000018 is an unknown value
+RDX=0x00007f5760401ff0 is an unknown value
+RSP=0x00007f576861f7b8 is pointing into the stack for thread: 0x00007f576000a000
+RBP=0x00007f576861f7c0 is pointing into the stack for thread: 0x00007f576000a000
+RSI=0x00007f576039ac00 is an unknown value
+RDI=0x0000000000000001 is an unknown value
+R8 ={method} {0x00007f57432c7c98} 'clWaitForEvents' '(IJ)I' in 'com/nativelibs4java/opencl/library/OpenCLLibrary'
+R9 =0x0000000000000018 is an unknown value
+R10=0x00007f57510156a8 is at code_begin+808 in an Interpreter codelet
+method entry point (kind = native)  [0x00007f5751015380, 0x00007f5751015c80]  2304 bytes
+R11=0x00007f5767209f40: <offset 0x986f40> in /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/libjvm.so at 0x00007f5766883000
+R12=0x0000000000000000 is an unknown value
+R13=0x00007f57432c7c90 is pointing into metadata
+R14=0x00007f576861f868 is pointing into the stack for thread: 0x00007f576000a000
+R15=0x00007f576000a000 is a thread
+
+
+Stack: [0x00007f5768520000,0x00007f5768621000],  sp=0x00007f576861f7b8,  free space=1021k
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+C  [libOpenCL.so.1+0x2de5]  clWaitForEvents+0x25
+j  com.nativelibs4java.opencl.library.OpenCLLibrary.clWaitForEvents(IJ)I+0
+j  com.nativelibs4java.opencl.CLEvent.waitFor([Lcom/nativelibs4java/opencl/CLEvent;)V+40
+j  com.nativelibs4java.opencl.CLEvent.waitFor()V+8
+j  javapgs.Math.Prime.sieve()V+164
+j  javapgs.JavaPGS.main([Ljava/lang/String;)V+46
+v  ~StubRoutines::call_stub
+V  [libjvm.so+0x6868c3]

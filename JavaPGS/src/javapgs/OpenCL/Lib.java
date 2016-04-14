@@ -42,7 +42,7 @@ public class Lib {
     public static void init(QuadraticWorkload q) throws IOException {
         context = JavaCL.createBestContext(q.clspecs.features);
         for (CLDevice d : context.getDevices()) {
-            System.out.format("Using: %s", d.getName());
+            System.out.format("Using: %s\n", d.getName());
         }
         queue = context.createDefaultQueue();
         test = context.createProgram(IOUtils.readText(Lib.class.getResource("Kernels/test.cl")));

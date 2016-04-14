@@ -46,7 +46,7 @@ public class JavaPGS {
             QuadraticWorkload r = IO.getQuadraticWorkloadFromFile(new File(args[0]));
             r.clspecs = IO.getCLSpecsFromFile(new File(args[1]));
             Lib.init(r);
-            Prime.init();
+            Prime.sieve_for_quad(r);
             Functions.test_quad(r);
         }
 
