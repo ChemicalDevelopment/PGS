@@ -23,7 +23,7 @@ import javapgs.Math.Prime;
 import org.bridj.Pointer;
 
 /**
- *
+ * Functions to test, and such
  * @author cade
  */
 public class Functions {
@@ -64,6 +64,6 @@ public class Functions {
         }
         long end = System.nanoTime();
 
-        System.out.println("Done (" + (end - start) / Math.pow(10, 9) + ")\n");
+        System.out.format("Done! (%f%s)", (end - start) / Math.pow(10, 9), "s");
     }
 }
