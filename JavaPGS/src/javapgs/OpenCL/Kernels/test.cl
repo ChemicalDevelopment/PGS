@@ -10,6 +10,7 @@ __kernel void sieve_32(__global short *primes, __global int *lim) {
         primes[i] = 0;   
         return;
     }
+    if (primes[i] == 0) return;
     int cI;
     for (cI = 2 * i; cI < lim[0]; cI += i) {
         primes[cI] = 0;

@@ -49,6 +49,5 @@ public class JavaPGS {
             Prime.sieve_for_quad(r);
             Functions.test_quad(r);
         }
-
     }
 }

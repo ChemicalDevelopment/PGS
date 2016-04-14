@@ -44,7 +44,7 @@ public class Prime {
         + 101 * Math.max(Math.abs(q.b_offset), Math.abs(q.b_offset + q.b_range))
         + Math.max(Math.abs(q.c_offset), Math.abs(q.c_offset + q.c_range));
         
-        sieve(Util.forceToNearest(max_needed, 100), 100);
+        sieve(Util.forceToNearest(max_needed, 10000), 100);
     }
     
 
@@ -56,6 +56,8 @@ public class Prime {
     public static void sieve(int max, int workgroup) {
         MAX = max;
 
+        System.out.format("We will need to sieve up to %d\n", MAX);
+        
         Pointer<Short> prime_ptr = Pointer.allocateShorts(MAX);
         Pointer<Integer> lim = Pointer.allocateInts(1);
         lim.set(0, MAX);
@@ -73,7 +75,6 @@ public class Prime {
         long start = System.nanoTime();
         {
             CLKernel kernel = program.createKernel("sieve_32", prime_buff, lim_buff); //, inp_p0, inp_p1, inp_p2);
-            //CLEvent kernelCompletion = kernel.enqueueNDRange(Lib.queue, new int[]{10}, new int[]{});
             CLEvent kernelCompletion = kernel.enqueueNDRange(Lib.queue, new int[] {MAX / 2}, new int[] {workgroup});
             kernelCompletion.waitFor();
         }
