@@ -18,6 +18,7 @@ import com.nativelibs4java.opencl.CLEvent;
 import com.nativelibs4java.opencl.CLKernel;
 import com.nativelibs4java.opencl.CLMem;
 import com.nativelibs4java.opencl.CLProgram;
+import javapgs.DataTypes.QuadraticWorkload;
 import javapgs.Math.Prime;
 import org.bridj.Pointer;
 
@@ -28,10 +29,7 @@ import org.bridj.Pointer;
 public class Functions {
 
     //The three on the end on dimension group size
-    public static void test_quad(int notable, int notable_dist, int p0m, int p0n, int p1m, int p1n, int p2m, int p2n, int p0d, int p1d, int p2d) {
-        int p0r = p0n - p0m;
-        int p1r = p1n - p1m;
-        int p2r = p2n - p2m;
+    public static void test_quad(QuadraticWorkload q) {
 
         final Pointer<Short> prime_ptr = Pointer.allocateShorts(Prime.MAX);
 
@@ -43,12 +41,12 @@ public class Functions {
             prime_ptr.set(i, Prime.primes[i]);
         }
 
-        prefs.set(0, notable);
-        prefs.set(1, notable_dist);
+        prefs.set(0, q.notable);
+        prefs.set(1, q.notable_dist);
 
-        coef_offset.set(0, p0m);
-        coef_offset.set(1, p1m);
-        coef_offset.set(2, p2m);
+        coef_offset.set(0, q.c_offset);
+        coef_offset.set(1, q.b_offset);
+        coef_offset.set(2, q.a_offset);
 
         CLBuffer<Short> prime_buff = Lib.context.createBuffer(CLMem.Usage.Input, prime_ptr);
         CLBuffer<Integer> prefs_buff = Lib.context.createBuffer(CLMem.Usage.Input, prefs);
@@ -62,7 +60,7 @@ public class Functions {
         long start = System.nanoTime();
         {
             CLKernel kernel = program.createKernel("test_quadratics_abs_consecutive_distinct_32", prefs_buff, prime_buff, coef_buff); //, inp_p0, inp_p1, inp_p2);
-            CLEvent kernelCompletion = kernel.enqueueNDRange(Lib.queue, new int[]{p0r, p1r, p2r}, new int[]{p0d, p1d, p2d});
+            CLEvent kernelCompletion = kernel.enqueueNDRange(Lib.queue, new int[]{q.c_range, q.b_range, q.a_range}, new int[]{q.work_c, q.work_b, q.work_a});
             kernelCompletion.waitFor();
         }
         long end = System.nanoTime();

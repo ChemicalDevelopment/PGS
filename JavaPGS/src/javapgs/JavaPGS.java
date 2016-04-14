@@ -13,15 +13,17 @@
  */
 package javapgs;
 
+import java.io.File;
 import java.io.IOException;
+import javapgs.DataTypes.QuadraticWorkload;
 import javapgs.Math.Prime;
 import javapgs.OpenCL.Functions;
 import javapgs.OpenCL.Lib;
 
 /**
- * Prime Generator Search!
- * Our github repo: https://github.com/ChemicalDevelopment/PGS
- * Wiki: https://github.com/ChemicalDevelopment/PGS/wiki
+ * Prime Generator Search! Our github repo:
+ * https://github.com/ChemicalDevelopment/PGS Wiki:
+ * https://github.com/ChemicalDevelopment/PGS/wiki
  *
  * @author cade
  */
@@ -38,32 +40,15 @@ public class JavaPGS {
     
     With workgroup sizes $p0d $p1d $p2d (refer to our wiki for help on workgroups
     
-    */
-
+     */
     public static void main(String args[]) throws IOException {
-        int[] min_max = new int[]{-1000, 1000, -1000, 1000, -1000, 1000};
-        int notable = 26;
-        int notable_dist = 12;
-        int p0d = 1;
-        int p1d = 1;
-        int p2d = 1;
-        if (args.length >= 11) {
-            notable = Integer.parseInt(args[0]);
-            notable_dist = Integer.parseInt(args[1]);
-            p0d = Integer.parseInt(args[2]);
-            p1d = Integer.parseInt(args[3]);
-            p2d = Integer.parseInt(args[4]);
-            min_max[0] = Integer.parseInt(args[5]);
-            min_max[1] = Integer.parseInt(args[6]);
-            min_max[2] = Integer.parseInt(args[7]);
-            min_max[3] = Integer.parseInt(args[8]);
-            min_max[4] = Integer.parseInt(args[9]);
-            min_max[5] = Integer.parseInt(args[10]);
-            Prime.MAX = 100 * 100 * Math.max(Math.abs(min_max[4]), Math.abs(min_max[5])) + 100 * Math.max(Math.abs(min_max[2]), Math.abs(min_max[3])) + Math.max(Math.abs(min_max[0]), Math.abs(min_max[1]));
+        if (args.length >= 2) {
+            QuadraticWorkload r = IO.getQuadraticWorkloadFromFile(new File(args[0]));
+            r.clspecs = IO.getCLSpecsFromFile(new File(args[1]));
+            Lib.init(r);
+            Prime.init();
+            Functions.test_quad(r);
         }
-        Lib.init();
 
-        Prime.init();
-        Functions.test_quad(notable, notable_dist, min_max[0], min_max[1], min_max[2], min_max[3], min_max[4], min_max[5], p0d, p1d, p2d);
     }
 }

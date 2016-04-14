@@ -1,0 +1,16 @@
+0 #This is where we start for the x^2 coefficient
+1000 #How many more do we go
+0 #The x coefficient
+1000 #How long do we go
+0 #The constant coefficient start
+1000 #How long do we go
+40 #Notable primes
+34 #Notable distinct primes
+2 #Work_a
+2 #work_b
+2 #work_c
+QUADRATIC #Kernel enums start here
+ABS #Absolute value
+CONSECUTIVE #Care about consecutive
+DISTINCT #Care about distinct
+INT32 #Only use 32 bit integers

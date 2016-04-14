@@ -13,19 +13,14 @@
  */
 package javapgs.OpenCL;
 
-import com.nativelibs4java.opencl.CLBuffer;
 import com.nativelibs4java.opencl.CLContext;
 import com.nativelibs4java.opencl.CLDevice;
-import com.nativelibs4java.opencl.CLEvent;
-import com.nativelibs4java.opencl.CLKernel;
-import com.nativelibs4java.opencl.CLMem;
-import com.nativelibs4java.opencl.CLPlatform.DeviceFeature;
 import com.nativelibs4java.opencl.CLProgram;
 import com.nativelibs4java.opencl.CLQueue;
 import com.nativelibs4java.opencl.JavaCL;
 import com.nativelibs4java.util.IOUtils;
 import java.io.IOException;
-import org.bridj.Pointer;
+import javapgs.DataTypes.QuadraticWorkload;
 
 /**
  * Manages OpenCL stuffs!
@@ -44,8 +39,11 @@ public class Lib {
     public static CLQueue queue;
 
     //Creates kernel refernces and compiles, saves time later
-    public static void init() throws IOException {
-        context = JavaCL.createBestContext(DeviceFeature.CPU);
+    public static void init(QuadraticWorkload q) throws IOException {
+        context = JavaCL.createBestContext(q.clspecs.features);
+        for (CLDevice d : context.getDevices()) {
+            System.out.format("Using: %s", d.getName());
+        }
         queue = context.createDefaultQueue();
         test = context.createProgram(IOUtils.readText(Lib.class.getResource("Kernels/test.cl")));
     }
