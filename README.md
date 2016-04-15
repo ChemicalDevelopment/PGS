@@ -9,7 +9,11 @@
 This is a project that searches for functions that are prime for certain values of the input. It is a **P**rime **G**enerator **S**earch. It looks through polynomials, and tests some of the input, and then spits out some info.
 
 ## Why do this?
-I believe that this question is not always relevant to research. Researching in maths, or any subject may lend itself to other problems in the future. Understanding the world around us and how it works is often priceless.
+Primes have both practical and novel purposes. Primes are in all forms of cryptography, and are the building blocks of arithmetic. Finding the density, probability, and other properties of prime generating polynomials can help us now, and in the future.
+
+There has been a small amount of modernized research on prime generating polynomials, and I believe there is a gap of where we are and where we should be. PrimeGrid is one example, and in
+
+
 
 ## Explanation
 For a more in-detail explanation, see our wiki (https://github.com/ChemicalDevelopment/PGS/wiki), but here's a short explanation:
@@ -35,13 +39,7 @@ More info can be found on our wiki (https://github.com/ChemicalDevelopment/PGS/w
 The thread on mersenneforums (http://mersenneforum.org/showthread.php?t=21200)
 
 
-## Findings
-
-Polynomials found by PGS:
-
-Brute force on all coefficients -100 <= x <= 100:
-
-![Bash output](/screenshots/C/Brute_100.png)
+Website: https://pgs.chemicaldevelopment.us
 
 
 ## Implementations
