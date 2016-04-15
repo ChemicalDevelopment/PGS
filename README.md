@@ -1,4 +1,11 @@
-# PGS
+
+  ██████╗  ██████╗ ███████╗
+  ██╔══██╗██╔════╝ ██╔════╝
+  ██████╔╝██║  ███╗███████╗
+  ██╔═══╝ ██║   ██║╚════██║
+  ██║     ╚██████╔╝███████║
+  ╚═╝      ╚═════╝ ╚══════╝
+
 
 ## What is this?
 This is a project that searches for functions that are prime for certain values of the input. It is a **P**rime **G**enerator **S**earch. It looks through polynomials, and tests some of the input, and then spits out some info.
