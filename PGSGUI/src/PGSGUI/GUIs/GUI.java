@@ -1,11 +1,16 @@
 package PGSGUI.GUIs;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class GUI extends javax.swing.JFrame {
-    
+
     public GUI() {
         initComponents();
     }
-    
+
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -14,19 +19,25 @@ public class GUI extends javax.swing.JFrame {
         jFrame2 = new javax.swing.JFrame();
         jFrame3 = new javax.swing.JFrame();
         jPanel1 = new javax.swing.JPanel();
-        jTextField1 = new javax.swing.JTextField();
+        username = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jPasswordField1 = new javax.swing.JPasswordField();
+        password = new javax.swing.JPasswordField();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel2 = new javax.swing.JPanel();
-        jToggleButton1 = new javax.swing.JToggleButton();
+        useCustomWorkloads = new javax.swing.JToggleButton();
         jLabel3 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
-        jToggleButton2 = new javax.swing.JToggleButton();
+        workload = new javax.swing.JTextField();
+        useCustomCLSpecs = new javax.swing.JToggleButton();
         jLabel4 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
-        jButton2 = new javax.swing.JButton();
+        clspecs = new javax.swing.JTextField();
+        start = new javax.swing.JButton();
+        jLabel5 = new javax.swing.JLabel();
+        baseDir = new javax.swing.JTextField();
+        jLabel6 = new javax.swing.JLabel();
+        jarFile = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        output = new javax.swing.JTextArea();
 
         org.jdesktop.layout.GroupLayout jFrame1Layout = new org.jdesktop.layout.GroupLayout(jFrame1.getContentPane());
         jFrame1.getContentPane().setLayout(jFrame1Layout);
@@ -69,16 +80,16 @@ public class GUI extends javax.swing.JFrame {
         jPanel1.setToolTipText("Login");
         jPanel1.setName(""); // NOI18N
 
-        jTextField1.setToolTipText("Username");
+        username.setToolTipText("Username");
 
         jLabel1.setText("Username:");
 
         jLabel2.setText("Password:");
 
-        jPasswordField1.setToolTipText("Password");
-        jPasswordField1.addActionListener(new java.awt.event.ActionListener() {
+        password.setToolTipText("Password");
+        password.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jPasswordField1ActionPerformed(evt);
+                passwordActionPerformed(evt);
             }
         });
 
@@ -93,8 +104,8 @@ public class GUI extends javax.swing.JFrame {
                     .add(jLabel2))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
-                    .add(jTextField1)
-                    .add(jPasswordField1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE))
+                    .add(username)
+                    .add(password, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE))
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -103,41 +114,66 @@ public class GUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(jLabel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 29, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(jTextField1))
+                    .add(username))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                 .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(jLabel2)
-                    .add(jPasswordField1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                    .add(password, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jPasswordField1.getAccessibleContext().setAccessibleName("Password");
+        password.getAccessibleContext().setAccessibleName("Password");
 
-        jToggleButton1.setText("Custom Workloads");
-        jToggleButton1.addActionListener(new java.awt.event.ActionListener() {
+        useCustomWorkloads.setText("Custom Workloads");
+        useCustomWorkloads.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jToggleButton1ActionPerformed(evt);
+                useCustomWorkloadsActionPerformed(evt);
             }
         });
 
         jLabel3.setText("CLSpecs:");
 
-        jTextField2.addActionListener(new java.awt.event.ActionListener() {
+        workload.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField2ActionPerformed(evt);
+                workloadActionPerformed(evt);
             }
         });
 
-        jToggleButton2.setText("Custom CLSpecs");
-        jToggleButton2.addActionListener(new java.awt.event.ActionListener() {
+        useCustomCLSpecs.setText("Custom CLSpecs");
+        useCustomCLSpecs.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jToggleButton2ActionPerformed(evt);
+                useCustomCLSpecsActionPerformed(evt);
             }
         });
 
         jLabel4.setText("Workload:");
 
-        jButton2.setText("Start");
+        start.setText("Start");
+        start.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                startMouseClicked(evt);
+            }
+        });
+
+        jLabel5.setText("Jar File:");
+
+        baseDir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                baseDirActionPerformed(evt);
+            }
+        });
+
+        jLabel6.setText("Base Dir:");
+
+        jarFile.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jarFileActionPerformed(evt);
+            }
+        });
+
+        output.setColumns(20);
+        output.setRows(5);
+        jScrollPane1.setViewportView(output);
 
         org.jdesktop.layout.GroupLayout jPanel2Layout = new org.jdesktop.layout.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -145,38 +181,65 @@ public class GUI extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
-                    .add(jButton2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
-                        .add(jToggleButton2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .add(jToggleButton1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .add(18, 18, 18)
-                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
-                    .add(jLabel4, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE)
-                    .add(jLabel3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
-                    .add(jTextField2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
-                    .add(jTextField3))
-                .addContainerGap(570, Short.MAX_VALUE))
+                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(jPanel2Layout.createSequentialGroup()
+                        .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(jPanel2Layout.createSequentialGroup()
+                                .add(jLabel5, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 72, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                                .add(18, 18, 18)
+                                .add(jarFile))
+                            .add(jPanel2Layout.createSequentialGroup()
+                                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING, false)
+                                    .add(start, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .add(useCustomCLSpecs, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .add(useCustomWorkloads, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .add(18, 18, 18)
+                                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
+                                    .add(jLabel4, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE)
+                                    .add(jLabel3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                                    .add(workload)
+                                    .add(clspecs))))
+                        .add(32, 32, 32))
+                    .add(jPanel2Layout.createSequentialGroup()
+                        .add(jLabel6, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 72, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                        .add(18, 18, 18)
+                        .add(baseDir, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 394, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 18, Short.MAX_VALUE)))
+                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 490, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(jToggleButton1)
-                    .add(jTextField2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                    .add(jLabel4))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(jToggleButton2)
-                    .add(jLabel3)
-                    .add(jTextField3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 259, Short.MAX_VALUE)
-                .add(jButton2)
+                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(jPanel2Layout.createSequentialGroup()
+                        .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                            .add(jLabel5, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 29, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                            .add(jarFile, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                            .add(jLabel6, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 29, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                            .add(baseDir, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                            .add(jLabel4)
+                            .add(workload, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                            .add(useCustomWorkloads))
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                        .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                            .add(useCustomCLSpecs)
+                            .add(jLabel3)
+                            .add(clspecs, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 189, Short.MAX_VALUE)
+                        .add(start))
+                    .add(jScrollPane1))
                 .addContainerGap())
         );
+
+        jLabel6.getAccessibleContext().setAccessibleDescription("Where the base directory for workloads and specs is located");
 
         jTabbedPane1.addTab("PGS", jPanel2);
 
@@ -209,22 +272,49 @@ public class GUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jPasswordField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPasswordField1ActionPerformed
+    private void passwordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jPasswordField1ActionPerformed
+    }//GEN-LAST:event_passwordActionPerformed
 
-    private void jToggleButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton1ActionPerformed
+    private void useCustomWorkloadsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_useCustomWorkloadsActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jToggleButton1ActionPerformed
+    }//GEN-LAST:event_useCustomWorkloadsActionPerformed
 
-    private void jToggleButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton2ActionPerformed
+    private void useCustomCLSpecsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_useCustomCLSpecsActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jToggleButton2ActionPerformed
+    }//GEN-LAST:event_useCustomCLSpecsActionPerformed
 
-    private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
+    private void workloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_workloadActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField2ActionPerformed
+    }//GEN-LAST:event_workloadActionPerformed
+    /*
     
+    This is the method that is called when they click the start button
+    
+     */
+    private void startMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_startMouseClicked
+        //A command to run from system, to call our JPGS jar file
+        String[] toRun = new String[]{"java", "-jar", jarFile.getText(), workload.getText(), clspecs.getName()};
+        Process proc;
+        try {
+            proc = Runtime.getRuntime().exec(toRun);
+            InputStream in = proc.getInputStream();
+            while (true) {
+                output.append("" + in.read());
+            }
+        } catch (Exception ex) {
+            output.append("Errored!\n");
+        }
+    }//GEN-LAST:event_startMouseClicked
+
+    private void baseDirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_baseDirActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_baseDirActionPerformed
+
+    private void jarFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jarFileActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jarFileActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -235,12 +325,13 @@ public class GUI extends javax.swing.JFrame {
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
         try {
-            javax.swing.UIManager.LookAndFeelInfo[] installedLookAndFeels=javax.swing.UIManager.getInstalledLookAndFeels();
-            for (int idx=0; idx<installedLookAndFeels.length; idx++)
+            javax.swing.UIManager.LookAndFeelInfo[] installedLookAndFeels = javax.swing.UIManager.getInstalledLookAndFeels();
+            for (int idx = 0; idx < installedLookAndFeels.length; idx++) {
                 if ("Nimbus".equals(installedLookAndFeels[idx].getName())) {
                     javax.swing.UIManager.setLookAndFeel(installedLookAndFeels[idx].getClassName());
                     break;
                 }
+            }
         } catch (ClassNotFoundException ex) {
             java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
@@ -258,10 +349,11 @@ public class GUI extends javax.swing.JFrame {
             }
         });
     }
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField baseDir;
     private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JTextField clspecs;
     private javax.swing.JFrame jFrame1;
     private javax.swing.JFrame jFrame2;
     private javax.swing.JFrame jFrame3;
@@ -269,15 +361,20 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPasswordField jPasswordField1;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JToggleButton jToggleButton1;
-    private javax.swing.JToggleButton jToggleButton2;
+    private javax.swing.JTextField jarFile;
+    private javax.swing.JTextArea output;
+    private javax.swing.JPasswordField password;
+    private javax.swing.JButton start;
+    private javax.swing.JToggleButton useCustomCLSpecs;
+    private javax.swing.JToggleButton useCustomWorkloads;
+    private javax.swing.JTextField username;
+    private javax.swing.JTextField workload;
     // End of variables declaration//GEN-END:variables
-    
+
 }
