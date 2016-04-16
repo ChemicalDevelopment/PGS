@@ -45,13 +45,13 @@ Website: https://pgs.chemicaldevelopment.us
 ## Features
 
 ### Planned
-..*Optimized kernel selection
-..*GPU Hashing for workloads
-..*Link with DB for users to help search
-..*Distributed BOINC projects (a way aways from this one)
+  * Optimized kernel selection
+  * GPU Hashing for workloads
+  * Link with DB for users to help search
+  * Distributed BOINC projects (a way aways from this one)
 
 
 ### Implemented
-..*OpenCL support
-..*JavaPGS
+  * OpenCL support
+  * JavaPGS
 
