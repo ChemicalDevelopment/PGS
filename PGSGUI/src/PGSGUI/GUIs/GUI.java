@@ -1,9 +1,9 @@
 package PGSGUI.GUIs;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import PGSGUI.PGSGUI;
+import static PGSGUI.PGSGUI.process;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
 public class GUI extends javax.swing.JFrame {
 
@@ -294,16 +294,30 @@ public class GUI extends javax.swing.JFrame {
      */
     private void startMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_startMouseClicked
         //A command to run from system, to call our JPGS jar file
-        String[] toRun = new String[]{"java", "-jar", jarFile.getText(), workload.getText(), clspecs.getName()};
-        Process proc;
+        output.setText("");
+        PGSGUI.process.destroyForcibly();
         try {
-            proc = Runtime.getRuntime().exec(toRun);
-            InputStream in = proc.getInputStream();
-            while (true) {
-                output.append("" + in.read());
-            }
+            ProcessBuilder builder = new ProcessBuilder("java", "-jar", jarFile.getText(), workload.getText(), clspecs.getText());
+            PGSGUI.process = builder.start();
+            final Thread ioThread = new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        final BufferedReader reader = new BufferedReader(
+                                new InputStreamReader(process.getInputStream()));
+                        String line = null;
+                        while ((line = reader.readLine()) != null) {
+                            output.append(line + "\n");
+                        }
+                        reader.close();
+                    } catch (final Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+            ioThread.start();
         } catch (Exception ex) {
-            output.append("Errored!\n");
+            output.append("Errored\n");
         }
     }//GEN-LAST:event_startMouseClicked
 

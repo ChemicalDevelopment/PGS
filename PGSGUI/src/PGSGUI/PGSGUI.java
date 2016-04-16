@@ -20,6 +20,9 @@ import PGSGUI.GUIs.GUI;
  * @author cade
  */
 public class PGSGUI {
+    
+    public static Process process;
+    
     public static void main(String args[]) {
         GUI.run();
     }
