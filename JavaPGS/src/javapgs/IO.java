@@ -81,12 +81,9 @@ public class IO {
         r.c_range = Integer.parseInt(lines[5]);
         r.notable = Integer.parseInt(lines[6]);
         r.notable_dist = Integer.parseInt(lines[7]);
-        r.work_a = Integer.parseInt(lines[8]);
-        r.work_b = Integer.parseInt(lines[9]);
-        r.work_c = Integer.parseInt(lines[10]);
 
         Kernel[] otherSpecs = new Kernel[20];
-        i = 11;
+        i = 8;
         int in = 0;
         try {
             Kernel c = Kernel.valueOf(lines[i]);

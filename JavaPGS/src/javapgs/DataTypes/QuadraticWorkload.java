@@ -35,7 +35,6 @@ public class QuadraticWorkload {
     public int a_range, b_range, c_range;
     public int notable, notable_dist;
     
-    public int work_a, work_b, work_c = 1;
     
     public Kernel[] specs;
     public CLSpecs clspecs;
@@ -45,7 +44,7 @@ public class QuadraticWorkload {
     Default constructor, give us all the values.
     
     */
-    public QuadraticWorkload(int _a_offset, int _b_offset, int _c_offset,int _a_range, int _b_range, int _c_range, int _notable, int _distinct, int _work_a, int _work_b, int _work_c, Kernel[] _specs, CLSpecs _clspecs) {
+    public QuadraticWorkload(int _a_offset, int _b_offset, int _c_offset,int _a_range, int _b_range, int _c_range, int _notable, int _distinct, Kernel[] _specs, CLSpecs _clspecs) {
         a_offset = _a_offset;
         b_offset = _b_offset;
         c_offset = _c_offset;
@@ -54,9 +53,6 @@ public class QuadraticWorkload {
         c_range = _a_range;
         notable = _notable;
         notable_dist = _distinct;
-        work_a = _work_a;
-        work_b = _work_b;
-        work_c = _work_c;
         specs = _specs;
         clspecs = _clspecs;
     }

@@ -24,8 +24,8 @@ public class Util {
     Forces an integer to the closest multiple of m, it will be at least a
     
     */
-    public static int forceToNearest(int a, int m) {
+    /*public static int forceToNearest(int a, int m) {
         return (m) * (a / m);
-    }
+    }*/
     
 }

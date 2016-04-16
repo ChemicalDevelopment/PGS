@@ -59,7 +59,7 @@ public class Functions {
         long start = System.nanoTime();
         {
             CLKernel kernel = program.createKernel("test_quadratics_abs_consecutive_distinct_32", prefs_buff, prime_buff, coef_buff); //, inp_p0, inp_p1, inp_p2);
-            CLEvent kernelCompletion = kernel.enqueueNDRange(Lib.queue, new int[]{q.c_range, q.b_range, q.a_range}, new int[]{q.work_c, q.work_b, q.work_a});
+            CLEvent kernelCompletion = kernel.enqueueNDRange(Lib.queue, new int[]{q.c_range, q.b_range, q.a_range});
             kernelCompletion.waitFor();
         }
         long end = System.nanoTime();
