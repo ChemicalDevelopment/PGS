@@ -1,10 +1,10 @@
--2500 #This is where we start for the x^2 coefficient
-5000 #How many more do we go
--2500 #The x coefficient
-5000 #How long do we go
--2500 #The constant coefficient start
-5000 #How long do we go
-40 #Notable primes
+-1000 #This is where we start for the x^2 coefficient
+2000 #How many more do we go
+-1000 #The x coefficient
+2000 #How long do we go
+-1000 #The constant coefficient start
+2000 #How long do we go
+58 #Notable primes
 40 #Notable distinct primes
 10 #Work_a
 10 #work_b

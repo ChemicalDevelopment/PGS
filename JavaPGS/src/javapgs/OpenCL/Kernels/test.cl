@@ -67,12 +67,23 @@ __kernel void test_quadratics_abs_consecutive_distinct_32(__constant int *prefs,
     short hbdist = 1;
 
     /*
+    
+    The following lines are to optimize early release cases
+
+    */
+    evals[0] = abs(i); //i + 0 * j + 0 * 0 * k
+    if (prime_arr[evals[0]] != 1) return;
+    evals[1] = abs(i + j + k); //i + j * 1 + k * 1 * 1
+    if (prime_arr[evals[1]] != 1) return;
+    if (evals[0] == evals[1]) return;
+    inarow = 2;
+    /*
 
     Our for loop!
     Tests x values, and reports their primality
 
     */
-    for (x = 0; x < 101; ++x) {
+    for (x = 2; x < 101; ++x) {
         //We store the primes in evals_x
         evals[x] = abs(i + j * x + k * x * x);
         //Currently, it is a short array, working on moving to bytes and bit masking

@@ -64,6 +64,6 @@ public class Functions {
         }
         long end = System.nanoTime();
 
-        System.out.format("Done! (%f%s)", (end - start) / Math.pow(10, 9), "s");
+        System.out.format("Done! (%f%s)\n", (end - start) / Math.pow(10, 9), "s");
     }
 }
