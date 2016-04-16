@@ -42,13 +42,16 @@ The thread on mersenneforums (http://mersenneforum.org/showthread.php?t=21200)
 Website: https://pgs.chemicaldevelopment.us
 
 
-## Implementations
+## Features
 
-### In C (WIP)
-Basic program is written in C, and uses GMP for larger numbers. Written for performance over all platforms
+### Planned
+..*Optimized kernel selection
+..*GPU Hashing for workloads
+..*Link with DB for users to help search
+..*Distributed BOINC projects (a way aways from this one)
 
 
-This is located in the /C/ folder.
+### Implemented
+..*OpenCL support
+..*JavaPGS
 
-### In Java (WIP)
-Now written! Using OpenCL to quickly make work! Does a 1000 brute search (-1000 to 1000) in under 10 seconds on a laptop!
