@@ -1,5 +1,54 @@
 /*
 
+General purpose functions
+
+*/
+
+/*
+
+Prints out quadratic
+
+*/
+void print_quad(int i, int j, int k, int inarow, int distinct) {
+    printf(" P: [0, %d] D: [0, %d]  |  ", inarow - 1, distinct - 1);
+    if (k != 0) {
+        if (k < 0) {
+            printf("-");
+        }
+        if (abs(k) != 1) {
+            printf("%d", abs(k));
+        }
+        printf("x^2");
+    }
+    if (j != 0) {
+        if (j < 0) {
+            printf(" - ");
+        } else {
+            printf(" + ");
+        }
+        if (abs(j) != 1) {
+            printf("%d", abs(j));
+        }
+        printf("x");
+
+    }
+     if (i != 0) {
+        if (i < 0) {
+            printf(" - ");
+        } else {
+            printf(" + ");
+        }
+        if (abs(i) != 1) {
+            printf("%d", abs(i));
+        }
+    }
+    printf("\n");
+}
+
+
+
+/*
+
 OpenCL kernel for sieving primes. Uses 1D parallelism, limited to 32 bit
 
 */
@@ -114,6 +163,7 @@ __kernel void test_quadratics_abs_consecutive_distinct_32(__constant int *prefs,
 
     */
     if ((inarow >= prefs[0]  || distinct >= prefs[1]) && inarow != 101) {
-        printf("%d + %dx + %dx^2 is prime for %d (x = [0, %d]) (distinct for %d)\n", i, j, k, inarow, inarow - 1, distinct);
+        print_quad(i, j, k, inarow, distinct);
     }
 }
+

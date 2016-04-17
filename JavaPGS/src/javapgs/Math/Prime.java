@@ -56,7 +56,7 @@ public class Prime {
     public static void sieve(int max) {
         MAX = max;
 
-        System.out.format("We will need to sieve up to %d\n", MAX);
+        System.out.format("Beginning sieve up to %d\n", MAX);
         
         Pointer<Short> prime_ptr = Pointer.allocateShorts(MAX);
         Pointer<Integer> lim = Pointer.allocateInts(1);

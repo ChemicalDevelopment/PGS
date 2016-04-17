@@ -23,8 +23,13 @@ public class PGSGUI {
     
     public static Process process;
     
-    public static void main(String args[]) {
+    /*
+    
+    Input: PGSGUIprefs
+    
+    */
+    
+    public static void main(String args[]) { 
         GUI.run();
     }
-    
 }
