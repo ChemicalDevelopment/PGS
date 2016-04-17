@@ -55,3 +55,20 @@ Website: https://pgs.chemicaldevelopment.us
   * JavaPGS
   * GUI Application
 
+## Installing
+Want to help out, or just stress test your computer? You can install PGS in these ways:
+### Linux/Unix/Mac
+#### Script (recommended)
+A simple way to install this program is using the script ( https://github.com/ChemicalDevelopment/PGS/blob/master/install/install.sh ), copy and paste, or download onto your computer, then `sudo ./install.sh` for PGS! This, by default, installs to /usr/local/ , which you can easily change through the install script.
+
+
+From here, you can run the PGSGUI by going into the install, and to PGSGUI-latest directory, and opening the jar file. Just click start and enjoy (note you may have to enable administrator privileges).
+
+
+If you ever need to get a newer version, simply run the install.sh again, and it will automaticall update everything!
+### Windows
+#### Script (recommended)
+TODO: Make batch script
+### Building (harder)
+For users that want more control, and customization, you can clone this repo, and download the neccessary dependency (JavaCL), and compile using your IDE, or commandline tool.
+
