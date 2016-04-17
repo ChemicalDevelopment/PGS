@@ -24,8 +24,8 @@ public class IO {
 
     public static final String windows_default_install_directory = "C:\\ProgramFiles\\PGS\\";
     public static final String unix_default_install_directory = "/usr/local/PGS/";
-    public static final String windows_path_to_jar = "PGS-lateset\\PGS.jar";
-    public static final String unix_path_to_jar = "PGS-latest/PGS.jar";
+    public static final String windows_path_to_jar = "PGS.jar";
+    public static final String unix_path_to_jar = "PGS.jar";
     public static final String windows_workload_dir = "workloads\\";
     public static final String unix_workload_dir = "workloads/";
     public static final String windows_clspecs_dir = "clspecs\\";
