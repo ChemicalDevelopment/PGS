@@ -13,31 +13,11 @@
  */
 package PGSGUI;
 
-import PGSGUI.GUIs.GUI;
-import PGSGUI.Lib.IO;
-
 /**
- * GUI Program for PGS.
- *
+ * Simple enum for OS (mainly has to do with file storage
  * @author cade
  */
-public class PGSGUI {
-
-    public static Process process;
-    public static OS opSys;
-    public static String base_dir;
-
-    public PGSGUI() {
-    }
-
-    public static void main(String args[]) {
-        //Detecting which one
-        if (System.getProperty("os.name").startsWith("Windows")) {
-            opSys = OS.WINDOWS;
-        } else {
-            opSys = OS.UNIX;
-        }
-        base_dir = IO.getInstallDirectory(opSys);
-        GUI.run();
-    }
+public enum OS {
+    UNIX,
+    WINDOWS
 }
