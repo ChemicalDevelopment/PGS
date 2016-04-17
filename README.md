@@ -6,13 +6,12 @@
     ╚═╝      ╚═════╝ ╚══════╝
     
 ## What is this?
-This is a project that searches for functions that are prime for certain values of the input. It is a **P**rime **G**enerator **S**earch. It looks through polynomials, and tests some of the input, and then spits out some info.
+This is a project that searches for functions that are prime for the first few values of input. It is a **P**rime **G**enerator **S**earch. It looks through polynomials, and tests some of the input, and then spits out some info.
 
 ## Why do this?
 Primes have both practical and novel purposes. Primes are in all forms of cryptography, and are the building blocks of arithmetic. Finding the density, probability, and other properties of prime generating polynomials can help us now, and in the future.
 
-There has been a small amount of modernized research on prime generating polynomials, and I believe there is a gap of where we are and where we should be. PrimeGrid is one example, and in
-
+There has been a small amount of modernized research on prime generating polynomials, and I believe there is a gap of where we are and where we should be. PrimeGrid (http://www.primegrid.com/) is one example, and they have found a linear function that is prime for x = [0, 25]. We are looking for polynomials (especially quadratics) that have the same property
 
 
 ## Explanation
@@ -30,7 +29,7 @@ from x = 0 to 2
 from x = 0 to 39
 
 
-This program looks for larger and longer examples of this!
+This program looks for larger and longer examples of this, and does it over the internet over multiple computers.
 
 ## More Info
 More info can be found on our wiki (https://github.com/ChemicalDevelopment/PGS/wiki)
@@ -54,4 +53,5 @@ Website: https://pgs.chemicaldevelopment.us
 ### Implemented
   * OpenCL support
   * JavaPGS
+  * GUI Application
 
