@@ -15,6 +15,15 @@ int check_bit(int op, int nth_place) {
     return (op >> (nth_place) & 1);
 }
 
+/*
+
+Divides by 2^nth_place
+
+*/
+int div_p2(int op, int nth_place) {
+    return (op >> nth_place);
+}
+
 
 /*
 
@@ -57,8 +66,6 @@ void print_quad(int i, int j, int k, int inarow, int distinct) {
     printf("\n");
 }
 
-
-
 /*
 
 OpenCL kernel for sieving primes. Uses 1D parallelism, limited to 32 bit
@@ -68,13 +75,13 @@ OpenCL kernel for sieving primes. Uses 1D parallelism, limited to 32 bit
 __kernel void sieve_32(__global int *primes, __global int *lim) {
     int i = get_global_id(0);
     if (i < 2) {
-        primes[i / 32] &= ~(1 << (i % 32));   
+        primes[div_p2(i, 5)] &= ~(1 << (i % 32));   
         return;
     }
-    if (((primes[i / 32] >> (i % 32)) & 1) == 0) return;
+    if (((primes[div_p2(i, 5)] >> (i % 32)) & 1) == 0) return;
     int cI;
     for (cI = 2 * i; cI < lim[0]; cI += i) {
-        primes[cI / 32] &= ~(1 << (cI % 32));
+        primes[div_p2(cI, 5)] &= ~(1 << (cI % 32));
     }
 }
 
@@ -124,18 +131,15 @@ __kernel void test_quadratics_abs_consecutive_distinct_32(__constant int *prefs,
 
     */
     int inarow = 0;
-    int distinct = 0;
-    short hbdist = 1;
-
     /*
     
     The following lines are to optimize early release cases
 
     */
     evals[0] = abs(i); //i + 0 * j + 0 * 0 * k
-    if (check_bit(prime_arr[evals[0] / 32], evals[0] % 32) != 1) return;
+    if (check_bit(prime_arr[div_p2(evals[0], 5)], evals[0] % 32) != 1) return;
     evals[1] = abs(i + j + k); //i + j * 1 + k * 1 * 1
-    if (check_bit(prime_arr[evals[1] / 32], evals[0] % 32) != 1) return;
+    if (check_bit(prime_arr[div_p2(evals[1], 5)], evals[0] % 32) != 1) return;
     if (evals[0] == evals[1]) return;
     inarow = 2;
     /*
@@ -148,33 +152,40 @@ __kernel void test_quadratics_abs_consecutive_distinct_32(__constant int *prefs,
         //We store the primes in evals_x
         evals[x] = abs(i + j * x + k * x * x);
         //Currently, it is a short array, working on moving to bytes and bit masking
-        if (check_bit(prime_arr[evals[x] / 32], evals[x] % 32)) {
+        if (check_bit(prime_arr[div_p2(evals[x], 5)], evals[x] % 32)) {
             //We add to how many are prime
             ++inarow;
         //Now we stop if it isn't prime
         } else break;
-        //Our distinct variable
-        if (hbdist == 1) {
-            //we check if it is distinct
-            for (y = 0; y < x; ++y) {
-                //If it isn't
-                if (evals[x] == evals[y]) {
-                    hbdist = 0;
-                    break;
-                } 
-                //we update how many are distinct
-                distinct = y;
+    }
+    /*
+
+    We determine how many are unique
+    
+    */
+    int distinct = 1;
+    int e_x;
+    for (x = 0; x < 101; ++x) {
+        if (distinct != x + 1) {
+            break;
+        }
+        e_x = evals[x];
+        for (y = 0; y < x; ++y) {
+            if (evals[y] != e_x) { //If they aren't distinct
+                 break;
+            } else {
+                ++distinct;
             }
         }
     }
-    //we add two, working on refactoring some of this
-    distinct += 2;
+    distinct++;
+
     /*
 
     If it qualifies for printing, and it isn't a constant function, we print out!
 
     */
-    if ((inarow >= prefs[0]  || distinct >= prefs[1]) && inarow != 101) {
+    if ((inarow >= prefs[0]  || distinct >= prefs[1]) && distinct != 1) {
         print_quad(i, j, k, inarow, distinct);
     }
 }

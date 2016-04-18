@@ -34,6 +34,9 @@ public class Prime {
 
     //Special bit-masking
     public static Pointer<Integer> primes;
+    
+    //Only use one, depending on flags.
+    public static Pointer<Long> primes_x64;
 
     /*
     
@@ -86,6 +89,7 @@ public class Prime {
         }
         long end = System.nanoTime();
         primes = prime_buff.read(Lib.queue);
+        prime_buff.release();
 
         System.out.format("Done sieving up to %d (%f%s)\n", MAX, (end - start) / Math.pow(10, 9), "s");
     }
