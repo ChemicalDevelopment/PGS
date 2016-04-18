@@ -4,6 +4,18 @@ General purpose functions
 
 */
 
+
+/*
+
+Checks bit
+
+*/
+
+int check_bit(int op, int nth_place) {
+    return (op >> (nth_place) & 1);
+}
+
+
 /*
 
 Prints out quadratic
@@ -53,16 +65,16 @@ OpenCL kernel for sieving primes. Uses 1D parallelism, limited to 32 bit
 
 */
 
-__kernel void sieve_32(__global short *primes, __global int *lim) {
+__kernel void sieve_32(__global int *primes, __global int *lim) {
     int i = get_global_id(0);
     if (i < 2) {
-        primes[i] = 0;   
+        primes[i / 32] &= ~(1 << (i % 32));   
         return;
     }
-    if (primes[i] == 0) return;
+    if (((primes[i / 32] >> (i % 32)) & 1) == 0) return;
     int cI;
     for (cI = 2 * i; cI < lim[0]; cI += i) {
-        primes[cI] = 0;
+        primes[cI / 32] &= ~(1 << (cI % 32));
     }
 }
 
@@ -84,7 +96,7 @@ coef_offset is where we start testing the polynomial coefficients
 
 */
 
-__kernel void test_quadratics_abs_consecutive_distinct_32(__constant int *prefs, __constant short *prime_arr, __constant int *coef_offset) {
+__kernel void test_quadratics_abs_consecutive_distinct_32(__constant int *prefs, __constant int *prime_arr, __constant int *coef_offset) {
     /*
 
     The following lines have to do with parallelism.
@@ -121,9 +133,9 @@ __kernel void test_quadratics_abs_consecutive_distinct_32(__constant int *prefs,
 
     */
     evals[0] = abs(i); //i + 0 * j + 0 * 0 * k
-    if (prime_arr[evals[0]] != 1) return;
+    if (check_bit(prime_arr[evals[0] / 32], evals[0] % 32) != 1) return;
     evals[1] = abs(i + j + k); //i + j * 1 + k * 1 * 1
-    if (prime_arr[evals[1]] != 1) return;
+    if (check_bit(prime_arr[evals[1] / 32], evals[0] % 32) != 1) return;
     if (evals[0] == evals[1]) return;
     inarow = 2;
     /*
@@ -136,7 +148,7 @@ __kernel void test_quadratics_abs_consecutive_distinct_32(__constant int *prefs,
         //We store the primes in evals_x
         evals[x] = abs(i + j * x + k * x * x);
         //Currently, it is a short array, working on moving to bytes and bit masking
-        if (prime_arr[evals[x]] == 1) {
+        if (check_bit(prime_arr[evals[x] / 32], evals[x] % 32)) {
             //We add to how many are prime
             ++inarow;
         //Now we stop if it isn't prime

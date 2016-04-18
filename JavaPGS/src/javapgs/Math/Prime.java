@@ -18,6 +18,8 @@ import com.nativelibs4java.opencl.CLEvent;
 import com.nativelibs4java.opencl.CLKernel;
 import com.nativelibs4java.opencl.CLMem;
 import com.nativelibs4java.opencl.CLProgram;
+import com.nativelibs4java.opencl.util.OpenCLType.*;
+import static com.nativelibs4java.opencl.util.OpenCLType.Char;
 import javapgs.DataTypes.QuadraticWorkload;
 import javapgs.OpenCL.Lib;
 import org.bridj.Pointer;
@@ -31,22 +33,22 @@ public class Prime {
     public static int MAX;
 
     //Special bit-masking
-    public static Pointer<Short> primes;
-    
+    public static Pointer<Integer> primes;
+
     /*
     
     Method for efficiently sieving a workload
     
-    */
+     */
     public static void sieve_for_quad(QuadraticWorkload q) {
         //the max needed.
         int max_needed = 101 * 101 * Math.max(Math.abs(q.a_offset), Math.abs(q.a_offset + q.a_range))
-        + 101 * Math.max(Math.abs(q.b_offset), Math.abs(q.b_offset + q.b_range))
-        + Math.max(Math.abs(q.c_offset), Math.abs(q.c_offset + q.c_range));
-        
+                + 101 * Math.max(Math.abs(q.b_offset), Math.abs(q.b_offset + q.b_range))
+                + Math.max(Math.abs(q.c_offset), Math.abs(q.c_offset + q.c_range));
+
         sieve(max_needed);
     }
-    
+
 
     /*
     
@@ -57,17 +59,21 @@ public class Prime {
         MAX = max;
 
         System.out.format("Beginning sieve up to %d\n", MAX);
-        
-        Pointer<Short> prime_ptr = Pointer.allocateShorts(MAX);
+
+        Pointer<Integer> prime_ptr = Pointer.allocateInts(max / 8 + 1);
         Pointer<Integer> lim = Pointer.allocateInts(1);
         lim.set(0, MAX);
+        int c = 0;
+        for (int j = 0; j < 32; ++j) {
+            c = c | (1 << j);
+        }
         for (int i = 0; i < MAX; ++i) {
-            prime_ptr.set(i, (short)1);
+            prime_ptr.set(i / 8, c);
         }
 
-        CLBuffer<Short> prime_buff = Lib.context.createBuffer(CLMem.Usage.Input, prime_ptr);
+        CLBuffer<Integer> prime_buff = Lib.context.createBuffer(CLMem.Usage.Input, prime_ptr);
         CLBuffer<Integer> lim_buff = Lib.context.createBuffer(CLMem.Usage.Input, lim);
-        
+
         prime_buff.write(Lib.queue, prime_ptr, true);
         lim_buff.write(Lib.queue, lim, true);
 
@@ -75,7 +81,7 @@ public class Prime {
         long start = System.nanoTime();
         {
             CLKernel kernel = program.createKernel("sieve_32", prime_buff, lim_buff); //, inp_p0, inp_p1, inp_p2);
-            CLEvent kernelCompletion = kernel.enqueueNDRange(Lib.queue, new int[] {MAX / 2});
+            CLEvent kernelCompletion = kernel.enqueueNDRange(Lib.queue, new int[]{MAX / 2});
             kernelCompletion.waitFor();
         }
         long end = System.nanoTime();

@@ -47,7 +47,7 @@ public class Functions {
         coef_offset.set(1, q.b_offset);
         coef_offset.set(2, q.a_offset);
 
-        CLBuffer<Short> prime_buff = Lib.context.createBuffer(CLMem.Usage.Input, Prime.primes);
+        CLBuffer<Integer> prime_buff = Lib.context.createBuffer(CLMem.Usage.Input, Prime.primes);
         CLBuffer<Integer> prefs_buff = Lib.context.createBuffer(CLMem.Usage.Input, prefs);
         CLBuffer<Integer> coef_buff = Lib.context.createBuffer(CLMem.Usage.Input, coef_offset);
 
