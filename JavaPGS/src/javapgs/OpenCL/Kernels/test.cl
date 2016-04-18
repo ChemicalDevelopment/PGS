@@ -11,7 +11,7 @@ Checks bit
 
 */
 
-int check_bit(int op, int nth_place) {
+int check_bit_32(int op, int nth_place) {
     return (op >> (nth_place) & 1);
 }
 
@@ -20,7 +20,26 @@ int check_bit(int op, int nth_place) {
 Divides by 2^nth_place
 
 */
-int div_p2(int op, int nth_place) {
+int div_p2_32(int op, int nth_place) {
+    return (op >> nth_place);
+}
+
+/*
+
+Checks bit in a long
+
+*/
+
+int check_bit_64(long op, int nth_place) {
+    return (op >> (nth_place) & 1);
+}
+
+/*
+
+Divides by 2^nth_place in a long
+
+*/
+long div_p2_64(long op, int nth_place) {
     return (op >> nth_place);
 }
 
@@ -30,8 +49,7 @@ int div_p2(int op, int nth_place) {
 Prints out quadratic
 
 */
-void print_quad(int i, int j, int k, int inarow, int distinct) {
-    printf(" P: [0, %d] D: [0, %d]  |  ", inarow - 1, distinct - 1);
+void print_quad(int i, int j, int k) {
     if (k != 0) {
         if (k < 0) {
             printf("-");
@@ -75,13 +93,32 @@ OpenCL kernel for sieving primes. Uses 1D parallelism, limited to 32 bit
 __kernel void sieve_32(__global int *primes, __global int *lim) {
     int i = get_global_id(0);
     if (i < 2) {
-        primes[div_p2(i, 5)] &= ~(1 << (i % 32));   
+        primes[div_p2_32(i, 5)] &= ~(1 << (i % 32));   
         return;
     }
-    if (((primes[div_p2(i, 5)] >> (i % 32)) & 1) == 0) return;
+    if (((primes[div_p2_32(i, 5)] >> (i % 32)) & 1) == 0) return;
     int cI;
     for (cI = 2 * i; cI < lim[0]; cI += i) {
-        primes[div_p2(cI, 5)] &= ~(1 << (cI % 32));
+        primes[div_p2_32(cI, 5)] &= ~(1 << (cI % 32));
+    }
+}
+
+/*
+
+Kernel for sieving primes, uses longs with x64 bitmask
+
+*/
+
+__kernel void sieve_64(__global long *primes, __global long *lim) {
+    int i = get_global_id(0);
+    if (i < 2) {
+        primes[div_p2_64(i, 6)] &= ~(1 << (i % 64));   
+        return;
+    }
+    if (((primes[div_p2_64(i, 6)] >> (i % 64)) & 1) == 0) return;
+    int cI;
+    for (cI = 2 * i; cI < lim[0]; cI += i) {
+        primes[div_p2_64(cI, 6)] &= ~(1 << (cI % 64));
     }
 }
 
@@ -122,14 +159,7 @@ __kernel void test_quadratics_abs_consecutive_distinct_32(__constant int *prefs,
     */
     int x, y;
     int evals[101];
-    /*
-
-    These three variables have to do with counting:
-    how many primes in a row?
-    how many are distinct?
-    a (poorly constructed) bool value 1 or 0
-
-    */
+    //How many primes have we had?
     int inarow = 0;
     /*
     
@@ -137,9 +167,9 @@ __kernel void test_quadratics_abs_consecutive_distinct_32(__constant int *prefs,
 
     */
     evals[0] = abs(i); //i + 0 * j + 0 * 0 * k
-    if (check_bit(prime_arr[div_p2(evals[0], 5)], evals[0] % 32) != 1) return;
+    if (check_bit_32(prime_arr[div_p2_32(evals[0], 5)], evals[0] % 32) != 1) return;
     evals[1] = abs(i + j + k); //i + j * 1 + k * 1 * 1
-    if (check_bit(prime_arr[div_p2(evals[1], 5)], evals[0] % 32) != 1) return;
+    if (check_bit_32(prime_arr[div_p2_32(evals[1], 5)], evals[0] % 32) != 1) return;
     if (evals[0] == evals[1]) return;
     inarow = 2;
     /*
@@ -152,7 +182,7 @@ __kernel void test_quadratics_abs_consecutive_distinct_32(__constant int *prefs,
         //We store the primes in evals_x
         evals[x] = abs(i + j * x + k * x * x);
         //Currently, it is a short array, working on moving to bytes and bit masking
-        if (check_bit(prime_arr[div_p2(evals[x], 5)], evals[x] % 32)) {
+        if (check_bit_32(prime_arr[div_p2_32(evals[x], 5)], evals[x] % 32)) {
             //We add to how many are prime
             ++inarow;
         //Now we stop if it isn't prime
@@ -163,22 +193,26 @@ __kernel void test_quadratics_abs_consecutive_distinct_32(__constant int *prefs,
     We determine how many are unique
     
     */
-    int distinct = 1;
+    int distinct;
+    int is_distinct = 1;
     int e_x;
     for (x = 0; x < 101; ++x) {
-        if (distinct != x + 1) {
+        if (x > inarow - 1) { //If we are out of primes
+            distinct = x;
+            break;
+        }
+        if (is_distinct != 1) {
+            distinct = x;
             break;
         }
         e_x = evals[x];
         for (y = 0; y < x; ++y) {
-            if (evals[y] != e_x) { //If they aren't distinct
-                 break;
-            } else {
-                ++distinct;
+            if (evals[y] == e_x) { //If they aren't distinct
+                is_distinct = 0;
+                break;
             }
         }
     }
-    distinct++;
 
     /*
 
@@ -186,7 +220,67 @@ __kernel void test_quadratics_abs_consecutive_distinct_32(__constant int *prefs,
 
     */
     if ((inarow >= prefs[0]  || distinct >= prefs[1]) && distinct != 1) {
-        print_quad(i, j, k, inarow, distinct);
+        printf("P: [0, %d] D: [0, %d]  |  ", inarow - 1, distinct - 1);
+        print_quad(i, j, k);
     }
 }
 
+/*
+
+Kernel for testing 32 bit maxes of just primality -- no distinct count is included.
+
+*/
+
+__kernel void test_quadratics_abs_consecutive_32(__constant int *prefs, __constant int *prime_arr, __constant int *coef_offset) {
+    /*
+
+    The following lines have to do with parallelism.
+    Each work group is assigned a range (specified from input) of polynomial coefficients to try.
+    One instance of this kernel runs a different a, b, c coefficients in the quadratic
+    The coef_offset array stores where to start the trials
+
+    */
+    int i = get_global_id(0) + coef_offset[0];
+    int j = get_global_id(1) + coef_offset[1];
+    int k = get_global_id(2) + coef_offset[2];
+    /*
+
+    x and y are looping variables used in the for loops in the kernel. Declaration here for: possible speedup in inner for-loop, and support for C (not c++) compiling
+
+    */
+    int x, y;
+    int evals[101];
+    //How many primes have we had?
+    int inarow = 0;
+    /*
+
+    The following lines are to optimize early release cases
+
+    */
+    evals[0] = abs(i); //i + 0 * j + 0 * 0 * k
+    if (check_bit_32(prime_arr[div_p2_32(evals[0], 5)], evals[0] % 32) != 1) return;
+    evals[1] = abs(i + j + k); //i + j * 1 + k * 1 * 1
+    if (check_bit_32(prime_arr[div_p2_32(evals[1], 5)], evals[0] % 32) != 1) return;
+    if (evals[0] == evals[1]) return;
+    inarow = 2;
+    /*
+
+    Our for loop!
+    Tests x values, and reports their primality
+
+    */
+    for (x = 2; x < 101; ++x) {
+        //We store the primes in evals_x
+        evals[x] = abs(i + j * x + k * x * x);
+        //Currently, it is a short array, working on moving to bytes and bit masking
+        if (check_bit_32(prime_arr[div_p2_32(evals[x], 5)], evals[x] % 32)) {
+            //We add to how many are prime
+            ++inarow;
+        //Now we stop if it isn't prime
+        } else break;
+    }
+    if ((inarow >= prefs[0])) {
+        printf("P = [0, %d]  |  |", inarow - 1);
+        print_quad(i, j, k);
+    }
+}
