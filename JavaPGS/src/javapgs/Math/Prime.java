@@ -35,8 +35,6 @@ public class Prime {
     //Special bit-masking
     public static Pointer<Integer> primes;
     
-    //Only use one, depending on flags.
-    public static Pointer<Long> primes_x64;
 
     /*
     
@@ -63,15 +61,15 @@ public class Prime {
 
         System.out.format("Beginning sieve up to %d\n", MAX);
 
-        Pointer<Integer> prime_ptr = Pointer.allocateInts(max / 8 + 1);
+        Pointer<Integer> prime_ptr = Pointer.allocateInts(MAX / 32);
         Pointer<Integer> lim = Pointer.allocateInts(1);
         lim.set(0, MAX);
         int c = 0;
         for (int j = 0; j < 32; ++j) {
             c = c | (1 << j);
         }
-        for (int i = 0; i < MAX; ++i) {
-            prime_ptr.set(i / 8, c);
+        for (int i = 0; i < MAX / 32; ++i) {
+            prime_ptr.set(i, c);
         }
 
         CLBuffer<Integer> prime_buff = Lib.context.createBuffer(CLMem.Usage.Input, prime_ptr);

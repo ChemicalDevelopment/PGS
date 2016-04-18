@@ -24,18 +24,19 @@ import org.bridj.Pointer;
 
 /**
  * Functions to test, and such
+ *
  * @author cade
  */
 public class Functions {
-    
+
 
     /*
     
     Basic test for quadratics!
     
-    */
+     */
     public static void test_quad(QuadraticWorkload q) {
-        
+
         final Pointer<Integer> coef_offset = Pointer.allocateInts(3).order(Lib.context.getByteOrder());
 
         final Pointer<Integer> prefs = Pointer.allocateInts(2).order(Lib.context.getByteOrder());
@@ -43,9 +44,9 @@ public class Functions {
         prefs.set(0, q.notable);
         prefs.set(1, q.notable_dist);
 
-        coef_offset.set(0, q.c_offset);
-        coef_offset.set(1, q.b_offset);
-        coef_offset.set(2, q.a_offset);
+        coef_offset.set(0, (int)q.c_offset);
+        coef_offset.set(1, (int)q.b_offset);
+        coef_offset.set(2, (int)q.a_offset);
 
         CLBuffer<Integer> prime_buff = Lib.context.createBuffer(CLMem.Usage.Input, Prime.primes);
         CLBuffer<Integer> prefs_buff = Lib.context.createBuffer(CLMem.Usage.Input, prefs);
@@ -58,7 +59,7 @@ public class Functions {
         CLProgram program = Lib.test;
         long start = System.nanoTime();
         {
-            CLKernel kernel = program.createKernel("test_quadratics_abs_consecutive_distinct_32", prefs_buff, prime_buff, coef_buff); //, inp_p0, inp_p1, inp_p2);
+            CLKernel kernel = program.createKernel("test_quadratics_abs_consecutive_32", prefs_buff, prime_buff, coef_buff); //, inp_p0, inp_p1, inp_p2);
             CLEvent kernelCompletion = kernel.enqueueNDRange(Lib.queue, new int[]{q.c_range, q.b_range, q.a_range});
             kernelCompletion.waitFor();
         }
@@ -66,4 +67,42 @@ public class Functions {
 
         System.out.format("Done! (%f%s)\n", (end - start) / Math.pow(10, 9), "s");
     }
+
+    /*
+    
+    Basic test for quadratics!
+    
+     */
+    /*public static void test_quad_64(QuadraticWorkload q) {
+
+        final Pointer<Long> coef_offset = Pointer.allocateLongs(3).order(Lib.context.getByteOrder());
+
+        final Pointer<Integer> prefs = Pointer.allocateInts(2).order(Lib.context.getByteOrder());
+
+        prefs.set(0, q.notable);
+        prefs.set(1, q.notable_dist);
+
+        coef_offset.set(0, q.c_offset);
+        coef_offset.set(1, q.b_offset);
+        coef_offset.set(2, q.a_offset);
+
+        CLBuffer<Long> prime_buff = Lib.context.createBuffer(CLMem.Usage.Input, Prime.primes_64);
+        CLBuffer<Integer> prefs_buff = Lib.context.createBuffer(CLMem.Usage.Input, prefs);
+        CLBuffer<Long> coef_buff = Lib.context.createBuffer(CLMem.Usage.Input, coef_offset);
+
+        prime_buff.write(Lib.queue, Prime.primes_64, true);
+        prefs_buff.write(Lib.queue, prefs, true);
+        coef_buff.write(Lib.queue, coef_offset, true);
+
+        CLProgram program = Lib.test;
+        long start = System.nanoTime();
+        {
+            CLKernel kernel = program.createKernel("test_quadratics_abs_consecutive_64", prefs_buff, prime_buff, coef_buff); //, inp_p0, inp_p1, inp_p2);
+            CLEvent kernelCompletion = kernel.enqueueNDRange(Lib.queue, new int[]{q.c_range, q.b_range, q.a_range});
+            kernelCompletion.waitFor();
+        }
+        long end = System.nanoTime();
+
+        System.out.format("Done! (%f%s)\n", (end - start) / Math.pow(10, 9), "s");
+    }*/
 }

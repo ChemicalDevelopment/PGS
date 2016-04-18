@@ -86,11 +86,53 @@ void print_quad(int i, int j, int k) {
 
 /*
 
+Prints out quadratic with long coefficients
+
+*/
+void print_quad_64(long i, long j, long k) {
+    if (k != 0) {
+        if (k < 0) {
+            printf("-");
+        }
+        if (abs(k) != 1) {
+            printf("%l", abs(k));
+        }
+        printf("x^2");
+    }
+    if (j != 0) {
+        if (j < 0) {
+            printf(" - ");
+        } else {
+            printf(" + ");
+        }
+        if (abs(j) != 1) {
+            printf("%l", abs(j));
+        }
+        printf("x");
+
+    }
+     if (i != 0) {
+        if (i < 0) {
+            printf(" - ");
+        } else {
+            printf(" + ");
+        }
+        if (abs(i) != 1) {
+            printf("%l", abs(i));
+        }
+    }
+    printf("\n");
+}
+
+
+
+/*
+
 OpenCL kernel for sieving primes. Uses 1D parallelism, limited to 32 bit
 
 */
 
-__kernel void sieve_32(__global int *primes, __global int *lim) {
+__kernel void sieve_32(__global int *primes, __global long *lim) {
     int i = get_global_id(0);
     if (i < 2) {
         primes[div_p2_32(i, 5)] &= ~(1 << (i % 32));   
@@ -102,26 +144,6 @@ __kernel void sieve_32(__global int *primes, __global int *lim) {
         primes[div_p2_32(cI, 5)] &= ~(1 << (cI % 32));
     }
 }
-
-/*
-
-Kernel for sieving primes, uses longs with x64 bitmask
-
-*/
-
-__kernel void sieve_64(__global long *primes, __global long *lim) {
-    int i = get_global_id(0);
-    if (i < 2) {
-        primes[div_p2_64(i, 6)] &= ~(1 << (i % 64));   
-        return;
-    }
-    if (((primes[div_p2_64(i, 6)] >> (i % 64)) & 1) == 0) return;
-    int cI;
-    for (cI = 2 * i; cI < lim[0]; cI += i) {
-        primes[div_p2_64(cI, 6)] &= ~(1 << (cI % 64));
-    }
-}
-
 
 /*
 
@@ -280,7 +302,69 @@ __kernel void test_quadratics_abs_consecutive_32(__constant int *prefs, __consta
         } else break;
     }
     if ((inarow >= prefs[0])) {
-        printf("P = [0, %d]  |  |", inarow - 1);
+        printf("P = [0, %d]  |  ", inarow - 1);
         print_quad(i, j, k);
     }
 }
+
+/*
+
+Kernel for testing 64 bit maxes of just primality -- no distinct count is included.
+Quite fast -- using 64 bit long bit masking
+
+*/
+
+__kernel void test_quadratics_abs_consecutive_64(__constant long *prefs, __constant long *prime_arr, __constant long *coef_offset) {
+    /*
+
+    The following lines have to do with parallelism.
+    Each work group is assigned a range (specified from input) of polynomial coefficients to try.
+    One instance of this kernel runs a different a, b, c coefficients in the quadratic
+    The coef_offset array stores where to start the trials
+
+    */
+    long i = get_global_id(0) + coef_offset[0];
+    long j = get_global_id(1) + coef_offset[1];
+    long k = get_global_id(2) + coef_offset[2];
+    printf("%ld: %d\n", i, check_bit_64(prime_arr[div_p2_64(i, 6)], i % 64));
+    /*
+
+    x and y are looping variables used in the for loops in the kernel. Declaration here for: possible speedup in inner for-loop, and support for C (not c++) compiling
+
+    */
+    long x, y;
+    long evals[256];
+    //How many primes have we had?
+    int inarow = 0;
+    /*
+
+    The following lines are to optimize early release cases
+
+    */
+    evals[0] = abs(i); //i + 0 * j + 0 * 0 * k
+    if (check_bit_64(prime_arr[div_p2_64(evals[0], 6)], evals[0] % 64) != 1) return;
+    evals[1] = abs(i + j + k); //i + j * 1 + k * 1 * 1
+    if (check_bit_64(prime_arr[div_p2_64(evals[1], 6)], evals[0] % 64) != 1) return;
+    if (evals[0] == evals[1]) return;
+    inarow = 2;
+    /*
+
+    Our for loop!
+    Tests x values, and reports their primality
+
+    */
+    for (x = 2; x < 256; ++x) {
+        //We store the primes in evals_x
+        evals[x] = abs(i + j * x + k * x * x);
+        if (check_bit_64(prime_arr[div_p2_64(evals[x], 6)], evals[x] % 64)) {
+            //We add to how many are prime
+            ++inarow;
+        //Now we stop if it isn't prime
+        } else break;
+    }
+    if ((inarow >= prefs[0])) {
+        printf("P = [0, %d]  |  ", inarow - 1);
+        print_quad_64(i, j, k);
+    }
+}
+
