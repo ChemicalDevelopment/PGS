@@ -266,7 +266,8 @@ public class GUI extends javax.swing.JFrame {
         }
         try {
             String base_dir = baseDir.getText();
-            ProcessBuilder builder = new ProcessBuilder("java", "-jar", base_dir + jarFile.getText(), base_dir + workload.getText(), base_dir + clspecs.getText());
+            //This allows us to set very low priority
+            ProcessBuilder builder = new ProcessBuilder("/usr/bin/nice", "-n", "12", "java", "-jar", base_dir + jarFile.getText(), base_dir + workload.getText(), base_dir + clspecs.getText());
             PGSGUI.process = builder.start();
             final Thread ioThread = new Thread() {
                 @Override
