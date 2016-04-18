@@ -19,6 +19,7 @@ import com.nativelibs4java.opencl.CLKernel;
 import com.nativelibs4java.opencl.CLMem;
 import com.nativelibs4java.opencl.CLProgram;
 import javapgs.DataTypes.QuadraticWorkload;
+import javapgs.Flags.Kernel;
 import javapgs.Math.Prime;
 import org.bridj.Pointer;
 
@@ -29,6 +30,15 @@ import org.bridj.Pointer;
  */
 public class Functions {
 
+    public static boolean contains(Kernel s, Kernel[] arr) {
+        for (Kernel a : arr) {
+            if (a == s) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     /*
     
@@ -37,6 +47,24 @@ public class Functions {
      */
     public static void test_quad(QuadraticWorkload q) {
 
+        String kernel_str = "test_quadratics_";
+        Kernel[] k_sp = q.specs;
+        if (contains(Kernel.ABS, k_sp)) {
+            kernel_str += "abs_";
+        }
+        if (contains(Kernel.CONSECUTIVE, k_sp)) {
+            kernel_str += "consecutive_";
+        }
+        if (contains(Kernel.DISTINCT, k_sp)) {
+            kernel_str += "distinct_";
+        }
+        if (contains(Kernel.INT32, k_sp)) {
+            kernel_str += "32";
+        }
+        if (contains(Kernel.LONG64, k_sp)) {
+            kernel_str += "64";
+        }
+
         final Pointer<Integer> coef_offset = Pointer.allocateInts(3).order(Lib.context.getByteOrder());
 
         final Pointer<Integer> prefs = Pointer.allocateInts(2).order(Lib.context.getByteOrder());
@@ -44,9 +72,9 @@ public class Functions {
         prefs.set(0, q.notable);
         prefs.set(1, q.notable_dist);
 
-        coef_offset.set(0, (int)q.c_offset);
-        coef_offset.set(1, (int)q.b_offset);
-        coef_offset.set(2, (int)q.a_offset);
+        coef_offset.set(0, (int) q.c_offset);
+        coef_offset.set(1, (int) q.b_offset);
+        coef_offset.set(2, (int) q.a_offset);
 
         CLBuffer<Integer> prime_buff = Lib.context.createBuffer(CLMem.Usage.Input, Prime.primes);
         CLBuffer<Integer> prefs_buff = Lib.context.createBuffer(CLMem.Usage.Input, prefs);
@@ -59,7 +87,7 @@ public class Functions {
         CLProgram program = Lib.test;
         long start = System.nanoTime();
         {
-            CLKernel kernel = program.createKernel("test_quadratics_abs_consecutive_distinct_32", prefs_buff, prime_buff, coef_buff); //, inp_p0, inp_p1, inp_p2);
+            CLKernel kernel = program.createKernel(kernel_str, prefs_buff, prime_buff, coef_buff); //, inp_p0, inp_p1, inp_p2);
             CLEvent kernelCompletion = kernel.enqueueNDRange(Lib.queue, new int[]{q.c_range, q.b_range, q.a_range});
             kernelCompletion.waitFor();
         }
@@ -73,7 +101,7 @@ public class Functions {
     Basic test for quadratics!
     
      */
-    /*public static void test_quad_64(QuadraticWorkload q) {
+ /*public static void test_quad_64(QuadraticWorkload q) {
 
         final Pointer<Long> coef_offset = Pointer.allocateLongs(3).order(Lib.context.getByteOrder());
 

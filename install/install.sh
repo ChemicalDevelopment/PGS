@@ -27,8 +27,8 @@ sudo curl -o $DIR"temp/clspecs.zip"  $REPO_URL"clspecs.zip"
 #Uinzip it
 sudo unzip $DIR"temp/PGSGUI.zip" -d $DIR
 sudo unzip $DIR"temp/PGS.zip" -d $DIR
-sudo unzip $DIR"temp/workloads.zip" -d $DIR
-sudo unzip $DIR"temp/clspecs.zip" -d $DIR
+sudo unzip $DIR"temp/workloads.zip" -d $DIR"workloads/"
+sudo unzip $DIR"temp/clspecs.zip" -d $DIR"clspecs/"
 
 
 #Now we delete temp dir
@@ -41,5 +41,12 @@ PGS_SCR=/usr/local/bin/pgs
 sudo curl -o $PGS_SCR $REPO_URL"pgs.sh"
 sudo chmod +x $PGS_SCR
 sudo fromdos $PGS_SCR
+
+cd $DIR
+
+#Convert to unix
+sudo find . -type f -name '*.workload' -exec fromdos '{}' +
+sudo find . -type f -name '*.specs' -exec fromdos '{}' +
+
 
 #We're done

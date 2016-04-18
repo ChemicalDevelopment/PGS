@@ -61,7 +61,7 @@ public class Prime {
 
         System.out.format("Beginning sieve up to %d\n", MAX);
 
-        Pointer<Integer> prime_ptr = Pointer.allocateInts(MAX / 32);
+        Pointer<Integer> prime_ptr = Pointer.allocateInts(MAX / 32 + 10);
         Pointer<Integer> lim = Pointer.allocateInts(1);
         lim.set(0, MAX);
         int c = 0;
@@ -82,7 +82,7 @@ public class Prime {
         long start = System.nanoTime();
         {
             CLKernel kernel = program.createKernel("sieve_32", prime_buff, lim_buff); //, inp_p0, inp_p1, inp_p2);
-            CLEvent kernelCompletion = kernel.enqueueNDRange(Lib.queue, new int[]{MAX / 2});
+            CLEvent kernelCompletion = kernel.enqueueNDRange(Lib.queue, new int[]{(int)Math.sqrt(MAX)});
             kernelCompletion.waitFor();
         }
         long end = System.nanoTime();

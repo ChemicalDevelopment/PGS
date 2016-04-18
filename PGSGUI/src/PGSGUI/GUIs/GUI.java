@@ -156,6 +156,7 @@ public class GUI extends javax.swing.JFrame {
             }
         });
 
+        output.setEditable(false);
         output.setColumns(20);
         output.setRows(5);
         jScrollPane1.setViewportView(output);
@@ -267,7 +268,7 @@ public class GUI extends javax.swing.JFrame {
         try {
             String base_dir = baseDir.getText();
             //This allows us to set very low priority
-            ProcessBuilder builder = new ProcessBuilder("/usr/bin/nice", "-n", "12", "java", "-jar", base_dir + jarFile.getText(), base_dir + workload.getText(), base_dir + clspecs.getText());
+            ProcessBuilder builder = new ProcessBuilder(/*"/usr/bin/nice", "-n", "-10", */"java", "-jar", base_dir + jarFile.getText(), base_dir + workload.getText(), base_dir + clspecs.getText());
             PGSGUI.process = builder.start();
             final Thread ioThread = new Thread() {
                 @Override
@@ -281,7 +282,7 @@ public class GUI extends javax.swing.JFrame {
                         }
                         reader.close();
                     } catch (final Exception e) {
-                        e.printStackTrace();
+                        output.append(e.getLocalizedMessage() + "\n");
                     }
                 }
             };
@@ -332,8 +333,8 @@ public class GUI extends javax.swing.JFrame {
                 s.setVisible(true);
                 s.baseDir.setText(PGSGUI.base_dir);
                 s.jarFile.setText(IO.unix_path_to_jar);
-                s.workload.setText(IO.unix_workload_dir + "brute100.txt");
-                s.clspecs.setText(IO.unix_clspecs_dir + "CPU.txt");
+                s.workload.setText(IO.unix_workload_dir + "quad_max_100.workload");
+                s.clspecs.setText(IO.unix_clspecs_dir + "CPU.specs");
             }
         });
     }

@@ -132,7 +132,7 @@ OpenCL kernel for sieving primes. Uses 1D parallelism, limited to 32 bit
 
 */
 
-__kernel void sieve_32(__global int *primes, __global long *lim) {
+__kernel void sieve_32(__global int *primes, __global int *lim) {
     int i = get_global_id(0);
     if (i < 2) {
         primes[div_p2_32(i, 5)] &= ~(1 << (i % 32));   
@@ -314,7 +314,7 @@ Quite fast -- using 64 bit long bit masking
 
 */
 
-__kernel void test_quadratics_abs_consecutive_64(__constant long *prefs, __constant long *prime_arr, __constant long *coef_offset) {
+__kernel void test_quadratics_abs_consecutive_64(__constant long *prefs, __constant int *prime_arr, __constant long *coef_offset) {
     /*
 
     The following lines have to do with parallelism.
@@ -326,7 +326,6 @@ __kernel void test_quadratics_abs_consecutive_64(__constant long *prefs, __const
     long i = get_global_id(0) + coef_offset[0];
     long j = get_global_id(1) + coef_offset[1];
     long k = get_global_id(2) + coef_offset[2];
-    printf("%ld: %d\n", i, check_bit_64(prime_arr[div_p2_64(i, 6)], i % 64));
     /*
 
     x and y are looping variables used in the for loops in the kernel. Declaration here for: possible speedup in inner for-loop, and support for C (not c++) compiling
@@ -342,9 +341,9 @@ __kernel void test_quadratics_abs_consecutive_64(__constant long *prefs, __const
 
     */
     evals[0] = abs(i); //i + 0 * j + 0 * 0 * k
-    if (check_bit_64(prime_arr[div_p2_64(evals[0], 6)], evals[0] % 64) != 1) return;
+    if (check_bit_64(prime_arr[div_p2_64(evals[0], 5)], evals[0] % 32) != 1) return;
     evals[1] = abs(i + j + k); //i + j * 1 + k * 1 * 1
-    if (check_bit_64(prime_arr[div_p2_64(evals[1], 6)], evals[0] % 64) != 1) return;
+    if (check_bit_64(prime_arr[div_p2_64(evals[1], 5)], evals[0] % 32) != 1) return;
     if (evals[0] == evals[1]) return;
     inarow = 2;
     /*
@@ -356,7 +355,7 @@ __kernel void test_quadratics_abs_consecutive_64(__constant long *prefs, __const
     for (x = 2; x < 256; ++x) {
         //We store the primes in evals_x
         evals[x] = abs(i + j * x + k * x * x);
-        if (check_bit_64(prime_arr[div_p2_64(evals[x], 6)], evals[x] % 64)) {
+        if (check_bit_64(prime_arr[div_p2_64(evals[x], 5)], evals[x] % 32)) {
             //We add to how many are prime
             ++inarow;
         //Now we stop if it isn't prime
