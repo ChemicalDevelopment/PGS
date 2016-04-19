@@ -13,6 +13,11 @@ Primes have both practical and novel purposes. Primes are in all forms of crypto
 
 There has been a small amount of modernized research on prime generating polynomials, and I believe there is a gap of where we are and where we should be. PrimeGrid (http://www.primegrid.com/) is one example, and they have found a linear function that is prime for x = [0, 25]. We are looking for polynomials (especially quadratics) that have the same property
 
+## Want to help out?
+Currently, end user support is limited as we try to add all the features that will come with it.
+
+If you would like to help develop the project, you can reach me at info@chemicaldevelopment.us
+
 
 ## Explanation
 For a more in-detail explanation, see our wiki (https://github.com/ChemicalDevelopment/PGS/wiki), but here's a short explanation:
