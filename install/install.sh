@@ -14,7 +14,12 @@ sudo rm -rf $DIR
 #Making our directories for binaries, workloads, etc
 sudo mkdir $DIR
 sudo mkdir $DIR"temp/"
-
+sudo mkdir $DIR"log/"
+sudo touch $DIR"log/output.log"
+sudo touch $DIR"log/error.log"
+#Spooky! We are adding flags for reading output and error
+sudo chmod 666 $DIR"log/output.log"
+sudo chmod 666 $DIR"log/error.log"
 
 #We download the latest
 #Curl and unzipping seperatly due to zip instead of tar

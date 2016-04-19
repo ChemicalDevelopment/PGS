@@ -30,6 +30,8 @@ public class IO {
     public static final String unix_workload_dir = "workloads/";
     public static final String windows_clspecs_dir = "clspecs\\";
     public static final String unix_clspecs_dir = "clspecs/";
+    public static final String windows_log_dir = "log\\";
+    public static final String unix_log_dir = "log/";
 
     public static String getInstallDirectory(OS opSys) {
         if (null != opSys) {
