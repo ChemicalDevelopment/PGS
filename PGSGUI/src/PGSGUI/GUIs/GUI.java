@@ -297,14 +297,14 @@ public class GUI extends javax.swing.JFrame {
                     try {
                         final BufferedReader output_reader = new BufferedReader(
                                 new InputStreamReader(process.getInputStream()));
-                        BufferedWriter output_log = new BufferedWriter(new FileWriter(IO.unix_default_install_directory + IO.unix_log_dir + "output.log", true));
-                        String line = null;
+                        String line = "";
                         while ((line = output_reader.readLine()) != null) {
                             output.append(line + "\n");
-                            output_log.write(line + "\n");
                         }
-                        output_reader.close();
+                        BufferedWriter output_log = new BufferedWriter(new FileWriter(IO.unix_default_install_directory + IO.unix_log_dir + "output.log"));
+                        output_log.write(output.getText());
                         output_log.close();
+                        output_reader.close();
                     } catch (final Exception e) {
                         output.append(e.getLocalizedMessage() + "\n");
                     }
@@ -316,15 +316,14 @@ public class GUI extends javax.swing.JFrame {
                     try {
                         final BufferedReader error_reader = new BufferedReader(
                                 new InputStreamReader(process.getErrorStream()));
-                        BufferedWriter error_log = new BufferedWriter(new FileWriter(IO.unix_default_install_directory + IO.unix_log_dir + "error.log", true));
-
-                        String line = null;
+                        String line = "";
                         while ((line = error_reader.readLine()) != null) {
                             error.append(line + "\n");
-                            error_log.write(line + "\n");
                         }
+                        BufferedWriter err_log = new BufferedWriter(new FileWriter(IO.unix_default_install_directory + IO.unix_log_dir + "error.log"));
+                        err_log.write(error.getText());
+                        err_log.close();
                         error_reader.close();
-                        error_log.close();
                     } catch (final Exception e) {
                         error.append(e.getLocalizedMessage() + "\n");
                     }
