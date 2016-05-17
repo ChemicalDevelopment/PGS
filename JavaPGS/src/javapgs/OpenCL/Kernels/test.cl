@@ -202,7 +202,8 @@ __kernel void test_quadratics_abs_consecutive_distinct_32(__constant int *prefs,
     */
     for (x = 2; x < 101; ++x) {
         //We store the primes in evals_x
-        evals[x] = abs(i + j * x + k * x * x);
+        //evals[x] = abs(i + j * x + k * x * x); More efficient way below
+        evals[x] = abs(i + x * (j + k * x));
         //Currently, it is a short array, working on moving to bytes and bit masking
         if (check_bit_32(prime_arr[div_p2_32(evals[x], 5)], evals[x] % 32)) {
             //We add to how many are prime

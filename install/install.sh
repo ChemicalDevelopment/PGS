@@ -6,7 +6,7 @@ sudo apt-get install tofrodos
 
 #Directory variable
 DIR=/usr/local/PGS/
-REPO_URL=http://chemicaldevelopment.azurewebsites.net/PGS/downloads/
+REPO_URL=https://raw.githubusercontent.com/ChemicalDevelopment/chemicaldevelopment.github.io/master/PGS/downloads/
 
 #remove old installation
 sudo rm -rf $DIR

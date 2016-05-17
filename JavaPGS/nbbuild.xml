@@ -10,6 +10,10 @@
 <project name="JavaPGS" default="default" basedir=".">
     <description>Builds, tests, and runs the project JavaPGS.</description>
     <import file="nbproject/build-impl.xml"/>
+            <target name="-post-jar">
+         <delete file="${dist.dir}/README.TXT"/>
+    </target>
+    
     <!--
 
     There exist several targets which are by default empty and which can be 
