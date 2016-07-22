@@ -64,7 +64,7 @@ Website: http://pgs.chemicaldevelopment.us
 Want to help out, or just stress test your computer? You can install PGS in these ways:
 ### Linux/Unix/Mac
 #### Script (recommended)
-A simple way to install this program is using the script ( Download: http://chemicaldevelopment.azurewebsites.net/PGS/downloads/install.sh ), copy and paste, or download onto your computer, then `sudo ./install.sh` for PGS! This, by default, installs to /usr/local/PGS , which you can easily change through the install script.
+A simple way to install this program is using the script included in /include/install.sh , copy and paste, or download onto your computer, then `sudo ./install.sh` for PGS! This, by default, installs to /usr/local/PGS , which you can easily change through the install script.
 
 
 This also creates a shell script to run PGS, just by running `pgs` in a shell (you need to make sure that ~/bin/ is in your PATH, which should be default).
