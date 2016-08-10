@@ -30,21 +30,6 @@ void set_notprime(uint64_t x) {
     primes[x] = 0;
 }
 
-/*
-int get_prime(uint64_t x) {
-    return ((primes[x / 64]) >> (x % 64)) & 1;
-}
-
-//Stores in our special structure
-void set_prime(uint64_t num) {
-    primes[(num / 64)] |= 1 << (num % 64);
-}
-
-void set_notprime(uint64_t num) {
-    primes[(num / 64)] &= ~(1 << (num % 64));
-}
-*/
-
 //Finds primes and stores them
 void init() {
     primes = malloc(sizeof(short) * ARR_SIZE);

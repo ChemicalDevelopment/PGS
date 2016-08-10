@@ -4,3 +4,5 @@
 /PGSGUI/nbproject/
 /PGSGUI/build/
 /PGSGUI/dist/
+*.o
+*.out
