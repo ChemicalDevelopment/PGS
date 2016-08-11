@@ -18,9 +18,9 @@
 #define MAX_X 101
 
 //How many primes in a notable function
-#define NOTABLE_PRIMES 51
+#define NOTABLE_PRIMES 40
 
-#define NOTABLE_DISTINCT_PRIMES 31
+#define NOTABLE_DISTINCT_PRIMES 20
 
 #define MIN_DIST_PRIMES 2
 
