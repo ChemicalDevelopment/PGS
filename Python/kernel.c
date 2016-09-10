@@ -222,7 +222,7 @@ __kernel void test_quadratics_abs_consecutive_distinct_32(__constant int *prefs,
 
     */
     if ((inarow >= prefs[0]  || distinct >= prefs[1]) && distinct != 1) {
-        printf("P: [0, %d] D: [0, %d]  |  ", inarow - 1, distinct - 1);
+        printf("PGSO: %d, %d; ", inarow - 1, distinct - 1);
         print_quad(i, j, k);
     }
 }
@@ -282,7 +282,7 @@ __kernel void test_quadratics_abs_consecutive_32(__constant int *prefs, __consta
         } else break;
     }
     if ((inarow >= prefs[0])) {
-        printf("P = [0, %d]  |  ", inarow - 1);
+        printf("PGSO: consequtive=%d; ", inarow - 1);
         print_quad(i, j, k);
     }
 }
@@ -342,7 +342,7 @@ __kernel void test_quadratics_abs_consecutive_64(__constant long *prefs, __const
         } else break;
     }
     if ((inarow >= prefs[0])) {
-        printf("P = [0, %d]  |  ", inarow - 1);
+        printf("PGSO: consequtive=%d; ", inarow - 1);
         print_quad_64(i, j, k);
     }
 }

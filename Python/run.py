@@ -11,14 +11,12 @@ def set_bit(v, index, x):
   return v
 
 def sieve(n):
-    "Return all primes <= n."
     np1 = n + 1
-    s = list(range(np1)) # leave off `list()` in Python 2
+    s = list(range(np1))
     s[1] = 0
     sqrtn = int(round(n**0.5))
-    for i in range(2, sqrtn + 1): # use `xrange()` in Python 2
+    for i in range(2, sqrtn + 1):
         if s[i]:
-            # next line:  use `xrange()` in Python 2
             s[i*i: np1: i] = [0] * len(range(i*i, np1, i))
     v = filter(None, s)
     bitset = [ 0 ] * (n / 32 + 1)
@@ -48,12 +46,10 @@ class CL:
         self.primebuf = cl.Buffer(self.ctx, mf.WRITE_ONLY | mf.COPY_HOST_PTR, hostbuf=self.prime)
         self.coefbuf = cl.Buffer(self.ctx, mf.READ_ONLY | mf.COPY_HOST_PTR, hostbuf=self.coef)
 
-    def execute(self, a=100, b=100, c=100):
+    def execute(self, a, b, c):
         self.program.test_quadratics_abs_consecutive_distinct_32(self.queue, (a, b, c), None, self.prefbuf, self.primebuf, self.coefbuf)
-
-
 
 example = CL()
 example.loadProgram("kernel.c")
 example.setup()
-example.execute()
+example.execute(100, 100, 100)
