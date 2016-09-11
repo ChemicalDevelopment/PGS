@@ -2,8 +2,8 @@
 *.out
 *.pyc
 *.credentials
+!/program/example.credentials
 *.prefs
+!/program/example.prefs
 *.dat
-/program/primes.dat
 *.vscode
-!./program/example.*
