@@ -57,21 +57,6 @@ if (!Boolean(args.offline)) {
     runOffline();
 }
 
-//signin(firebase, );
-/*
-const ls = spawn('ls', ['-lh', '/usr']);
-
-ls.stdout.on('data', (data) => {
-  console.log(`stdout: ${data}`);
-});
-
-ls.stderr.on('data', (data) => {
-  console.log(`stderr: ${data}`);
-});
-
-ls.on('close', (code) => {
-  console.log(`PGS Has Finished ${code}`);
-});*/
 
 var usr;
 var db;
@@ -95,15 +80,16 @@ function runOnline() {
         usr = user;
     });
     db = firebase.database();
-    signin(usrCreds.email, usrCreds.password);
-    var work = getWorkloads();
-    if (work.length == 0) {
-        console.log("No workloads found");
-        console.log("   Getting some now");
-    }
-    console.log("Found workloads:");
-    console.dir(work);
-    doWorkload(work[0], false);
+    signin(usrCreds.email, usrCreds.password, function() {
+        var work = getWorkloads();
+        if (work.length == 0) {
+            console.log("No workloads found");
+            console.log("   Getting some now");
+        }
+        console.log("Found workloads:");
+        console.dir(work);
+        doWorkload(work[0], false);
+    });
 }
 
 //Runs without looking for online jobs
@@ -132,13 +118,14 @@ function getWorkloads() {
 }
 
 //Attempts to sign in
-function signin(email, password) {
+function signin(email, password, callback) {
     firebase.auth().signInWithEmailAndPassword(email, password).catch(function (error) {
         // Handle Errors here.
         var errorCode = error.code;
         var errorMessage = error.message;
         console.log(errorMessage);
     });
+    setTimeout(function () { callback() }, 2000);
 }
 
 
@@ -159,33 +146,31 @@ function doWorkload(workload, offline) {
             }
         }
     });
+
     proc.on('close', (code) => {
         console.log(`PGS Has Finished`);
     });
 }
 
 function putFunctionInFirebase(func) {
-    if (func.toString().startsWith("PGSO:")) {
-        func = func.replace("PGSO:", "");
-        var parts = func.split(";");
-        var part1 = parts[0].split(",");
-        var cons = parseInt(part1[0]);
-        var dist = parseInt(part1[1]);
-        var equa = parts[0];
-        equa = equa.replace("[", "");
-        equa = equa.replace("]", "");
-        var coef_str = equa.split(',');
-        var coef_num = [];
-        for (var i = 0; i < coef_str.length; ++i) {
-            coef_num.push(parseInt(coef_str[i]));
-        }
-        var jsonFunc = {
-            consecutive: cons,
-            distinct: dist,
-            equation: coef_num
-        };
-        putFunctionInFirebase(jsonFunc);
-    } else {
-        db.ref("/user_data/" + usr.uid + "/functions").push(func);
+    func = func.replace("PGSO:", "");
+    var parts = func.split(";");
+    var part1 = parts[0].split(",");
+    var cons = parseInt(part1[0]);
+    var dist = parseInt(part1[1]);
+    var equa = parts[1];
+    equa = equa.replace("[", "");
+    equa = equa.replace("]", "");
+    var coef_str = equa.split(',');
+    var coef_num = [];
+    for (var i = 0; i < coef_str.length; ++i) {
+        coef_num.push(parseInt(coef_str[i]));
     }
+    var jsonFunc = {
+        consecutive: cons,
+        distinct: dist,
+        equation: coef_num
+    };
+    console.dir(jsonFunc);
+    db.ref("/user_data/" + usr.uid + "/functions").push(jsonFunc);
 }
