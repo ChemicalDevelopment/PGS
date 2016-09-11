@@ -1,8 +1,9 @@
-/JavaPGS/nbproject/
-/JavaPGS/dist/
-/JavaPGS/build/
-/PGSGUI/nbproject/
-/PGSGUI/build/
-/PGSGUI/dist/
 *.o
 *.out
+*.pyc
+*.credentials
+*.prefs
+*.dat
+/program/primes.dat
+*.vscode
+!/Main/example.*

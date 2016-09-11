@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
- 
-<project name="PGSGUI" default="default" basedir=".">
-    <import file="build.xml" as="common"/>
-        <target name="-post-jar">
-         <delete file="${dist.dir}/README.TXT"/>
-    </target>
-
-</project>
