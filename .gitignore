@@ -6,4 +6,4 @@
 *.dat
 /program/primes.dat
 *.vscode
-!/Main/example.*
+!./Main/example.*
