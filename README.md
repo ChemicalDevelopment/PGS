@@ -14,9 +14,9 @@ Primes have both practical and novel purposes. Primes are in all forms of crypto
 There has been a small amount of modernized research on prime generating polynomials, and I believe there is a gap of where we are and where we should be. PrimeGrid (http://www.primegrid.com/) is one example, and they have found a linear function that is prime for x = [0, 25]. We are looking for polynomials (especially quadratics) that have the same property
 
 ## Want to help out?
-We have a website (chemicaldevelopment.us/pgs/client) where you can create an account, view records, and manage your account.
+We have a website (https://chemicaldevelopment.us/pgs/client) where you can create an account, view records, and manage your account.
 
-To download the project, please check out (chemicaldevelopment.us/pgs).
+To download the project, please check out (https://chemicaldevelopment.us/pgs).
 
 If you would like to help develop the project, you can reach me at info@chemicaldevelopment.us
 
@@ -45,9 +45,9 @@ More info can be found on our wiki (https://github.com/ChemicalDevelopment/PGS/w
 
 The thread on mersenneforums (http://mersenneforum.org/showthread.php?t=21200)
 
-Website: (chemicaldevelopment.us/pgs)
-Online Client: (chemicaldevelopment.us/pgs/client/)
-Account Manager: (chemicaldevelopment.us/pgs/client/account/)
+Website: (https://chemicaldevelopment.us/pgs)
+Online Client: (https://chemicaldevelopment.us/pgs/client/)
+Account Manager: (https://chemicaldevelopment.us/pgs/client/account/)
 
 
 ## Features
