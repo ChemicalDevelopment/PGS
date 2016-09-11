@@ -45,9 +45,13 @@ More info can be found on our wiki (https://github.com/ChemicalDevelopment/PGS/w
 
 The thread on mersenneforums (http://mersenneforum.org/showthread.php?t=21200)
 
+
 Website: (https://chemicaldevelopment.us/pgs)
+
 Online Client: (https://chemicaldevelopment.us/pgs/client/)
+
 Account Manager: (https://chemicaldevelopment.us/pgs/client/account/)
+
 
 
 ## Features
