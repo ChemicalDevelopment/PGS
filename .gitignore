@@ -1,9 +1,0 @@
-*.o
-*.out
-*.pyc
-*.credentials
-*.prefs
-*.dat
-/program/primes.dat
-*.vscode
-!./program/example.*
