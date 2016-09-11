@@ -6,5 +6,8 @@
 *.prefs
 !/program/example.prefs
 /program/node_modules/
+/program/tmp/
+/program/workloads/*
+/program/output/*
 *.dat
 *.vscode
