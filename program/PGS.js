@@ -18,19 +18,11 @@ var parser = new ArgumentParser({
 
 //Default values for args, example.$end
 var defaults = {
-    "credentials": 'example.credentials',
-    "prefs": 'example.prefs',
+    "prefs": 'my.prefs',
     "online": true,
 };
 
 //Add our Args
-parser.addArgument(
-  [ '-c', '--credentials' ],
-  {
-    help: 'Credentials file. Default: ' + defaults.credentials,
-    defaultValue: defaults.credentials
-  }
-);
 parser.addArgument(
   [ '-p', '--prefs' ],
   {
@@ -63,7 +55,6 @@ var db;
 
 //Runs and updates the database
 function runOnline() {
-    var usrCreds = JSON.parse(fs.readFileSync("" + args.credentials, 'utf8'));
     //Updated user data
     //Firebase configuration
     var config = {
@@ -80,7 +71,7 @@ function runOnline() {
         usr = user;
     });
     db = firebase.database();
-    signin(usrCreds.email, usrCreds.password, function() {
+    signin(usrPrefs.email, usrPrefs.password, function() {
         var work = getWorkloads();
         if (work.length == 0) {
             console.log("No workloads found");
@@ -138,9 +129,8 @@ function doWorkload(workload, offline) {
         var output = data.toString().split("\n");
         for (var i = 0;i < output.length; ++i) {
             if (output[i].startsWith("PGSO:")) {
-                if (offline) {
-                    console.log(output[i]);
-                } else {
+                console.dir(jsonFunc(output[i]));
+                if (!offline) {
                     putFunctionInFirebase(output[i]);
                 }
             }
@@ -152,7 +142,7 @@ function doWorkload(workload, offline) {
     });
 }
 
-function putFunctionInFirebase(func) {
+function jsonFunc(func) {
     func = func.replace("PGSO:", "");
     var parts = func.split(";");
     var part1 = parts[0].split(",");
@@ -171,6 +161,9 @@ function putFunctionInFirebase(func) {
         distinct: dist,
         equation: coef_num
     };
-    console.dir(jsonFunc);
-    db.ref("/user_data/" + usr.uid + "/functions").push(jsonFunc);
+    return jsonFunc;
+}
+
+function putFunctionInFirebase(func) {
+    db.ref("/user_data/" + usr.uid + "/functions").push(jsonFunc(func));
 }
