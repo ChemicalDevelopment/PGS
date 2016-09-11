@@ -1,8 +1,0 @@
-{
-    "BASE_DIR": "./",
-    "RUN_FILE": "run.sh",
-    "WORKLOAD_DIR": "workloads/",
-    "OUTPUT_DIR": "output/",
-    "WORKLOAD_TYPE": "LEAST"
-}
-
