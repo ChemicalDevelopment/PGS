@@ -1,0 +1,10 @@
+*.o
+*.out
+*.pyc
+*.credentials
+!/program/example.credentials
+*.prefs
+!/program/example.prefs
+/program/node_modules/
+*.dat
+*.vscode
