@@ -1,12 +1,7 @@
-//Our database
-var firebase = require('firebase');
-
-//File reading
+//Dependencies
 var fs = require('fs');
-
-//Parsing arguments
+var firebase = require('firebase');
 var ArgumentParser = require('argparse').ArgumentParser;
-//Spawning processes
 const spawn = require('child_process').spawn;
 
 //Create Parser
@@ -15,8 +10,6 @@ var parser = new ArgumentParser({
   addHelp: true,
   description: 'PGS - Prime Gen Search'
 });
-
-//Default values for args, example.$end
 var defaults = {
     "prefs": 'my.prefs',
     "online": true,
@@ -40,7 +33,6 @@ parser.addArgument(
 
 //We store our parsed args
 var args = parser.parseArgs();
-
 var usrPrefs = JSON.parse(fs.readFileSync("" + args.prefs, 'utf8'));
 
 if (!Boolean(args.offline)) {
@@ -49,7 +41,7 @@ if (!Boolean(args.offline)) {
     runOffline();
 }
 
-
+//Store database and usr
 var usr;
 var db;
 
@@ -98,7 +90,7 @@ function runOffline() {
 
 //Gets a list of workloads
 function getWorkloads() {
-    var files = fs.readdirSync(usrPrefs.BASE_DIR + usrPrefs.WORKLOAD_DIR);
+    var files = fs.readdirSync("./workloads/");
     var workloads = [];
     for (var i = 0; i < files.length; ++i) {
         if (files[i].endsWith('.workload')) {
@@ -119,10 +111,10 @@ function signin(email, password, callback) {
     setTimeout(function () { callback() }, 2000);
 }
 
-
+//Runs workload from filename
 function doWorkload(workload, offline) {
-    var execPath = usrPrefs.BASE_DIR + usrPrefs.RUN_FILE;
-    var workloadPath = usrPrefs.BASE_DIR + usrPrefs.WORKLOAD_DIR + workload;
+    var execPath = usrPrefs.RUN_FILE;
+    var workloadPath = "./workloads/" + workload;
     const proc = spawn(execPath, [workloadPath]);
 
     proc.stdout.on('data', (data) => {
@@ -139,9 +131,11 @@ function doWorkload(workload, offline) {
 
     proc.on('close', (code) => {
         console.log(`PGS Has Finished`);
+        process.exit(code)
     });
 }
 
+//Returns function in json format
 function jsonFunc(func) {
     func = func.replace("PGSO:", "");
     var parts = func.split(";");
@@ -164,6 +158,7 @@ function jsonFunc(func) {
     return jsonFunc;
 }
 
+//Puts function in firebase
 function putFunctionInFirebase(func) {
     db.ref("/user_data/" + usr.uid + "/functions").push(jsonFunc(func));
 }

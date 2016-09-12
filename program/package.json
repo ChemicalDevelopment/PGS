@@ -25,6 +25,8 @@
     "argparse": "^1.0.7",
     "firebase": "^3.3.2",
     "fs": "0.0.1-security",
-    "request": "^2.74.0"
+    "nooocl": "^0.11.1",
+    "request": "^2.74.0",
+    "utf8": "^2.1.1"
   }
 }

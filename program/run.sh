@@ -1,1 +1,1 @@
-python ./run.py $1
+node ./CLLib.js --workload $1
