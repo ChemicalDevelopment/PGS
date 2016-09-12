@@ -21,6 +21,50 @@ To download the project, please check out (http://chemicaldevelopment.us/pgs).
 If you would like to help develop the project, you can reach me at info@chemicaldevelopment.us
 
 
+## Running
+### Releases (Default)
+To download an executable, check out the [Releases](https://github.com/ChemicalDevelopment/PGS/releases)
+
+### Development Build
+To use the development build, be sure to have `node` and `npm`.
+
+Then, 
+```
+git clone https://github.com/ChemicalDevelopment/PGS.git
+cd PGS/program
+cp ./example.prefs ./my.prefs
+npm install
+```
+
+Then, to run the program:
+```
+node PGS.js --offline
+```
+
+Or, if you would like to run a version that reports the the server,
+
+You need to create an account at (http://chemicaldevelopment.us/pgs/account), and then fill in your email and password (without "{{" or "}}")
+
+Then, use your text editor to open `./my.prefs`
+```
+{
+    "RUN_FILE": "./run.sh",
+    "email": "{{email}}",
+    "password": "{{password}}"
+}
+```
+Then,
+```
+node PGS.js
+```
+You can specify a different prefs file with `-p`
+
+For example, say you have a file named `company.prefs`, run
+```
+node PGS.js -p ./company.prefs
+``
+
+
 ## Explanation
 For a more in-detail explanation, see our wiki (https://github.com/ChemicalDevelopment/PGS/wiki), but here's a short explanation:
 
@@ -68,7 +112,3 @@ Account Manager: (http://chemicaldevelopment.us/pgs/client/account/)
 ### Removed
   * JavaPGS
   * GUI Application (Also going to be implemented)
-
-
-## Installing
-Coming in the next few days
