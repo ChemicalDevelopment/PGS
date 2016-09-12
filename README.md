@@ -23,7 +23,22 @@ If you would like to help develop the project, you can reach me at info@chemical
 
 ## Running
 ### Releases (Default)
+[Sign Up](http://chemicaldevelopment.us/pgs/account) for an account
+
 To download an executable, check out the [Releases](https://github.com/ChemicalDevelopment/PGS/releases)
+
+Unzip the folder, and edit `my.prefs` and enter in your email and password.
+
+The next part may change based on what platform you use.
+
+#### Windows
+
+Double click `PGS.exe`
+
+#### Mac & Linux
+
+Double click `PGS`
+
 
 ### Development Build
 To use the development build, be sure to have `node` and `npm`.
@@ -34,7 +49,12 @@ git clone https://github.com/ChemicalDevelopment/PGS.git
 cd PGS/program
 cp ./example.prefs ./my.prefs
 npm install
+cd lib
+chmod +x ./update.sh
+./update.sh 1000000000
+#The last one should take about 40 secs to 1 minute
 ```
+
 
 Then, to run the program:
 ```
@@ -43,7 +63,7 @@ node PGS.js --offline
 
 Or, if you would like to run a version that reports the the server,
 
-You need to create an account at (http://chemicaldevelopment.us/pgs/account), and then fill in your email and password (without "{{" or "}}")
+You need to create an account at (http://chemicaldevelopment.us/pgs/account), and then fill in your email and password (without "{{" or "}}") (git ignores any .prefs files except for example.pref)
 
 Then, use your text editor to open `./my.prefs`
 ```

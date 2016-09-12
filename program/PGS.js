@@ -122,8 +122,9 @@ function doWorkload(workload, offline) {
         for (var i = 0;i < output.length; ++i) {
             if (output[i].startsWith("PGSO:")) {
                 console.dir(jsonFunc(output[i]));
+                //fs.appendFile('./output/output.txt', jsonFunc(output[i]));
                 if (!offline) {
-                    putFunctionInFirebase(output[i]);
+                    putFunctionInFirebase(jsonFunc(output[i]));
                 }
             }
         }
@@ -160,5 +161,5 @@ function jsonFunc(func) {
 
 //Puts function in firebase
 function putFunctionInFirebase(func) {
-    db.ref("/user_data/" + usr.uid + "/functions").push(jsonFunc(func));
+    db.ref("/user_data/" + usr.uid + "/functions").push(func);
 }

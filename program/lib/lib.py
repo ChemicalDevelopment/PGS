@@ -1,5 +1,11 @@
-import numpy
+"""
+Part of PGS.
 
+TODO. Make C version of this for all platforms.
+
+"""
+import numpy
+import sys
 def set_bit(v, index, x):
   mask = 1 << index
   v &= ~mask
@@ -30,7 +36,7 @@ def sieve(n):
     return s
 
 def savetofile(s):
-    fn = "primes_test.dat"
+    fn = "primes.dat"
     st = ""
     ch = 0xff
     lgch = 8
@@ -44,11 +50,5 @@ def savetofile(s):
     fil.close
 
 
-sieve_array = numpy.array(sieve(2 ** 20), dtype=numpy.int32)
+sieve_array = numpy.array(sieve(eval(sys.argv[1])), dtype=numpy.int32)
 savetofile(sieve_array)
-#sieve_array.tofile("primes.dat")
-f = open('primes_test.dat').read()
-print("\n")
-for i in range(0, 20):
-    #print(str(i) + " isprime " + str(get_bit(ord(f[i / 8]), i % 8)))
-    print(ord(f[i]))

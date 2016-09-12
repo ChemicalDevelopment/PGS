@@ -84,36 +84,41 @@ var queue = new CLCommandQueue(context, device);
 var bytes = int.size;
 
 var prime_dat = fs.readFileSync("./primes.dat");
-//console.log(prime_dat);
+console.log("Read in data");
 
 var primeTo = prime_dat.length * 8;
 
-var primestr = "";
+var primestr = prime_dat.toString();
 var i = 0;
-
-for (var p in prime_dat) {
-    primestr += String.fromCharCode(prime_dat[i]);
-    ++i;
-}
-
-var primebuf = new Buffer(primeTo * bytes);
-for (i = 0; i < primeTo; i += 4) {
-    var b1 = prime_dat[i];
-    var b2 = prime_dat[i + 1] * 256;
-    var b3 = prime_dat[i + 2] * 256 * 256;
-    var b4 = prime_dat[i + 3] * 256 * 256 * 256
+var b1, b2, b3, b4;
+var primebuf = new Buffer(prime_dat.length);
+for (i = 0; i < prime_dat.length / 4; i += 4) {
+    b1 = prime_dat[i] >>> 0;  
+    b2 = prime_dat[i + 1] << 8 >>> 0;
+    b3 = prime_dat[i + 2] << 16 >>> 0;
+    b4 = prime_dat[i + 3] << 24 >>> 0;
     primebuf.writeUInt32LE(b1 + b2 + b3 + b4, i);
 }
 
+var off = 0;/*
+for (i = 0; i < prime_dat.length / 2; i += 1) {
+    off = primebuf.writeUInt32LE(prime_dat[i], off);
+}
+*/
+
+//console.log(primestr);
+
+
+console.log("Created prime buffer with data");
 
 // Create device memory buffers
-var primemem = new CLBuffer(context, defs.CL_MEM_READ_ONLY, bytes * primeTo);
+var primemem = new CLBuffer(context, defs.CL_MEM_READ_ONLY, prime_dat.length);
 
 // Copy memory buffers
 // Notice: the is no synchronous operations in NOOOCL,
 // so there is no blocking_write parameter there.
 // All writes and reads are asynchronous.
-queue.enqueueWriteBuffer(primemem, 0, bytes * primeTo, primebuf);
+queue.enqueueWriteBuffer(primemem, 0, primebuf.length, primebuf);
 
 // It's time to build the program.
 //var kernelSourceCode = fs.readFileSync(path.join(cwd, "vecAdd.cl"), { encoding: "utf8" });
@@ -134,7 +139,7 @@ program.build("-cl-fast-relaxed-math").then(
 
         // Kernel stuff:
         var kernel = program.createKernel("test_quadratics");
-        //var kernel = program.createKernel("quad");
+        //var kernel = program.createKernel("foo");
 
         kernel.setArg(0, primemem);
         //kernel.setArg(0, int);
