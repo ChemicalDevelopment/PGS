@@ -1,6 +1,6 @@
 {
     "RUN_FILE": "./run.sh",
-    "email": "$emailHere",
-    "password": "$passwordHere"
+    "email": "{{email}}",
+    "password": "{{password}}"
 }
 
