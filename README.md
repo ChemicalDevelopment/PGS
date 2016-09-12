@@ -62,7 +62,7 @@ You can specify a different prefs file with `-p`
 For example, say you have a file named `company.prefs`, run
 ```
 node PGS.js -p ./company.prefs
-``
+```
 
 
 ## Explanation
