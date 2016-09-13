@@ -48,18 +48,16 @@ chmod +x install.sh
 ./install.sh
 ```
 
-Here is a full instuction set.
-
-Then, 
+Here is a full instuction set:
 ```
 git clone https://github.com/ChemicalDevelopment/PGS.git
-cd PGS/program
+cd PGS
 cp ./example.prefs ./my.prefs
 npm install
 cd lib
 chmod +x ./update.sh
 ./update.sh 1000000000
-#The last one should take about 40 secs to 1 minute
+#The last one should take a while
 ```
 
 
@@ -75,7 +73,7 @@ You need to create an account at (http://chemicaldevelopment.us/pgs/client), and
 Then, use your text editor to open `./my.prefs`, and change the email and password
 ```
 {
-    "RUN_FILE": "./run.sh",
+    "RUN_FILE": "./run_c.sh",
     "email": "{{email}}",
     "password": "{{password}}"
 }
