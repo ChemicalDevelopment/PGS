@@ -1,0 +1,22 @@
+{
+  "name": "nodepgs",
+  "version": "1.0.0",
+  "description": "OpenCL bindings to run PGS with Node",
+  "main": "CLLib.js",
+  "scripts": {
+    "test": "node CLLib.js -w ../workloads/test.workload"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChemicalDevelopment/PGS.git"
+  },
+  "keywords": [
+    "PGS"
+  ],
+  "author": "Cade Brown",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/ChemicalDevelopment/PGS/issues"
+  },
+  "homepage": "https://github.com/ChemicalDevelopment/PGS#readme"
+}

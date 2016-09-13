@@ -1,5 +1,5 @@
 {
-    "RUN_FILE": "./run.sh",
+    "RUN_FILE": "./run_c.sh",
     "email": "{{email}}",
     "password": "{{password}}"
 }

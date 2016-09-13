@@ -46,8 +46,6 @@ int main(int argc, char *argv[]) {
     printf("\n\n");
     printf("Writing the file\n\n");
     FILE *f = fopen("primes.dat", "w");
-    int ch = 0xff;
-    int sz = 8;
     for (i = 0; i < x / 32; ++i) {
         fwrite(&bitset[i], sizeof bitset[i], 1, f);
     }

@@ -118,7 +118,9 @@ function signin(email, password, callback) {
 function doWorkload(workload, offline) {
     var execPath = usrPrefs.RUN_FILE;
     var workloadPath = "./workloads/" + workload;
-    const proc = spawn(execPath, [workloadPath]);
+    var workload = JSON.parse(fs.readFileSync(workloadPath, 'utf8'));
+    const proc = spawn(execPath, [workload.ranges[0], workload.ranges[1], workload.ranges[2],
+                                  workload.offsets[0], workload.offsets[1], workload.offsets[2]]);
 
     proc.stdout.on('data', (data) => {
         var output = data.toString().split("\n");
@@ -186,7 +188,6 @@ function putFunctionInFirebase(func) {
         }
         var cre = dbr.child(nm);
         cre.set(func[i]);
-        console.dir(func[i]);
         ++i;
         
     }, 100);

@@ -18,6 +18,7 @@ __kernel void test_quadratics(__constant int *pr) {
     int i = get_global_id(0);
     int j = get_global_id(1);
     int k = get_global_id(2);
+
     int x, y;
     int evals[101];
     int inarow = 0;

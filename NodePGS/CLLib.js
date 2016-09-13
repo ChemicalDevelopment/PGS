@@ -20,6 +20,10 @@ var int = ref.types.int;
 //Constant ranges. Should always be 10
 const localRange = 10;
 
+var options = {
+    kernelPath: "./kernel.c"
+};
+
 //Parse the commandline args
 var parser = new ArgumentParser({
   version: '0.0.0',
@@ -27,28 +31,60 @@ var parser = new ArgumentParser({
   description: 'PGS-Node-CL - Prime Gen Search'
 });
 
-//Default values for args, example.workload
-var defaults = {
-    "workload": 'test.workload'
-};
-
-//Add our Args
 parser.addArgument(
-  [ '-w', '--workload' ],
+  [ '-r0', '--range0' ],
   {
-    help: 'Workload file. Default: ' + defaults.prefs,
-    defaultValue: defaults.prefs
+    help: 'range0 - Range of c coefficient',
+    defaultValue: 1000
   }
 );
 
-//Parse them to JSON
+parser.addArgument(
+  [ '-r1', '--range1' ],
+  {
+    help: 'range1 - Range of b coefficient',
+    defaultValue: 1000
+  }
+);
+
+parser.addArgument(
+  [ '-r2', '--range2' ],
+  {
+    help: 'range2 - Range of a coefficient',
+    defaultValue: 1000
+  }
+);
+
+
+parser.addArgument(
+  [ '-o0', '--offset0' ],
+  {
+    help: 'offset0 - Offset of c coefficient',
+    defaultValue: 0
+  }
+);
+
+
+parser.addArgument(
+  [ '-o1', '--offset1' ],
+  {
+    help: 'offset1 - Offset of b coefficient',
+    defaultValue: 0
+  }
+);
+
+
+parser.addArgument(
+  [ '-o2', '--offset2' ],
+  {
+    help: 'offset2 - Offset of a coefficient',
+    defaultValue: 0
+  }
+);
+
+
 var args = parser.parseArgs();
 
-//JSON workload info
-var workload = JSON.parse(fs.readFileSync("" + args.workload, 'utf8'));
-
-//Parse range from workload. Most workloads issued from server will be 1000
-var range = workload.ranges;
 
 // Initialize OpenCL then we get host, device, context, and a queue
 var host = CLHost.createV11();
@@ -116,7 +152,7 @@ var primemem = new CLBuffer(context, defs.CL_MEM_READ_ONLY, prime_dat.length);
 // All writes and reads are asynchronous.
 queue.enqueueWriteBuffer(primemem, 0, primebuf.length, primebuf);
 
-var kernelSourceCode = fs.readFileSync(path.join(cwd, "kernel.c"), { encoding: "utf8" });
+var kernelSourceCode = fs.readFileSync(options.kernelPath, { encoding: "utf8" });
 var program = context.createProgram(kernelSourceCode);
 
 console.log("building kernel...");
@@ -125,7 +161,7 @@ program.build("-cl-fast-relaxed-math").then(
     function () {
         var buildStatus = program.getBuildStatus(device);
         var buildLog = program.getBuildLog(device);
-        console.log(buildLog);
+        //console.log(buildLog);
         if (buildStatus < 0) {
             throw new CLError(buildStatus, "Build failed.");
         }
@@ -137,24 +173,19 @@ program.build("-cl-fast-relaxed-math").then(
 
         //Set buffer to bitset
         kernel.setArg(0, primemem);
-        
-        /*var localSize = new NDRange(10, 10, 10);
-        var globalSize = new NDRange(1000, 1000, 1000);
-        var offset = new NDRange(0, 0, 0);
-        */
 
-        var globalSize = new NDRange(range[0], range[1], range[2]);
+        
+        var globalSize = new NDRange(parseInt(args.range0), parseInt(args.range1), parseInt(args.range2));
+        //var globalSize = new NDRange(256, 256, 256);
         var localSize = new NDRange(localRange, localRange, localRange);
-        var offset = new NDRange(workload.offsets[0], workload.offsets[1], workload.offsets[2]);
-
-        console.log("Launching the kernel.");
-
-        
+        //var localSize = new NDRange(4, 4, 4);
+        var offset = new NDRange(parseInt(args.offset0), parseInt(args.offset1), parseInt(args.offset2));
 
         // Enqueue the kernel asynchronously
         //queue.enqueueNDRangeKernel(kernel, globalSize, localSize);
         //console.log(queue.enqueueNDRangeKernel.toString());
         queue.enqueueNDRangeKernel(kernel, globalSize, localSize, offset);
+        //queue.enqueueNDRangeKernel(kernel, globalSize, localSize);
 
     });
 
