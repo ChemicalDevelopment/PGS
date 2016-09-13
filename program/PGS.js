@@ -10,6 +10,7 @@ var parser = new ArgumentParser({
   addHelp: true,
   description: 'PGS - Prime Gen Search'
 });
+//Default values
 var defaults = {
     "prefs": 'my.prefs',
     "online": true,
@@ -33,8 +34,10 @@ parser.addArgument(
 
 //We store our parsed args
 var args = parser.parseArgs();
+//Store prefs file
 var usrPrefs = JSON.parse(fs.readFileSync("" + args.prefs, 'utf8'));
 
+//Some logic to either report to server or not
 if (!Boolean(args.offline)) {
     runOnline();
 } else {
@@ -119,20 +122,25 @@ function doWorkload(workload, offline) {
 
     proc.stdout.on('data', (data) => {
         var output = data.toString().split("\n");
+        var jsons = [];
         for (var i = 0;i < output.length; ++i) {
             if (output[i].startsWith("PGSO:")) {
                 console.dir(jsonFunc(output[i]));
-                //fs.appendFile('./output/output.txt', jsonFunc(output[i]));
-                if (!offline) {
-                    putFunctionInFirebase(jsonFunc(output[i]));
-                }
+                jsons.push(jsonFunc(output[i]));
+                fs.appendFile('./output/output.txt', jsonFunc(output[i]));
             }
+        }
+        if (!offline) {
+            if (jsons.length > 0) {
+                console.dir("reporting to server");
+                putFunctionInFirebase(jsons);
+            }     
         }
     });
 
     proc.on('close', (code) => {
         console.log(`PGS Has Finished`);
-        process.exit(code)
+        //process.exit(code)
     });
 }
 
@@ -161,5 +169,25 @@ function jsonFunc(func) {
 
 //Puts function in firebase
 function putFunctionInFirebase(func) {
-    db.ref("/user_data/" + usr.uid + "/functions").push(func);
+    var dbr = db.ref("/user_data/" + usr.uid + "/functions");
+    var isd = true;
+    var i = 0;
+    var j = setInterval(function () {
+        if (i >= func.length) {
+            clearInterval(j);
+            return;
+        }
+        var nm = "";
+        for (var k = 0; k < func[i].equation.length; ++k) {
+            nm += "(" + func[i].equation[k] + ")";
+            if (k != func[i].equation.length - 1) {
+                nm += "-";
+            }
+        }
+        var cre = dbr.child(nm);
+        cre.set(func[i]);
+        console.dir(func[i]);
+        ++i;
+        
+    }, 100);
 }

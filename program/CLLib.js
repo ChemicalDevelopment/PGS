@@ -5,18 +5,22 @@ var nooocl = require("nooocl");
 var ArgumentParser = require('argparse').ArgumentParser;
 var ref = require("ref");
 
+//Current working directory
 var cwd = __dirname;
+//Bunch of OpenCL stuff
 var CLHost = nooocl.CLHost;
 var CLContext = nooocl.CLContext;
 var CLBuffer = nooocl.CLBuffer;
 var CLCommandQueue = nooocl.CLCommandQueue;
 var NDRange = nooocl.NDRange;
 var CLError = nooocl.CLError;
+//What int we are using. Is 32 bits
 var int = ref.types.int;
 
-//Constant ranges.
+//Constant ranges. Should always be 10
 const localRange = 10;
 
+//Parse the commandline args
 var parser = new ArgumentParser({
   version: '0.0.0',
   addHelp: true,
@@ -43,14 +47,17 @@ var args = parser.parseArgs();
 //JSON workload info
 var workload = JSON.parse(fs.readFileSync("" + args.workload, 'utf8'));
 
-var range = workload.blockrange;
+//Parse range from workload. Most workloads issued from server will be 1000
+var range = workload.ranges;
 
 // Initialize OpenCL then we get host, device, context, and a queue
 var host = CLHost.createV11();
 var defs = host.cl.defs;
 
+//Get 
 var platforms = host.getPlatforms();
 var device;
+//Searches for hardware
 function searchForDevice(hardware) {
     platforms.forEach(function (p) {
         var devices = hardware === "gpu" ? p.gpuDevices() : p.cpuDevices();
@@ -63,12 +70,14 @@ function searchForDevice(hardware) {
     });
 }
 
+//tries to find cpu
 searchForDevice("cpu");
 if (!device) {
-    console.warn("No CPU device has been found, searching for a G   PU fallback.");
+    console.warn("No CPU device has been found, searching for a fallback.");
     searchForDevice("default");
 }
 
+//Log info, or show Error
 if (!device) {
     throw new Error("No capable OpenCL 1.1 device has been found.");
 }
@@ -76,19 +85,15 @@ else {
     console.log("Running on device: " + device.name + " - " + device.platform.name);
 }
 
+//Create OpenCL context and queue
 var context = new CLContext(device);
 var queue = new CLCommandQueue(context, device);
 
-
-// Initialize data on the host side:
-var bytes = int.size;
-
+//Read in synchronously our bin. Stored in little endian
 var prime_dat = fs.readFileSync("./primes.dat");
 console.log("Read in data");
 
-var primeTo = prime_dat.length * 8;
-
-var primestr = prime_dat.toString();
+//Going to clean this up a bit
 var i = 0;
 var b1, b2, b3, b4;
 var primebuf = new Buffer(prime_dat.length);
@@ -99,15 +104,6 @@ for (i = 0; i < prime_dat.length / 4; i += 4) {
     b4 = prime_dat[i + 3] << 24 >>> 0;
     primebuf.writeUInt32LE(b1 + b2 + b3 + b4, i);
 }
-
-var off = 0;/*
-for (i = 0; i < prime_dat.length / 2; i += 1) {
-    off = primebuf.writeUInt32LE(prime_dat[i], off);
-}
-*/
-
-//console.log(primestr);
-
 
 console.log("Created prime buffer with data");
 
@@ -120,13 +116,11 @@ var primemem = new CLBuffer(context, defs.CL_MEM_READ_ONLY, prime_dat.length);
 // All writes and reads are asynchronous.
 queue.enqueueWriteBuffer(primemem, 0, primebuf.length, primebuf);
 
-// It's time to build the program.
-//var kernelSourceCode = fs.readFileSync(path.join(cwd, "vecAdd.cl"), { encoding: "utf8" });
 var kernelSourceCode = fs.readFileSync(path.join(cwd, "kernel.c"), { encoding: "utf8" });
 var program = context.createProgram(kernelSourceCode);
 
 console.log("building kernel...");
-// Building is always asynchronous in NOOOCL!
+// Building is always asynchronous
 program.build("-cl-fast-relaxed-math").then(
     function () {
         var buildStatus = program.getBuildStatus(device);
@@ -137,29 +131,25 @@ program.build("-cl-fast-relaxed-math").then(
         }
         console.log("Build completed.");
 
-        // Kernel stuff:
+        //Main kernel name is test_quadratics
         var kernel = program.createKernel("test_quadratics");
         //var kernel = program.createKernel("foo");
 
+        //Set buffer to bitset
         kernel.setArg(0, primemem);
-        //kernel.setArg(0, int);
-        /*kernel.setArg(1, coefmem);*/
-        // Notice: in NOOOCL you have specify type of value arguments,
-        // because there is no C compatible type system exists in JavaScript.
-
-        // Ranges:
-        // Number of work items in each local work group
         
         /*var localSize = new NDRange(10, 10, 10);
         var globalSize = new NDRange(1000, 1000, 1000);
         var offset = new NDRange(0, 0, 0);
         */
 
-        var globalSize = new NDRange(range, range, range);
+        var globalSize = new NDRange(range[0], range[1], range[2]);
         var localSize = new NDRange(localRange, localRange, localRange);
         var offset = new NDRange(workload.offsets[0], workload.offsets[1], workload.offsets[2]);
 
         console.log("Launching the kernel.");
+
+        
 
         // Enqueue the kernel asynchronously
         //queue.enqueueNDRangeKernel(kernel, globalSize, localSize);

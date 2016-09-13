@@ -41,7 +41,14 @@ Double click `PGS`
 
 
 ### Development Build
-To use the development build, be sure to have `node` and `npm`.
+For the default install script, run
+```
+cd program
+chmod +x install.sh
+./install.sh
+```
+
+Here is a full instuction set.
 
 Then, 
 ```
@@ -65,7 +72,7 @@ Or, if you would like to run a version that reports the the server,
 
 You need to create an account at (http://chemicaldevelopment.us/pgs/account), and then fill in your email and password (without "{{" or "}}") (git ignores any .prefs files except for example.pref)
 
-Then, use your text editor to open `./my.prefs`
+Then, use your text editor to open `./my.prefs`, and change the email and password
 ```
 {
     "RUN_FILE": "./run.sh",
@@ -109,7 +116,6 @@ More info can be found on our wiki (https://github.com/ChemicalDevelopment/PGS/w
 
 The thread on mersenneforums (http://mersenneforum.org/showthread.php?t=21200)
 
-
 Website: (http://chemicaldevelopment.us/pgs)
 
 Online Client: (http://chemicaldevelopment.us/pgs/client/)
@@ -123,11 +129,9 @@ Account Manager: (http://chemicaldevelopment.us/pgs/client/account/)
 ### Planned
   * GUI Application (Was removed)
 
-
 ### Implemented
   * OpenCL support
   * Link with DB for users to help search
-
 
 ### Removed
   * JavaPGS
