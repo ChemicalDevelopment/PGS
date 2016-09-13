@@ -174,8 +174,9 @@ function putFunctionInFirebase(func) {
     var dbr = db.ref("/user_data/" + usr.uid + "/functions");
     var isd = true;
     var i = 0;
-    var nm = "";
+    var nm;
     for (i = 0; i < func.length; ++i) {
+        nm = "";
         for (var k = 0; k < func[i].equation.length; ++k) {
             nm += "(" + func[i].equation[k] + ")";
             if (k != func[i].equation.length - 1) {

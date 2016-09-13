@@ -1,7 +1,7 @@
 """
 Part of PGS.
 
-TODO. Make C version of this for all platforms.
+Please use ./update.sh
 
 """
 import numpy
