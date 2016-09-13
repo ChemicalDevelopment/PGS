@@ -9,6 +9,7 @@
 /program/tmp/
 /program/run.build/
 /program/workloads/*
+!/program/workloads/test.workload
 /program/output/*
 *.dat
 *.vscode
