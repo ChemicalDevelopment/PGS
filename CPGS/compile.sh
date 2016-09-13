@@ -1,1 +1,1 @@
-gcc ./PGS.c -o ./PGS.o
+gcc ./PGS.c -o ./CPGS.o

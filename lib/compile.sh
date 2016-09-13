@@ -1,0 +1,1 @@
+gcc lib.c -lm -o lib.o

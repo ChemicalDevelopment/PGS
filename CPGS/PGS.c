@@ -78,7 +78,7 @@ void get_primes(const char *primefile) {
     printf("Init prime buf\n");
     int i;
     for (i = 0; i < NUM_READS; ++i) {
-        fread(&pr[i], 4, 1, f);
+        fread(&pr[i], sizeof(int), 1, f);
     }
     fclose(f);
 }
@@ -90,15 +90,17 @@ int main(int argc, char *argv[])
     int r0 = 1000, r1 = 1000, r2 = 1000;
     //Offsets
     int o0 = 0, o1 = 0, o2 = 0;
+    char *fn = "./primes.dat";
     if (argc > 1) r0 = strtol(argv[1], NULL, 0);
-    if (argc > 2) r1 = strtol(argv[2], NULL, 0);
-    if (argc > 3) r2 = strtol(argv[3], NULL, 0);
-    if (argc > 4) o0 = strtol(argv[4], NULL, 0);
-    if (argc > 5) o1 = strtol(argv[5], NULL, 0);
-    if (argc > 6) o2 = strtol(argv[6], NULL, 0);
+    if (argc > 2) r0 = strtol(argv[2], NULL, 0);
+    if (argc > 3) r1 = strtol(argv[3], NULL, 0);
+    if (argc > 4) r2 = strtol(argv[4], NULL, 0);
+    if (argc > 5) o0 = strtol(argv[5], NULL, 0);
+    if (argc > 6) o1 = strtol(argv[6], NULL, 0);
+    if (argc > 7) o2 = strtol(argv[7], NULL, 0);
     int i, j, k;
     //1 billion should be default
-    get_primes("../primes.dat");
+    get_primes(fn);
     printf("Read in primes\n");
     int ti = (int)time(NULL);
     for (i = o0; i < r0 + o0; ++i)

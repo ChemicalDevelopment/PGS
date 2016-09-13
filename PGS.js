@@ -119,7 +119,7 @@ function doWorkload(workload, offline) {
     var execPath = usrPrefs.RUN_FILE;
     var workloadPath = "./workloads/" + workload;
     var workload = JSON.parse(fs.readFileSync(workloadPath, 'utf8'));
-    const proc = spawn(execPath, [workload.ranges[0], workload.ranges[1], workload.ranges[2],
+    const proc = spawn(execPath, [usrPrefs.PRIME_FILE, workload.ranges[0], workload.ranges[1], workload.ranges[2],
                                   workload.offsets[0], workload.offsets[1], workload.offsets[2]]);
 
     proc.stdout.on('data', (data) => {
@@ -129,7 +129,7 @@ function doWorkload(workload, offline) {
             if (output[i].startsWith("PGSO:")) {
                 console.dir(jsonFunc(output[i]));
                 jsons.push(jsonFunc(output[i]));
-                fs.appendFile('./output/output.txt', jsonFunc(output[i]));
+                fs.appendFile('./output/output.txt', output[i]);
             }
         }
         if (!offline) {
@@ -174,12 +174,8 @@ function putFunctionInFirebase(func) {
     var dbr = db.ref("/user_data/" + usr.uid + "/functions");
     var isd = true;
     var i = 0;
-    var j = setInterval(function () {
-        if (i >= func.length) {
-            clearInterval(j);
-            return;
-        }
-        var nm = "";
+    var nm = "";
+    for (i = 0; i < func.length; ++i) {
         for (var k = 0; k < func[i].equation.length; ++k) {
             nm += "(" + func[i].equation[k] + ")";
             if (k != func[i].equation.length - 1) {
@@ -188,7 +184,5 @@ function putFunctionInFirebase(func) {
         }
         var cre = dbr.child(nm);
         cre.set(func[i]);
-        ++i;
-        
-    }, 100);
+    }
 }
