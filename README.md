@@ -40,11 +40,12 @@ Double click `PGS.exe`
 Double click `PGS`
 
 
+
 ### Development Build
+To use development build, you will need `gcc` and `node`
+
 For the default install script, run
 ```
-cd program
-chmod +x install.sh
 ./install.sh
 ```
 
@@ -56,7 +57,7 @@ cp ./example.prefs ./my.prefs
 npm install
 cd lib
 chmod +x ./update.sh
-./update.sh 1000000000
+./update.sh
 #The last one should take a while
 ```
 
@@ -88,6 +89,12 @@ For example, say you have a file named `company.prefs`, run
 ```
 node PGS.js -p ./company.prefs
 ```
+
+To create your own executable, just make sure to make a `run_$name.sh` that acccepts range0, range1, range2, offset0, offset1, offset2 as its arguments, and prints out:
+```
+PGSO: $consecutive, $distinct; [$array]
+```
+to stdout
 
 
 ## Explanation
@@ -128,7 +135,7 @@ Account Manager: (http://chemicaldevelopment.us/pgs/client/account/)
   * GUI Application (Was removed)
 
 ### Implemented
-  * OpenCL support
+  * OpenCL support - Buggy
   * Link with DB for users to help search
 
 ### Removed
