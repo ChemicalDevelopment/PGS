@@ -70,7 +70,7 @@ node PGS.js --offline
 
 Or, if you would like to run a version that reports the the server,
 
-You need to create an account at (http://chemicaldevelopment.us/pgs/account), and then fill in your email and password (without "{{" or "}}") (git ignores any .prefs files except for example.pref)
+You need to create an account at (http://chemicaldevelopment.us/pgs/client), and then fill in your email and password (without "{{" or "}}") (git ignores any .prefs files except for example.pref)
 
 Then, use your text editor to open `./my.prefs`, and change the email and password
 ```
