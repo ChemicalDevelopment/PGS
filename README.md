@@ -39,6 +39,12 @@ Double click `PGS.exe`
 
 Double click `PGS`
 
+```
+
+```
+
+Run a shell in any OS, and run `./PGS` or `./PGS.exe` with some flags found on the (wiki)[https://github.com/ChemicalDevelopment/PGS/wiki].
+
 
 
 ### Development Build
@@ -75,9 +81,12 @@ Then, use your text editor to open `./my.prefs`, and change the email and passwo
 ```
 {
     "RUN_FILE": "./run_c.sh",
+    "PRIME_FILE": "./primes.dat",
     "email": "{{email}}",
-    "password": "{{password}}"
+    "password": "{{password}}",
+    "workload_preference": "random"
 }
+
 ```
 Then,
 ```
