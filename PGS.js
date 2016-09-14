@@ -27,7 +27,14 @@ parser.addArgument(
 parser.addArgument(
   [ '-offline', '--offline' ],
   {
-    help: 'Online mode. Default: ' + defaults.online,
+    help: 'Sets to offline mode',
+    action: 'storeTrue'
+  }
+);
+parser.addArgument(
+  [ '-remove', '--removeworkload' ],
+  {
+    help: 'Whether or not to delete.',
     action: 'storeTrue'
   }
 );
@@ -67,14 +74,22 @@ function runOnline() {
     });
     db = firebase.database();
     signin(usrPrefs.email, usrPrefs.password, function() {
+        var fn = function(w) {
+            console.dir(w);
+            doWorkload(w, false);
+        }
         var work = getWorkloads();
+        var workload;
         if (work.length == 0) {
             console.log("No workloads found");
             console.log("   Getting some now");
+            getWorkloadOnline(fn);
+        } else {
+            workload = JSON.parse(fs.readFileSync("./workloads/" + work[0], 'utf8'));
+            console.log("Found workload:");
+            console.dir(workload);
+            fn(workload);
         }
-        console.log("Found workloads:");
-        console.dir(work);
-        doWorkload(work[0], false);
     });
 }
 
@@ -89,6 +104,35 @@ function runOffline() {
     console.log("Found workloads:");
     console.dir(work);
     doWorkload(work[0], true);
+}
+
+function getWorkloadOnline(fn) {
+    var type = usrPrefs.workload_preference.toLowerCase();
+    console.log("Finding workload from server using method: "  + type);
+    var jobs;
+    var workload;
+    db.ref("/workloads/").once('value').then(function(snapshot) {
+        jobs = snapshot.val();
+        console.log("Got response");
+        switch (type) {
+            default:
+                var i;
+                var max = 0;
+                for (i in jobs) {
+                    workload = jobs[i];
+                    ++max;
+                }
+                var rnd = Math.floor(Math.random() * (max + 1));
+                var j;
+                for (i in jobs) {
+                    if (j == rnd) {
+                        workload = jobs[i];
+                    }
+                    ++j;
+                }
+        }
+        fn(workload);
+    });
 }
 
 //Gets a list of workloads
@@ -111,14 +155,13 @@ function signin(email, password, callback) {
         var errorMessage = error.message;
         console.log(errorMessage);
     });
-    setTimeout(function () { callback() }, 2000);
+    setTimeout(function () { callback() }, 1000);
 }
 
 //Runs workload from filename
 function doWorkload(workload, offline) {
     var execPath = usrPrefs.RUN_FILE;
-    var workloadPath = "./workloads/" + workload;
-    var workload = JSON.parse(fs.readFileSync(workloadPath, 'utf8'));
+    //var workloadPath = "./workloads/" + workload;
     const proc = spawn(execPath, [usrPrefs.PRIME_FILE, workload.ranges[0], workload.ranges[1], workload.ranges[2],
                                   workload.offsets[0], workload.offsets[1], workload.offsets[2]]);
 
@@ -140,8 +183,13 @@ function doWorkload(workload, offline) {
         }
     });
 
+
     proc.on('close', (code) => {
         console.log(`PGS Has Finished`);
+        if (offline && args.removeworkload) {
+            console.log("Deleting workload");
+            fs.unlink(workloadPath);
+        }
         //process.exit(code)
     });
 }

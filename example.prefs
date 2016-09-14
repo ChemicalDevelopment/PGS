@@ -2,6 +2,7 @@
     "RUN_FILE": "./run_c.sh",
     "PRIME_FILE": "./primes.dat",
     "email": "{{email}}",
-    "password": "{{password}}"
+    "password": "{{password}}",
+    "workload_preference": "random"
 }
 

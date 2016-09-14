@@ -1,3 +1,4 @@
 cd CPGS
 ./compile.sh
-./CPGS.o ../primes.dat $1 $2 $3 $4 $5 $6
+cd ..
+./CPGS/CPGS.o $1 $2 $3 $4 $5 $6 $7
