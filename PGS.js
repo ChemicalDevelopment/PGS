@@ -43,17 +43,37 @@ parser.addArgument(
 var args = parser.parseArgs();
 //Store prefs file
 var usrPrefs = JSON.parse(fs.readFileSync("" + args.prefs, 'utf8'));
-
-//Some logic to either report to server or not
-if (!Boolean(args.offline)) {
-    runOnline();
-} else {
-    runOffline();
-}
-
-//Store database and usr
 var usr;
 var db;
+
+fs.access(usrPrefs.PRIME_FILE, fs.F_OK, function(err) {
+    if (!(!err)) {
+
+        console.log("Error no prime file! Generating one now.");
+        const pp = spawn("./lib.o", ["2000000000", usrPrefs.PRIME_FILE]);
+
+        pp.stdout.on('data', (data) => {
+            console.log(data.toString());
+
+        });
+
+        proc.on('close', (code) => {
+            console.log(`PGSlib Has Finished`);
+                if (!Boolean(args.offline)) {
+                    runOnline();
+                } else {
+                    runOffline();
+                }
+            //process.exit(code)
+        });
+    } else {
+        if (!Boolean(args.offline)) {
+            runOnline();
+        } else {
+            runOffline();
+        }
+    }
+});
 
 //Runs and updates the database
 function runOnline() {
@@ -87,7 +107,6 @@ function runOnline() {
         } else {
             workload = JSON.parse(fs.readFileSync("./workloads/" + work[0], 'utf8'));
             console.log("Found workload:");
-            console.dir(workload);
             fn(workload);
         }
     });
@@ -172,7 +191,7 @@ function doWorkload(workload, offline) {
             if (output[i].startsWith("PGSO:")) {
                 console.dir(jsonFunc(output[i]));
                 jsons.push(jsonFunc(output[i]));
-                fs.appendFile('./output/output.txt', output[i]);
+                fs.appendFile('./output/output.txt', output[i] + "\n");
             }
         }
         if (!offline) {

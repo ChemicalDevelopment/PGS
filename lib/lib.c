@@ -16,7 +16,7 @@ int get_bit(v, index) {
 }
 
 int main(int argc, char *argv[]) {
-    long x = strtoll(argv[1], NULL, 10);
+    long x = 2000000000;//strtoll(argv[1], NULL, 10);
     int *bitset = (int *)malloc(sizeof(int) * (x / 32 + 1));
     if (x % 32 != 0) {
         x += 32 - (x % 32);
@@ -45,7 +45,8 @@ int main(int argc, char *argv[]) {
     }
     printf("\n\n");
     printf("Writing the file\n\n");
-    FILE *f = fopen("primes.dat", "w");
+    //FILE *f = fopen("primes.dat", "w");
+    FILE *f = fopen(argv[2], "w");
     for (i = 0; i < x / 32; ++i) {
         fwrite(&bitset[i], sizeof bitset[i], 1, f);
     }
