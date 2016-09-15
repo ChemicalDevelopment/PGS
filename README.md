@@ -29,6 +29,8 @@ To download an executable, check out the [Releases](https://github.com/ChemicalD
 
 Unzip the folder, and edit `my.prefs` and enter in your email and password.
 
+You can also change `threads` to whatever value you'd like.
+
 The next part may change based on what platform you use.
 
 #### Windows
@@ -39,7 +41,7 @@ Double click `PGS.exe`
 
 Double click `PGS`
 
-` `
+
 
 Run a shell in any OS, and run `./PGS` or `./PGS.exe` with some flags found on the (wiki)[https://github.com/ChemicalDevelopment/PGS/wiki].
 
@@ -82,7 +84,8 @@ Then, use your text editor to open `./my.prefs`, and change the email and passwo
     "PRIME_FILE": "./primes.dat",
     "email": "{{email}}",
     "password": "{{password}}",
-    "workload_preference": "random"
+    "workload_preference": "random",
+    "threads": 2
 }
 
 ```
@@ -97,9 +100,13 @@ For example, say you have a file named `company.prefs`, run
 node PGS.js -p ./company.prefs
 ```
 
-To create your own executable, just make sure to make a `run_$name.sh` that acccepts range0, range1, range2, offset0, offset1, offset2 as its arguments, and prints out:
+To create your own executable, just make sure to make a `run_$name.sh` that acccepts primeFile range0, range1, range2, offset0, offset1, offset2 as its arguments, and prints out:
 ```
 PGSO: $consecutive, $distinct; [$array]
+```
+and optionally:
+```
+PGSP: $percentDone
 ```
 to stdout
 
@@ -142,9 +149,10 @@ Account Manager: (http://chemicaldevelopment.us/pgs/client/account/)
   * GUI Application (Was removed)
 
 ### Implemented
-  * OpenCL support - Buggy
+  * Multithreaded - Specify `in my.prefs`
   * Link with DB for users to help search
 
 ### Removed
   * JavaPGS
   * GUI Application (Also going to be implemented)
+  * OpenCL - Too buggy, and multithreaded is better performance
