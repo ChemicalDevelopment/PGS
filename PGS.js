@@ -4,6 +4,8 @@ var firebase = require('firebase');
 var ArgumentParser = require('argparse').ArgumentParser;
 const spawn = require('child_process').spawn;
 
+var Queue = require('firebase-queue');
+
 //Create Parser
 var parser = new ArgumentParser({
   version: '0.0.0',
@@ -45,6 +47,8 @@ var args = parser.parseArgs();
 var usrPrefs = JSON.parse(fs.readFileSync("" + args.prefs, 'utf8'));
 var usr;
 var db;
+var queue = [];
+var queueJobs = [];
 
 fs.access(usrPrefs.PRIME_FILE, fs.F_OK, function(err) {
     if (!(!err)) {
@@ -94,20 +98,21 @@ function runOnline() {
     });
     db = firebase.database();
     signin(usrPrefs.email, usrPrefs.password, function() {
-        var fn = function(w) {
-            console.dir(w);
-            doWorkload(w, false);
-        }
-        var work = getWorkloads();
-        var workload;
-        if (work.length == 0) {
-            console.log("No workloads found");
-            console.log("   Getting some now");
-            getWorkloadOnline(fn);
-        } else {
-            workload = JSON.parse(fs.readFileSync("./workloads/" + work[0], 'utf8'));
-            console.log("Found workload:");
-            fn(workload);
+        var ref = db.ref('workloads');
+        for (var i = 0; i < usrPrefs.threads; ++i) {
+            queue.push(new Queue(ref, function(data, progress, resolve, reject) {
+                // Read and process task data
+                console.log("Now Processing: ");
+                console.dir(data);
+
+                var oncomplete = function() {
+                    setTimeout(function() {
+                        resolve();
+                    }, 1000);
+                };
+
+                doWorkload(data, true, oncomplete, progress);                
+            }));
         }
     });
 }
@@ -115,14 +120,14 @@ function runOnline() {
 //Runs without looking for online jobs
 function runOffline() {
     var work = getWorkloads();
-    if (work.length == 0) {
+    if (work.length == 0) { 
         console.log("No workloads found");
         console.log("   Try running without --offline");
         return;
     }
     console.log("Found workloads:");
     console.dir(work);
-    doWorkload(work[0], true);
+    doWorkload(work[0], true, function () { }, function (x) { });
 }
 
 function getWorkloadOnline(fn) {
@@ -178,7 +183,7 @@ function signin(email, password, callback) {
 }
 
 //Runs workload from filename
-function doWorkload(workload, offline) {
+function doWorkload(workload, offline, oncomplete, progFunc) {
     var execPath = usrPrefs.RUN_FILE;
     //var workloadPath = "./workloads/" + workload;
     const proc = spawn(execPath, [usrPrefs.PRIME_FILE, workload.ranges[0], workload.ranges[1], workload.ranges[2],
@@ -193,6 +198,9 @@ function doWorkload(workload, offline) {
                 jsons.push(jsonFunc(output[i]));
                 fs.appendFile('./output/output.txt', output[i] + "\n");
             }
+            if (output[i].startsWith("PGSP:")) {
+                progFunc(parseInt(output[i].replace("PGSP:", "")));
+            }
         }
         if (!offline) {
             if (jsons.length > 0) {
@@ -202,14 +210,13 @@ function doWorkload(workload, offline) {
         }
     });
 
-
     proc.on('close', (code) => {
         console.log(`PGS Has Finished`);
         if (offline && args.removeworkload) {
             console.log("Deleting workload");
             fs.unlink(workloadPath);
         }
-        //process.exit(code)
+        oncomplete();        
     });
 }
 
@@ -236,21 +243,37 @@ function jsonFunc(func) {
     return jsonFunc;
 }
 
+function getWorkloadKey(work) {
+    var nm = "";
+    for (var k = 0; k < func[i].equation.length; ++k) {
+        nm += "(" + func[i].equation[k] + ")";
+        if (k != func[i].equation.length - 1) {
+            nm += "-";
+        }
+    }
+    return nm;
+}
+
 //Puts function in firebase
 function putFunctionInFirebase(func) {
     var dbr = db.ref("/user_data/" + usr.uid + "/functions");
     var isd = true;
     var i = 0;
-    var nm;
     for (i = 0; i < func.length; ++i) {
-        nm = "";
-        for (var k = 0; k < func[i].equation.length; ++k) {
-            nm += "(" + func[i].equation[k] + ")";
-            if (k != func[i].equation.length - 1) {
-                nm += "-";
-            }
-        }
-        var cre = dbr.child(nm);
+        var cre = dbr.child(getWorkloadKey(func[i]));
         cre.set(func[i]);
     }
 }
+
+process.on('SIGINT', function() {
+    console.log('Starting queue shutdown');
+    var j = 0;
+    for (var i = 0; i < queue.length; ++i) {
+        queue[i].shutdown().then(function() {   
+            console.log('Shutdown thread ' + j++);
+            if (j == queue.length) {
+                process.exit();
+            }
+        });
+    }
+});

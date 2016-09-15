@@ -67,6 +67,7 @@ void test_quadratic(int i, int j, int k)
     if ((inarow >= 60 || distinct >= 40) && distinct > 1)
     {
         printf("PGSO: %d, %d; [%d, %d, %d]\n", inarow, distinct, i, j, k);
+        fflush(stdout);
     }
 }
 
@@ -112,6 +113,11 @@ int main(int argc, char *argv[])
                 test_quadratic(i, j, k);
             }
         }
+        if ((i - o0) % (r0 / 10) == 0) {
+            printf("PGSP: %d\n", 100 * (i - o0) / (r0 - 1));
+            fflush(stdout);
+        }
     }
     printf("\nTook %d\n", (int)time(NULL) - ti);
+    fflush(stdout);
 }

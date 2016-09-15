@@ -23,7 +23,8 @@
   "homepage": "https://github.com/ChemicalDevelopment/PGS#readme",
   "dependencies": {
     "argparse": "^1.0.7",
-    "firebase": "^3.3.2",
+    "firebase": "^3.4.0",
+    "firebase-queue": "^1.5.0",
     "fs": "0.0.1-security",
     "nooocl": "^0.11.1",
     "request": "^2.74.0",

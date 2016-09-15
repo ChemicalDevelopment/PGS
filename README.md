@@ -39,9 +39,7 @@ Double click `PGS.exe`
 
 Double click `PGS`
 
-```
-
-```
+` `
 
 Run a shell in any OS, and run `./PGS` or `./PGS.exe` with some flags found on the (wiki)[https://github.com/ChemicalDevelopment/PGS/wiki].
 

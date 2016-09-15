@@ -3,6 +3,7 @@
     "PRIME_FILE": "./primes.dat",
     "email": "{{email}}",
     "password": "{{password}}",
-    "workload_preference": "random"
+    "workload_preference": "random",
+    "threads": 2
 }
 
