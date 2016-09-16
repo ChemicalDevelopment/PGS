@@ -184,7 +184,7 @@ function signin(email, password, callback) {
 
 //Runs workload from filename
 function doWorkload(workload, offline, oncomplete, progFunc) {
-    var execPath = usrPrefs.RUN_FILE;
+    var execPapgs if queue failsth = usrPrefs.RUN_FILE;
     //var workloadPath = "./workloads/" + workload;
     const proc = spawn(execPath, [usrPrefs.PRIME_FILE, workload.ranges[0], workload.ranges[1], workload.ranges[2],
                                   workload.offsets[0], workload.offsets[1], workload.offsets[2]]);
@@ -269,11 +269,11 @@ process.on('SIGINT', function() {
     console.log('Starting queue shutdown');
     var j = 0;
     for (var i = 0; i < queue.length; ++i) {
-        queue[i].shutdown().then(function() {   
+        //queue[i].shutdown().then(function() {   
             console.log('Shutdown thread ' + j++);
             if (j == queue.length) {
                 process.exit();
             }
-        });
+        //});
     }
 });
