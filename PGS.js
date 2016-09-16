@@ -184,7 +184,7 @@ function signin(email, password, callback) {
 
 //Runs workload from filename
 function doWorkload(workload, offline, oncomplete, progFunc) {
-    var execPapgs if queue failsth = usrPrefs.RUN_FILE;
+    var execPath = usrPrefs.RUN_FILE;
     //var workloadPath = "./workloads/" + workload;
     const proc = spawn(execPath, [usrPrefs.PRIME_FILE, workload.ranges[0], workload.ranges[1], workload.ranges[2],
                                   workload.offsets[0], workload.offsets[1], workload.offsets[2]]);
