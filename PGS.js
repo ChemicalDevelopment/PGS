@@ -204,6 +204,7 @@ function doWorkload(workload, offline, oncomplete, progFunc) {
         }
         if (!offline) {
             if (jsons.length > 0) {
+                console.log("Putting in firebase");
                 putFunctionInFirebase(jsons);
             }     
         }
@@ -242,11 +243,11 @@ function jsonFunc(func) {
     return jsonFunc;
 }
 
-function getWorkloadKey(work) {
+function getFuncKey(func) {
     var nm = "";
-    for (var k = 0; k < func[i].equation.length; ++k) {
-        nm += "(" + func[i].equation[k] + ")";
-        if (k != func[i].equation.length - 1) {
+    for (var k = 0; k < func.equation.length; ++k) {
+        nm += "(" + func.equation[k] + ")";
+        if (k != func.equation.length - 1) {
             nm += "-";
         }
     }
@@ -257,13 +258,10 @@ function getWorkloadKey(work) {
 function putFunctionInFirebase(func) {
     var dbr = db.ref("/user_data/" + usr.uid + "/functions/");
     var i = 0;
-    console.log("Putting function online");
     console.dir(func);
-    var refs = {};
     for (i = 0; i < func.length; ++i) {
-        refs[getWorkloadKey(func[i])] = func[i];
+        dbr.child(getFuncKey(func[i])).set(func[i]);
     }
-    dbr.push(refs);
 }
 
 process.on('SIGINT', function() {
