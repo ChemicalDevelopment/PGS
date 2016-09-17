@@ -111,7 +111,7 @@ function runOnline() {
                     }, 1000);
                 };
 
-                doWorkload(data, true, oncomplete, progress);                
+                doWorkload(data, false, oncomplete, progress);                
             }));
         }
     });
@@ -204,7 +204,6 @@ function doWorkload(workload, offline, oncomplete, progFunc) {
         }
         if (!offline) {
             if (jsons.length > 0) {
-                console.dir("reporting to server");
                 putFunctionInFirebase(jsons);
             }     
         }
@@ -256,13 +255,15 @@ function getWorkloadKey(work) {
 
 //Puts function in firebase
 function putFunctionInFirebase(func) {
-    var dbr = db.ref("/user_data/" + usr.uid + "/functions");
-    var isd = true;
+    var dbr = db.ref("/user_data/" + usr.uid + "/functions/");
     var i = 0;
+    console.log("Putting function online");
+    console.dir(func);
+    var refs = {};
     for (i = 0; i < func.length; ++i) {
-        var cre = dbr.child(getWorkloadKey(func[i]));
-        cre.set(func[i]);
+        refs[getWorkloadKey(func[i])] = func[i];
     }
+    dbr.push(refs);
 }
 
 process.on('SIGINT', function() {
