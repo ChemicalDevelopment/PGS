@@ -11,8 +11,13 @@
 /run.build/
 /workloads/*
 !/workloads/test.workload
-/program/output/*
-!/program/output/
+/output/*
+!/output/
 *.dat
 *.vscode
 /build/
+/JPGS/build/
+/JPGS/nbproject/
+/JPGS/test/
+/nbproject/private/
+/JPGS/dist/

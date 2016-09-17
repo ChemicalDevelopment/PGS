@@ -104,11 +104,17 @@ function runOnline() {
                 // Read and process task data
                 console.log("Now Processing: ");
                 console.dir(data);
+                var data_t = data;
+                data_t.timestamp = new Date().getTime();
+                var wref = db.ref('/user_data/' + usr.uid + "/current_workloads/").push(data_t);
 
                 var oncomplete = function() {
+                    data_t.timestamp = new Date().getTime();
+                    db.ref('/user_data/' + usr.uid + "/workloads/").push(data_t);
+                    wref.set({});
                     setTimeout(function() {
                         resolve();
-                    }, 1000);
+                    }, 50);
                 };
 
                 doWorkload(data, false, oncomplete, progress);                
@@ -271,6 +277,7 @@ process.on('SIGINT', function() {
         //queue[i].shutdown().then(function() {   
             console.log('Shutdown thread ' + j++);
             if (j == queue.length) {
+               // console.dir(queue[i]);
                 process.exit();
             }
         //});

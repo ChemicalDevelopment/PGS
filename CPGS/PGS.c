@@ -88,7 +88,7 @@ void get_primes(const char *primefile) {
 int main(int argc, char *argv[])
 {
     //Ranges
-    int r0 = 1000, r1 = 1000, r2 = 1000;
+    int r0 = 2000, r1 = 2000, r2 = 2000;
     //Offsets
     int o0 = 0, o1 = 0, o2 = 0;
     char *fn = "./primes.dat";
