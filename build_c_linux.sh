@@ -9,5 +9,5 @@ cp ./lib/lib.o ./build/c/linux/lib.o
 enclose PGS.js
 cp ./PGS ./build/c/linux/PGS
 rm ./PGS
-cp ./build/c/
-zip -r ./linux-C-$1.zip ./linux
+cd ./build/c/
+zip -r "./linux-C-"$1".zip" ./linux
