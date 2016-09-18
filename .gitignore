@@ -12,7 +12,6 @@
 /workloads/*
 !/workloads/test.workload
 /output/*
-!/output/
 *.dat
 *.vscode
 /build/
