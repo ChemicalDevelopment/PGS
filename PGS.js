@@ -104,22 +104,22 @@ function runOnline() {
                 // Read and process task data
                 console.log("Now Processing: ");
                 console.dir(data);
+                
                 var data_t = data;
                 data_t.timestamp = new Date().getTime();
                 var wref = db.ref('/user_data/' + usr.uid + "/current_workloads/").push(data_t);
 
                 var oncomplete = function() {
-                    resolve();
-                    setTimeout(function() {
-                        var timeElapsed = new Date().getTime() - data_t.timestamp;
-                        data_t["timespent"] = timeElapsed;
-                        db.ref('/user_data/' + usr.uid + "/workloads/").push(data_t);
-                        db.ref("/user_data/" + usr.uid + "/timespent").once('value').then(function(snapshot) {
-                            var data_v = snapshot.val();
-                            db.ref('/user_data/' + usr.uid + "/timespent").set(data_v + timeElapsed);
-                            wref.set({});
-                        });
-                    }, 200);
+                    var timeElapsed = new Date().getTime() - data_t.timestamp;
+                    data_t["timespent"] = timeElapsed;
+                    db.ref('/user_data/' + usr.uid + "/workloads/").push(data_t);
+                    db.ref("/user_data/" + usr.uid + "/timespent").once('value').then(function(snapshot) {
+                        var data_v = snapshot.val();
+                        db.ref('/user_data/' + usr.uid + "/timespent").set(data_v + timeElapsed);
+                        wref.set({});
+                        resolve();
+                    });
+                    
                 };
 
                 progress(0);
