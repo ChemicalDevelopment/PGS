@@ -151,6 +151,7 @@ Account Manager: (http://chemicaldevelopment.us/pgs/client/account/)
 ### Implemented
   * Multithreaded - Specify `in my.prefs`
   * Link with DB for users to help search
+  * OpenCL - Look in folder `JPGS`.
 
 ### Removed
   * JavaPGS
