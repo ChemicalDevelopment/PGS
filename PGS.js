@@ -117,9 +117,8 @@ function runOnline() {
                         var data_v = snapshot.val();
                         db.ref('/user_data/' + usr.uid + "/timespent").set(data_v + timeElapsed);
                         wref.set({});
-                        resolve();
+                        resolve(data_t);
                     });
-                    
                 };
 
                 progress(0);
