@@ -8,4 +8,5 @@ chmod +x ./update.sh
 echo "This part may take up to 2 minutes"
 ./update.sh
 mkdir output
+touch output/output.txt
 echo "! Remember to edit ./my.prefs !"
