@@ -119,7 +119,7 @@ function runOnline() {
                             db.ref('/user_data/' + usr.uid + "/timespent").set(data_v + timeElapsed);
                             wref.set({});
                         });
-                    }, 500);
+                    }, 200);
                 };
 
                 progress(0);
