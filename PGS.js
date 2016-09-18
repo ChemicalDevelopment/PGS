@@ -122,6 +122,8 @@ function runOnline() {
                     }, 50);
                 };
 
+                progress(0);
+
                 doWorkload(data, false, oncomplete, progress);                
             }));
         }
