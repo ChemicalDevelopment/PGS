@@ -115,11 +115,9 @@ function runOnline() {
                     db.ref("/user_data/" + usr.uid + "/timespent").once('value').then(function(snapshot) {
                         var data_v = snapshot.val();
                         db.ref('/user_data/' + usr.uid + "/timespent").set(data_v + timeElapsed);
-                    });
-                    wref.set({});
-                    setTimeout(function() {
+                        wref.set({});
                         resolve();
-                    }, 50);
+                    });
                 };
 
                 progress(0);
