@@ -200,7 +200,7 @@ function doWorkload(workload, offline, oncomplete, progFunc) {
     const proc = spawn(execPath, [usrPrefs.PRIME_FILE, workload.ranges[0], workload.ranges[1], workload.ranges[2],
                                   workload.offsets[0], workload.offsets[1], workload.offsets[2]]);
 
-    proc.stdout.on('data', (data) => {
+    proc.stdout.on('data', function (data) {
         var output = data.toString().split("\n");
         var jsons = [];
         for (var i = 0;i < output.length; ++i) {
@@ -221,7 +221,7 @@ function doWorkload(workload, offline, oncomplete, progFunc) {
         }
     });
 
-    proc.on('close', (code) => {
+    proc.on('close', function(code) {
         console.log(`PGS Has Finished`);
         if (offline && args.removeworkload) {
             console.log("Deleting workload");
