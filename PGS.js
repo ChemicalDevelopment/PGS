@@ -58,10 +58,9 @@ fs.access(usrPrefs.PRIME_FILE, fs.F_OK, function(err) {
 
         pp.stdout.on('data', (data) => {
             console.log(data.toString());
-
         });
 
-        proc.on('close', (code) => {
+        pp.on('close', (code) => {
             console.log(`PGSlib Has Finished`);
                 if (!Boolean(args.offline)) {
                     runOnline();
