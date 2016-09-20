@@ -2,7 +2,9 @@
 var fs = require('fs');
 var firebase = require('firebase');
 var ArgumentParser = require('argparse').ArgumentParser;
-const spawn = require('child_process').spawn;
+var child_process = require('child_process');
+
+const spawn = child_process.spawn;
 
 var Queue = require('firebase-queue');
 
@@ -221,6 +223,11 @@ function doWorkload(workload, offline, oncomplete, progFunc) {
         }
     });
 
+    proc.stderr.on('data', function (data) {
+        console.log(data.toString());
+    });
+
+    /*
     proc.on('close', function(code) {
         console.log(`PGS Has Finished`);
         if (offline && args.removeworkload) {
@@ -229,6 +236,7 @@ function doWorkload(workload, offline, oncomplete, progFunc) {
         }
         oncomplete();        
     });
+    */
 }
 
 //Returns function in json format
