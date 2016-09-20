@@ -54,7 +54,7 @@ fs.access(usrPrefs.PRIME_FILE, fs.F_OK, function(err) {
     if (!(!err)) {
 
         console.log("Error no prime file! Generating one now.");
-        const pp = spawn("./lib.o", ["2000000000", usrPrefs.PRIME_FILE]);
+        const pp = spawn("./lib.o", [usrPrefs.PRIME_FILE]);
 
         pp.stdout.on('data', (data) => {
             console.log(data.toString());
