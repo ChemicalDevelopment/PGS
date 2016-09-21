@@ -317,7 +317,7 @@ function submitOutput(data, offline, progFunc) {
     }
     if (!offline) {
         if (jsons.length > 0) {
-            console.log("Putting in firebase");
+            console.log("Putting in firebase: ");
             putFunctionInFirebase(jsons);
         }     
     }
@@ -394,7 +394,7 @@ function getWorkloadKey(work) {
 function putFunctionInFirebase(func) {
     var dbr = db.ref("/user_data/" + usr.uid + "/functions/");
     var i = 0;
-    console.dir(func);
+    //      console.dir(func);
     for (i = 0; i < func.length; ++i) {
         dbr.child(getFuncKey(func[i])).set(func[i]);
     }
