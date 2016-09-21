@@ -1,29 +1,19 @@
-*.o
-*.out
-*.pyc
-*.credentials
-!/program/example.credentials
+# Ignore all prefs except the example one
 *.prefs
 !example.prefs
-/node_modules/
-/NodePGS/node_modules/
-/tmp/
-/run.build/
-/workloads/*
-!/workloads/test.workload
 
-# Output directory
-/output/*
-!/output/
+# All compiled C programs
+*.o
+*.out
 
 # Prime sieve
 *.dat
 
+# Ignore tmp directory for building
+/tmp/
+
 # Zipped and compiled versions
 /build/
-
-# VScode editor
-*.vscode
 
 # JavaPGS netbeans and whatnot
 /JPGS/build/
@@ -31,3 +21,9 @@
 /JPGS/test/
 /nbproject/private/
 /JPGS/dist/
+
+# Ignore all npm installed packages
+/node_modules/
+
+# VScode editor
+*.vscode
