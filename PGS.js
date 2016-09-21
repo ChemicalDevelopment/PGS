@@ -51,9 +51,9 @@ parser.addArgument(
   }
 );
 parser.addArgument(
-  [ '-remove', '--removeworkload' ],
+  [ '-remove', '--remove' ],
   {
-    help: 'Whether or not to delete.',
+    help: 'Whether or not to delete workloads onces they have been ran',
     action: 'storeTrue'
   }
 );
@@ -217,7 +217,7 @@ function runOnline() {
                 //Start at 0
                 progress(0);
                 //Invoke the process
-                doWorkload(data, false, oncomplete, progress); 
+                doWorkload(data, "", oncomplete, progress); 
                 }  
             });
         }
@@ -245,27 +245,30 @@ function runOffline() {
     var i = 0;
     var currentThreads;
     var ee = new eventEmitter;
+    var complete = function () {
+        currentThreads -= 1;
+        if (currentThreads == 0 && i >= workloads_json.length) {
+            console.log("Done with all");
+        } else {
+            ee.emit('next');
+        }
+    }
     var next = function() {
         currentThreads += 1;
-        doWorkload(workloads_json[i], true, function () { }, function (x) { });
+        if (i < workloads_json.length) {
+            doWorkload(workloads_json[i], work[i], complete, function (x) {  });
+            ++i;
+        }
     };
     ee.on('next', next);
-    var complete = function () {
-        ++i;
-        currentThreads -= 1;
-        if (i >= workloads_json.length) {
-            console.log("Done with all")
-            //return;
-        }
-        ee.emit('next');
-    }
+
     for (var j = 0; j < threads; ++j) {
         ee.emit('next');
     }
 }
 
 //Runs workload from filename
-function doWorkload(workload, offline, oncomplete, progFunc) {
+function doWorkload(workload, path, oncomplete, progFunc) {
     var execPath = usrPrefs.RUN_FILE;
     //We spawn a process
     const proc = spawn(execPath, [usrPrefs.PRIME_FILE, workload.ranges[0], workload.ranges[1], workload.ranges[2],
@@ -273,7 +276,7 @@ function doWorkload(workload, offline, oncomplete, progFunc) {
     
     //The process should print out info.
     proc.stdout.on('data', function (data) {
-        submitOutput(data, offline, progFunc);
+        submitOutput(data, path != "", progFunc);
     });
 
     //On error, we print and log
@@ -285,9 +288,9 @@ function doWorkload(workload, offline, oncomplete, progFunc) {
     proc.on('close', function(code) {
         console.log(`PGS Has Finished`);
         fs.appendFile('./output/output.txt', "\nFinished workload: " + JSON.stringify(workload) + "\n\n");
-        if (offline && args.removeworkload) {
+        if (path != "" && args.remove) {
             console.log("Deleting workload");
-            fs.unlink(workloadPath);
+            fs.unlink("./workloads/" + path);
         }
         oncomplete();
     });

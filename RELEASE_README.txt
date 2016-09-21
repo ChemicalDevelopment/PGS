@@ -35,6 +35,9 @@ To run using the terminal, run `./PGS` or `./PGS.exe` for windows.
 To just download workloads, run `./PGS --download $n` to download and store $n workloads. You can run these later using `--offline`
 
 To run downloaded workloads, run `./PGS --offline`. Their results will be stored in `./output/finds.txt`.
+Additionally, you can run  `./PGS --offline --remove` to remove workload files as they are completed.
+
+To submit stored results, run `./PGS --submit`. The results will be stored online.
 
 
 
