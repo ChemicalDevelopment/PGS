@@ -19,7 +19,7 @@ cp $BASE_DIR/CPGS/CPGS.o $INSTALL_DIR/CPGS.o
 cp $BASE_DIR/lib/lib.o $INSTALL_DIR/lib.o
 cp $BASE_DIR/final_run_c.sh $INSTALL_DIR/run_c.sh
 cp $BASE_DIR/example.prefs $INSTALL_DIR/my.prefs
-
+chmod +x $INSTALL_DIR/run_c.sh
 #Make directory for output and worklodas
 mkdir $INSTALL_DIR/output/
 mkdir $INSTALL_DIR/workloads/
