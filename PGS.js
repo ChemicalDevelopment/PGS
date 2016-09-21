@@ -52,13 +52,15 @@ parser.addArgument(
 
 //We store our parsed args
 var args = parser.parseArgs();
+var startMill = new Date().getTime();
+
 //Store prefs file
 var usrPrefs = JSON.parse(fs.readFileSync(args.prefs, 'utf8'));
 var usr;
 var db;
-var queue = [];
-var progFuncs = [];
-var queueJobs = [];
+var isShutdown = false;
+var queue = {};
+var rejectFuncs = [];
 
 fs.access(usrPrefs.PRIME_FILE, fs.F_OK, function(err) {
     if (!(!err)) {
@@ -105,57 +107,93 @@ function runOnline() {
     firebase.auth().onAuthStateChanged(function (user) {
         usr = user;
     });
+    //Create  a reference
     db = firebase.database();
+    //Signin with callback
     signin(usrPrefs.email, usrPrefs.password, function() {
+        //Get our workloads ref. Used with queue
         var ref = db.ref('workloads');
+        //Used for downloading workloads
         var nth = 0;
-        for (var i = 0; i < usrPrefs.threads; ++i) {
-            queue.push(new Queue(ref, function(data, progress, resolve, reject) {
-                // Read and process task data
-                console.log("Now Processing: ");
-                console.dir(data);
-                if (args.download > 0) {
-                    nth += 1;
-                    fs.writeFileSync("./workloads/" + getWorkloadKey(data) + ".workload", JSON.stringify(data), 'utf8');
-                    if (nth >= args.download) {
-                        console.log("Done saving workloads to ./workloads/");
-                        shutdownQueues();
-                        process.exit(0);
-                    }
-                    progress(-1)
-                    resolve();
-                } else {
-                    var data_t = data;
-                    data_t.timestamp = new Date().getTime();
-                    var wref = db.ref('/user_data/' + usr.uid + "/current_workloads/").push(data_t);
-                    progFuncs.push(progress);
-                    var oncomplete = function() {
-                        var timeElapsed = new Date().getTime() - data_t.timestamp;
-                        fs.appendFile('./output/output.txt', "\nWorkload done in " + timeElapsed + "ms\n", 'utf8');
-                        data_t["timespent"] = timeElapsed;
-                        db.ref('/user_data/' + usr.uid + "/workloads/").push(data_t);
-                        db.ref("/user_data/" + usr.uid + "/timespent").once('value').then(function(snapshot) {
-                            var data_v = snapshot.val();
+        //Set the number of workers
+        var options = {
+            'numWorkers': usrPrefs.threads,
+        };
+        //Init the global var
+        queue = new Queue(ref, options, function(data, progress, resolve, reject) {
+            // Read and process task data
+            console.log("Now Processing: ");
+            console.dir(data);
+            //If we are supposed to download
+            if (args.download > 0) {
+                //Add to how many we've done
+                nth += 1;
+                //Write JSON to file 
+                fs.writeFileSync("./workloads/" + getWorkloadKey(data) + ".workload", JSON.stringify(data), 'utf8');
+                //Resolve, mark that we will do it.
+                resolve();
+                //Set the progress to -1
+                progress(-1)
+                if (nth >= args.download) {
+                    //If we have saved the amount.
+                    console.log("Done saving workloads to ./workloads/");
+                    shutdown();
+                }
+            //If we are shutting down, or it is over max time, we mark it so that the backend can process it
+            } else if (usrPrefs.time && usrPrefs.time >= 0 && new Date().getTime() - startMill >= usrPrefs.time * 60 * 1000 || isShutdown) {
+                console.log("Past the max time specified. Quitting");
+                shutdown();
+            } else {
+            //Create a data afterwards
+            var data_t = data;
+            //Set the timestamp
+            data_t.timestamp = new Date().getTime();
+            //Add to active workloads
+            var wref = db.ref('/user_data/' + usr.uid + "/current_workloads/").push(data_t);
+            //Add the reject to an array so it can be called by shutdown
+            rejectFuncs.push(reject);
+
+            //Our callback
+            var oncomplete = function() {
+                //Remove it from reject funcs
+                rejectFuncs.splice(rejectFuncs.indexOf(reject), 1);
+                //Create a time elapsed
+                var timeElapsed = new Date().getTime() - data_t.timestamp;
+                //Appedn this to output
+                fs.appendFile('./output/output.txt', "\nWorkload done in " + timeElapsed + "ms\n", 'utf8');
+                //Set the time elapsed
+                data_t["timespent"] = timeElapsed;
+                //Push ref - Left commented now.
+                //db.ref('/user_data/' + usr.uid + "/workloads/").push(data_t);
+                //Get value
+                db.ref("/user_data/" + usr.uid + "/timespent").once('value').then(function(snapshot) {
+                    var data_v = snapshot.val();
+                    //Get time spent
+                    db.ref('/user_data/' + usr.uid + "/timespent").set(data_v + timeElapsed);
+                        //Get blocks
+                        db.ref("/user_data/" + usr.uid + "/blocksdone").once('value').then(function(i_snapshot) {
+                            var i_data_v = i_snapshot.val();
+                            //Update both
+                            db.ref('/user_data/' + usr.uid + "/blocksdone").set(i_data_v + 1);
                             db.ref('/user_data/' + usr.uid + "/timespent").set(data_v + timeElapsed);
-                                db.ref("/user_data/" + usr.uid + "/timespent").once('value').then(function(i_snapshot) {
-                                var i_data_v = i_snapshot.val();
-                                db.ref('/user_data/' + usr.uid + "/blocksdone").set(i_data_v + 1);
-                                db.ref('/user_data/' + usr.uid + "/timespent").set(data_v + timeElapsed);
-                                if (progFuncs.indexOf(progress) != -1) {
-                                    progFuncs.splice(progFuncs.indexOf(progress), 0);
-                                }
-                                wref.set({});
-                                resolve(data_t);
-                            });
-                        });
-                    };
-
-                    progress(0);
-
-                    doWorkload(data, false, oncomplete, progress);   
-                }             
-            }));
-        }
+                            //Remove the current workloads
+                            wref.remove();
+                            //Resolve
+                            resolve(data_t);
+                            //If we have passed the max time
+                            if (usrPrefs.time && usrPrefs.time >= 0 && new Date().getTime() - startMill >= usrPrefs.time * 60 * 1000) {
+                                console.log("Past the max time specified. Quitting");
+                                shutdown();
+                            }
+                    });
+                });
+            };
+            //Start at 0
+            progress(0);
+            //Invoke the process
+            doWorkload(data, false, oncomplete, progress); 
+            }  
+        });
     });
 }
 
@@ -202,18 +240,22 @@ function runOffline() {
 //Runs workload from filename
 function doWorkload(workload, offline, oncomplete, progFunc) {
     var execPath = usrPrefs.RUN_FILE;
-    //var workloadPath = "./workloads/" + workload;
+    //We spawn a process
     const proc = spawn(execPath, [usrPrefs.PRIME_FILE, workload.ranges[0], workload.ranges[1], workload.ranges[2],
-                                  workload.offsets[0], workload.offsets[1], workload.offsets[2]]);
-
+                                  workload.offsets[0], workload.offsets[1], workload.offsets[2]])
+    
+    //The process should print out info.
     proc.stdout.on('data', function (data) {
         var output = data.toString().split("\n");
         var jsons = [];
+        //Strips down things that start with keyworkds
         for (var i = 0;i < output.length; ++i) {
             if (output[i].startsWith("PGSO:")) {
                 console.dir(jsonFunc(output[i]));
                 jsons.push(jsonFunc(output[i]));
+                //Log to finds.txt
                 fs.appendFile('./output/output.txt', output[i] + "\n" + getFuncKey(jsonFunc(output[i])) + "\n", 'utf8');
+                fs.appendFile('./output/finds.txt', output[i] + "\n", 'utf8');
             }
             if (output[i].startsWith("PGSP:")) {
                 console.dir(output[i]);
@@ -229,10 +271,12 @@ function doWorkload(workload, offline, oncomplete, progFunc) {
         }
     });
 
+    //On error, we print and log
     proc.stderr.on('data', function (data) {
         console.log(data.toString());
+        fs.appendFile('./output/error.txt', data.toString() + "\n", 'utf8');
     });
-
+    //On close, we delete the workload if the flag is set, and then we call our callback
     proc.on('close', function(code) {
         console.log(`PGS Has Finished`);
         fs.appendFile('./output/output.txt', "\nFinished workload: " + JSON.stringify(workload) + "\n\n");
@@ -328,23 +372,25 @@ function signin(email, password, callback) {
         // Handle Errors here.
         var errorCode = error.code;
         var errorMessage = error.message;
+        //Log the message
         console.log(errorMessage);
     });
-    setTimeout(function () { callback() }, 1000);
+    callback();
 }
 
-//Shuts down all queues
-function shutdownQueues() {
-    var j = 0;
-    for (var i = 0; i < queue.length; ++i) {
-        console.log('Shutdown thread ' + j++);
+function shutdown() {
+    isShutdown = true;
+    console.log("Shutting down");
+    console.log('Starting queue shutdown');
+    for (f in rejectFuncs) {
+        rejectFuncs[f]("Shut down");
     }
-    for (i = 0; i < progFuncs.length; ++i) {
-        progFuncs[i]("error");
-    }
+    queue.shutdown().then(function() {
+        console.log('Finished queue shutdown');
+        process.exit(0);
+  });
 }
 
 process.on('SIGINT', function() {
-    console.log('Starting queue shutdown');
-    shutdownQueues();
+    shutdown();
 });
