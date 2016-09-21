@@ -125,7 +125,7 @@ function runOnline() {
             console.dir(e);
         }
         if (args.submit) {
-            var findsTxt = "./workloads/finds.txt";
+            var findsTxt = "./output/finds.txt";
             console.log("Submitting finds: " + findsTxt);
             if (fileExists(findsTxt)) {
                 setTimeout(function () {submitOutput(fs.readFileSync(findsTxt), false, function () {}) }, 2000);
