@@ -1,4 +1,23 @@
 #!/bin/bash
+#Detect OS, and set the build os, unless they enter in the first argument
+if [[ "$1" == ""]]; then
+    if [[ "$OSTYPE" == "linux-gnu" ]]; then
+        BUILD_OS="linux"
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+        BUILD_OS="mac"
+    elif [[ "$OSTYPE" == "cygwin" ]]; then
+        BUILD_OS="cygwin"
+    elif [[ "$OSTYPE" == "msys" ]]; then
+        BUILD_OS="win-lite"
+    elif [[ "$OSTYPE" == "freebsd"* ]]; then
+        BUILD_OS="freebsd"
+    else
+        BUILD_OS="default"
+    fi
+else
+    BUILD_OS=$1
+fi
+
 #Push and pop directories to compile these files
 cd CPGS
 ./compile.sh
@@ -10,7 +29,7 @@ cd ..
 
 #Declare base dir and install dir
 BASE_DIR=$PWD
-INSTALL_DIR=$BASE_DIR/build/c/mac
+INSTALL_DIR=$BASE_DIR/build/$BUILD_OS
 
 #Make directory recursively
 mkdir -p $INSTALL_DIR
@@ -23,9 +42,6 @@ chmod +x $INSTALL_DIR/run_c.sh
 #Make directory for output and worklodas
 mkdir $INSTALL_DIR/output/
 mkdir $INSTALL_DIR/workloads/
-
-#Make sure they have a file to append to
-touch $INSTALL_DIR/output/output.txt
 
 #Copy the readme
 cp $BASE_DIR/RELEASE_README.txt $INSTALL_DIR/README.txt
