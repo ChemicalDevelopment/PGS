@@ -39,7 +39,7 @@ parser.addArgument(
   [ '-download', '--download' ],
   {
     help: 'Downloads the files into ./workloads/',
-    action: 'storeTrue'
+    defaultValue: -1
   }
 );
 parser.addArgument(
@@ -57,6 +57,7 @@ var usrPrefs = JSON.parse(fs.readFileSync(args.prefs, 'utf8'));
 var usr;
 var db;
 var queue = [];
+var progFuncs = [];
 var queueJobs = [];
 
 fs.access(usrPrefs.PRIME_FILE, fs.F_OK, function(err) {
@@ -113,29 +114,39 @@ function runOnline() {
                 // Read and process task data
                 console.log("Now Processing: ");
                 console.dir(data);
-                if (args.download) {
+                if (args.download > 0) {
                     nth += 1;
                     fs.writeFileSync("./workloads/" + getWorkloadKey(data) + ".workload", JSON.stringify(data), 'utf8');
-                    if (nth >= usrPrefs.threads) {
+                    if (nth >= args.download) {
                         console.log("Done saving workloads to ./workloads/");
                         shutdownQueues();
                         process.exit(0);
                     }
+                    progress(-1)
                     resolve();
                 } else {
                     var data_t = data;
                     data_t.timestamp = new Date().getTime();
                     var wref = db.ref('/user_data/' + usr.uid + "/current_workloads/").push(data_t);
-
+                    progFuncs.push(progress);
                     var oncomplete = function() {
                         var timeElapsed = new Date().getTime() - data_t.timestamp;
+                        fs.appendFile('./output/output.txt', "\nWorkload done in " + timeElapsed + "ms\n", 'utf8');
                         data_t["timespent"] = timeElapsed;
                         db.ref('/user_data/' + usr.uid + "/workloads/").push(data_t);
                         db.ref("/user_data/" + usr.uid + "/timespent").once('value').then(function(snapshot) {
                             var data_v = snapshot.val();
                             db.ref('/user_data/' + usr.uid + "/timespent").set(data_v + timeElapsed);
-                            wref.set({});
-                            resolve(data_t);
+                                db.ref("/user_data/" + usr.uid + "/timespent").once('value').then(function(i_snapshot) {
+                                var i_data_v = i_snapshot.val();
+                                db.ref('/user_data/' + usr.uid + "/blocksdone").set(i_data_v + 1);
+                                db.ref('/user_data/' + usr.uid + "/timespent").set(data_v + timeElapsed);
+                                if (progFuncs.indexOf(progress) != -1) {
+                                    progFuncs.splice(progFuncs.indexOf(progress), 0);
+                                }
+                                wref.set({});
+                                resolve(data_t);
+                            });
                         });
                     };
 
@@ -326,13 +337,10 @@ function signin(email, password, callback) {
 function shutdownQueues() {
     var j = 0;
     for (var i = 0; i < queue.length; ++i) {
-        //queue[i].shutdown().then(function() {   
-            console.log('Shutdown thread ' + j++);
-            if (j == queue.length) {
-               // console.dir(queue[i]);
-                process.exit();
-            }
-        //});
+        console.log('Shutdown thread ' + j++);
+    }
+    for (i = 0; i < progFuncs.length; ++i) {
+        progFuncs[i]("error");
     }
 }
 
