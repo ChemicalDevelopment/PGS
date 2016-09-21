@@ -1,6 +1,6 @@
 /*
 
-General purpose functions
+OpenCL kernel for PGS
 
 */
 
@@ -62,9 +62,4 @@ __kernel void test_quadratics(__constant int *pr) {
     if ((inarow >= 60 || distinct >= 40) && distinct > 1) {
         printf("PGSO: %d, %d; [%d, %d, %d]\n", inarow, distinct, i, j, k);
     }
-}
-
-__kernel void foo(__constant int * pr) {
-    //int i = get_global_id(0);
-    //printf("%d isp %d\n", i, chbit(pr[i / 8], i % 8));
 }

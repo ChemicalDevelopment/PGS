@@ -1,16 +1,40 @@
+#!/bin/bash
+#Push and pop directories to compile these files
 cd CPGS
 ./compile.sh
 cd ..
+#Do the same with lib
 cd lib
 ./compile.sh
 cd ..
-mkdir -p build/c/linux
-cp ./CPGS/CPGS.o ./build/c/linux/CPGS.o
-cp ./lib/lib.o ./build/c/linux/lib.o
-#cp ./run_c.sh ./build/c/linux/run_c.sh
-#cp ./example.prefs ./build/c/linux/my.prefs
+
+#Declare base dir and install dir
+BASE_DIR=$PWD
+INSTALL_DIR=$BASE_DIR/build/c/linux
+
+#Make directory recursively
+mkdir -p $INSTALL_DIR
+#Copy files
+cp $BASE_DIR/CPGS/CPGS.o $INSTALL_DIR/CPGS.o
+cp $BASE_DIR/lib/lib.o $INSTALL_DIR/lib.o
+cp $BASE_DIR/final_run_c.sh $INSTALL_DIR/run_c.sh
+cp $BASE_DIR/example.prefs $INSTALL_DIR/my.prefs
+
+#Make directory for output and worklodas
+mkdir $INSTALL_DIR/output/
+mkdir $INSTALL_DIR/workloads/
+
+#Make sure they have a file to append to
+touch $INSTALL_DIR/output/output.txt
+
+#Copy the readme
+cp $BASE_DIR/RELEASE_README.txt $INSTALL_DIR/README.txt
+
+#Enclose (needs to do npm install -g enclose)
 enclose PGS.js
-cp ./PGS ./build/c/linux/PGS
+#Copy it
+cp $BASE_DIR/PGS $INSTALL_DIR/PGS
+#Remove compiled file
 rm ./PGS
-cd build/c
-zip -r "./linux-C-"$1".zip" ./linux
+#Go to head folder
+cd $INSTALL_DIR/../

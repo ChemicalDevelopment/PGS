@@ -36,6 +36,13 @@ parser.addArgument(
   }
 );
 parser.addArgument(
+  [ '-download', '--download' ],
+  {
+    help: 'Downloads the files into ./workloads/',
+    action: 'storeTrue'
+  }
+);
+parser.addArgument(
   [ '-remove', '--removeworkload' ],
   {
     help: 'Whether or not to delete.',
@@ -46,7 +53,7 @@ parser.addArgument(
 //We store our parsed args
 var args = parser.parseArgs();
 //Store prefs file
-var usrPrefs = JSON.parse(fs.readFileSync("" + args.prefs, 'utf8'));
+var usrPrefs = JSON.parse(fs.readFileSync(args.prefs, 'utf8'));
 var usr;
 var db;
 var queue = [];
@@ -100,31 +107,42 @@ function runOnline() {
     db = firebase.database();
     signin(usrPrefs.email, usrPrefs.password, function() {
         var ref = db.ref('workloads');
+        var nth = 0;
         for (var i = 0; i < usrPrefs.threads; ++i) {
             queue.push(new Queue(ref, function(data, progress, resolve, reject) {
                 // Read and process task data
                 console.log("Now Processing: ");
                 console.dir(data);
-                
-                var data_t = data;
-                data_t.timestamp = new Date().getTime();
-                var wref = db.ref('/user_data/' + usr.uid + "/current_workloads/").push(data_t);
+                if (args.download) {
+                    nth += 1;
+                    fs.writeFileSync("./workloads/" + getWorkloadKey(data) + ".workload", JSON.stringify(data), 'utf8');
+                    if (nth >= usrPrefs.threads) {
+                        console.log("Done saving workloads to ./workloads/");
+                        shutdownQueues();
+                        process.exit(0);
+                    }
+                    resolve();
+                } else {
+                    var data_t = data;
+                    data_t.timestamp = new Date().getTime();
+                    var wref = db.ref('/user_data/' + usr.uid + "/current_workloads/").push(data_t);
 
-                var oncomplete = function() {
-                    var timeElapsed = new Date().getTime() - data_t.timestamp;
-                    data_t["timespent"] = timeElapsed;
-                    db.ref('/user_data/' + usr.uid + "/workloads/").push(data_t);
-                    db.ref("/user_data/" + usr.uid + "/timespent").once('value').then(function(snapshot) {
-                        var data_v = snapshot.val();
-                        db.ref('/user_data/' + usr.uid + "/timespent").set(data_v + timeElapsed);
-                        wref.set({});
-                        resolve(data_t);
-                    });
-                };
+                    var oncomplete = function() {
+                        var timeElapsed = new Date().getTime() - data_t.timestamp;
+                        data_t["timespent"] = timeElapsed;
+                        db.ref('/user_data/' + usr.uid + "/workloads/").push(data_t);
+                        db.ref("/user_data/" + usr.uid + "/timespent").once('value').then(function(snapshot) {
+                            var data_v = snapshot.val();
+                            db.ref('/user_data/' + usr.uid + "/timespent").set(data_v + timeElapsed);
+                            wref.set({});
+                            resolve(data_t);
+                        });
+                    };
 
-                progress(0);
+                    progress(0);
 
-                doWorkload(data, false, oncomplete, progress);                
+                    doWorkload(data, false, oncomplete, progress);   
+                }             
             }));
         }
     });
@@ -138,61 +156,36 @@ function runOffline() {
         console.log("   Try running without --offline");
         return;
     }
-    console.log("Found workloads:");
+    console.log("Found files: ");
     console.dir(work);
-    doWorkload(work[0], true, function () { }, function (x) { });
-}
-
-function getWorkloadOnline(fn) {
-    var type = usrPrefs.workload_preference.toLowerCase();
-    console.log("Finding workload from server using method: "  + type);
-    var jobs;
-    var workload;
-    db.ref("/workloads/").once('value').then(function(snapshot) {
-        jobs = snapshot.val();
-        console.log("Got response");
-        switch (type) {
-            default:
-                var i;
-                var max = 0;
-                for (i in jobs) {
-                    workload = jobs[i];
-                    ++max;
-                }
-                var rnd = Math.floor(Math.random() * (max + 1));
-                var j;
-                for (i in jobs) {
-                    if (j == rnd) {
-                        workload = jobs[i];
-                    }
-                    ++j;
-                }
-        }
-        fn(workload);
-    });
-}
-
-//Gets a list of workloads
-function getWorkloads() {
-    var files = fs.readdirSync("./workloads/");
-    var workloads = [];
-    for (var i = 0; i < files.length; ++i) {
-        if (files[i].endsWith('.workload')) {
-            workloads.push(files[i]);
-        }
+    var eventEmitter = require('events').EventEmitter;
+    var workloads_json = [];
+    for (var s in work) {
+        workloads_json.push(JSON.parse(fs.readFileSync("./workloads/" + work[s])));
     }
-    return workloads;
-}
-
-//Attempts to sign in
-function signin(email, password, callback) {
-    firebase.auth().signInWithEmailAndPassword(email, password).catch(function (error) {
-        // Handle Errors here.
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        console.log(errorMessage);
-    });
-    setTimeout(function () { callback() }, 1000);
+    var threads = usrPrefs.threads;
+    console.log("Found workloads:");
+    console.dir(workloads_json);
+    var i = 0;
+    var currentThreads;
+    var ee = new eventEmitter;
+    var next = function() {
+        currentThreads += 1;
+        doWorkload(workloads_json[i], true, function () { }, function (x) { });
+    };
+    ee.on('next', next);
+    var complete = function () {
+        ++i;
+        currentThreads -= 1;
+        if (i >= workloads_json.length) {
+            console.log("Done with all")
+            //return;
+        }
+        ee.emit('next');
+    }
+    for (var j = 0; j < threads; ++j) {
+        ee.emit('next');
+    }
 }
 
 //Runs workload from filename
@@ -209,10 +202,12 @@ function doWorkload(workload, offline, oncomplete, progFunc) {
             if (output[i].startsWith("PGSO:")) {
                 console.dir(jsonFunc(output[i]));
                 jsons.push(jsonFunc(output[i]));
-                fs.appendFile('./output/output.txt', output[i] + "\n");
+                fs.appendFile('./output/output.txt', output[i] + "\n" + getFuncKey(jsonFunc(output[i])) + "\n", 'utf8');
             }
             if (output[i].startsWith("PGSP:")) {
+                console.dir(output[i]);
                 progFunc(parseInt(output[i].replace("PGSP:", "")));
+                fs.appendFile('./output/output.txt', output[i] + "\n");
             }
         }
         if (!offline) {
@@ -227,16 +222,28 @@ function doWorkload(workload, offline, oncomplete, progFunc) {
         console.log(data.toString());
     });
 
-    /*
     proc.on('close', function(code) {
         console.log(`PGS Has Finished`);
+        fs.appendFile('./output/output.txt', "\nFinished workload: " + JSON.stringify(workload) + "\n\n");
         if (offline && args.removeworkload) {
             console.log("Deleting workload");
             fs.unlink(workloadPath);
         }
-        oncomplete();        
+        oncomplete();
     });
-    */
+}
+
+
+//Gets a list of workloads
+function getWorkloads() {
+    var files = fs.readdirSync("./workloads/");
+    var workloads = [];
+    for (var i = 0; i < files.length; ++i) {
+        if (files[i].endsWith('.workload')) {
+            workloads.push(files[i]);
+        }
+    }
+    return workloads;
 }
 
 //Returns function in json format
@@ -262,11 +269,32 @@ function jsonFunc(func) {
     return jsonFunc;
 }
 
+//Gets function key in firebase
 function getFuncKey(func) {
     var nm = "";
     for (var k = 0; k < func.equation.length; ++k) {
         nm += "(" + func.equation[k] + ")";
         if (k != func.equation.length - 1) {
+            nm += "-";
+        }
+    }
+    return nm;
+}
+
+//Returns workload key
+function getWorkloadKey(work) {
+    var nm = "";
+    var k;
+    for (k = 0; k < work.offsets.length ; ++k) {
+        nm += "(" + work.offsets[k] + ")";
+        if (k != work.offsets.length - 1) {
+            nm += "-";
+        }
+    }
+    nm += ";";
+    for (k = 0; k < work.ranges.length; ++k) {
+        nm += "(" + work.ranges[k] + ")";
+        if (k != work.ranges.length - 1) {
             nm += "-";
         }
     }
@@ -283,8 +311,19 @@ function putFunctionInFirebase(func) {
     }
 }
 
-process.on('SIGINT', function() {
-    console.log('Starting queue shutdown');
+//Attempts to sign in
+function signin(email, password, callback) {
+    firebase.auth().signInWithEmailAndPassword(email, password).catch(function (error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        console.log(errorMessage);
+    });
+    setTimeout(function () { callback() }, 1000);
+}
+
+//Shuts down all queues
+function shutdownQueues() {
     var j = 0;
     for (var i = 0; i < queue.length; ++i) {
         //queue[i].shutdown().then(function() {   
@@ -295,4 +334,9 @@ process.on('SIGINT', function() {
             }
         //});
     }
+}
+
+process.on('SIGINT', function() {
+    console.log('Starting queue shutdown');
+    shutdownQueues();
 });

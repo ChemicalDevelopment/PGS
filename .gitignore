@@ -11,10 +11,21 @@
 /run.build/
 /workloads/*
 !/workloads/test.workload
+
+# Output directory
 /output/*
+!/output/
+
+# Prime sieve
 *.dat
-*.vscode
+
+# Zipped and compiled versions
 /build/
+
+# VScode editor
+*.vscode
+
+# JavaPGS netbeans and whatnot
 /JPGS/build/
 /JPGS/nbproject/
 /JPGS/test/

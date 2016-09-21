@@ -55,19 +55,6 @@ For the default install script, run
 ./install.sh
 ```
 
-Here is a full instuction set:
-```
-git clone https://github.com/ChemicalDevelopment/PGS.git
-cd PGS
-cp ./example.prefs ./my.prefs
-npm install
-cd lib
-chmod +x ./update.sh
-./update.sh
-#The last one should take a while
-```
-
-
 Then, to run the program:
 ```
 node PGS.js --offline
@@ -93,22 +80,6 @@ Then,
 ```
 node PGS.js
 ```
-You can specify a different prefs file with `-p`
-
-For example, say you have a file named `company.prefs`, run
-```
-node PGS.js -p ./company.prefs
-```
-
-To create your own executable, just make sure to make a `run_$name.sh` that acccepts primeFile range0, range1, range2, offset0, offset1, offset2 as its arguments, and prints out:
-```
-PGSO: $consecutive, $distinct; [$array]
-```
-and optionally:
-```
-PGSP: $percentDone
-```
-to stdout
 
 
 ## Explanation
