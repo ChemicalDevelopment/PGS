@@ -1,5 +1,6 @@
 //Dependencies
 var fs = require('fs');
+var fileExists = require('file-exists');
 var firebase = require('firebase');
 var ArgumentParser = require('argparse').ArgumentParser;
 var child_process = require('child_process');
@@ -32,6 +33,13 @@ parser.addArgument(
   [ '-offline', '--offline' ],
   {
     help: 'Sets to offline mode',
+    action: 'storeTrue'
+  }
+);
+parser.addArgument(
+  [ '-submit', '--submit' ],
+  {
+    help: 'Submits ./output/finds.txt to the server',
     action: 'storeTrue'
   }
 );
@@ -105,95 +113,114 @@ function runOnline() {
     var app = firebase.initializeApp(config);
     //update user prefs.
     firebase.auth().onAuthStateChanged(function (user) {
+        console.log("Auth changed");
         usr = user;
     });
     //Create  a reference
     db = firebase.database();
     //Signin with callback
-    signin(usrPrefs.email, usrPrefs.password, function() {
-        //Get our workloads ref. Used with queue
-        var ref = db.ref('workloads');
-        //Used for downloading workloads
-        var nth = 0;
-        //Set the number of workers
-        var options = {
-            'numWorkers': usrPrefs.threads,
-        };
-        //Init the global var
-        queue = new Queue(ref, options, function(data, progress, resolve, reject) {
-            // Read and process task data
-            console.log("Now Processing: ");
-            console.dir(data);
-            //If we are supposed to download
-            if (args.download > 0) {
-                //Add to how many we've done
-                nth += 1;
-                //Write JSON to file 
-                fs.writeFileSync("./workloads/" + getWorkloadKey(data) + ".workload", JSON.stringify(data), 'utf8');
-                //Resolve, mark that we will do it.
-                resolve();
-                //Set the progress to -1
-                progress(-1)
-                if (nth >= args.download) {
-                    //If we have saved the amount.
-                    console.log("Done saving workloads to ./workloads/");
-                    shutdown();
-                }
-            //If we are shutting down, or it is over max time, we mark it so that the backend can process it
-            } else if (usrPrefs.time && usrPrefs.time >= 0 && new Date().getTime() - startMill >= usrPrefs.time * 60 * 1000 || isShutdown) {
-                console.log("Past the max time specified. Quitting");
-                shutdown();
+    signin(usrPrefs.email, usrPrefs.password, function(e) {
+        if (e) {
+            console.log("error");
+            console.dir(e);
+        }
+        if (args.submit) {
+            var findsTxt = "./workloads/finds.txt";
+            console.log("Submitting finds: " + findsTxt);
+            if (fileExists(findsTxt)) {
+                setTimeout(function () {submitOutput(fs.readFileSync(findsTxt), false, function () {}) }, 2000);
+                //setTimeout(function() {console.log('test')}, 5000);
             } else {
-            //Create a data afterwards
-            var data_t = data;
-            //Set the timestamp
-            data_t.timestamp = new Date().getTime();
-            //Add to active workloads
-            var wref = db.ref('/user_data/' + usr.uid + "/current_workloads/").push(data_t);
-            //Add the reject to an array so it can be called by shutdown
-            rejectFuncs.push(reject);
-
-            //Our callback
-            var oncomplete = function() {
-                //Remove it from reject funcs
-                rejectFuncs.splice(rejectFuncs.indexOf(reject), 1);
-                //Create a time elapsed
-                var timeElapsed = new Date().getTime() - data_t.timestamp;
-                //Appedn this to output
-                fs.appendFile('./output/output.txt', "\nWorkload done in " + timeElapsed + "ms\n", 'utf8');
-                //Set the time elapsed
-                data_t["timespent"] = timeElapsed;
-                //Push ref - Left commented now.
-                //db.ref('/user_data/' + usr.uid + "/workloads/").push(data_t);
-                //Get value
-                db.ref("/user_data/" + usr.uid + "/timespent").once('value').then(function(snapshot) {
-                    var data_v = snapshot.val();
-                    //Get time spent
-                    db.ref('/user_data/' + usr.uid + "/timespent").set(data_v + timeElapsed);
-                        //Get blocks
-                        db.ref("/user_data/" + usr.uid + "/blocksdone").once('value').then(function(i_snapshot) {
-                            var i_data_v = i_snapshot.val();
-                            //Update both
-                            db.ref('/user_data/' + usr.uid + "/blocksdone").set(i_data_v + 1);
-                            db.ref('/user_data/' + usr.uid + "/timespent").set(data_v + timeElapsed);
-                            //Remove the current workloads
-                            wref.remove();
-                            //Resolve
-                            resolve(data_t);
-                            //If we have passed the max time
-                            if (usrPrefs.time && usrPrefs.time >= 0 && new Date().getTime() - startMill >= usrPrefs.time * 60 * 1000) {
-                                console.log("Past the max time specified. Quitting");
-                                shutdown();
-                            }
-                    });
-                });
+                console.log(findsTxt + " does not exist!");
+                process.exit(1);
+            }
+        } else {
+            //Get our workloads ref. Used with queue
+            var ref = db.ref('workloads');
+            //Used for downloading workloads
+            var nth = 0;
+            //Set the number of workers
+            var options = {
+                'numWorkers': usrPrefs.threads,
             };
-            //Start at 0
-            progress(0);
-            //Invoke the process
-            doWorkload(data, false, oncomplete, progress); 
-            }  
-        });
+            //Init the global var
+            queue = new Queue(ref, options, function(data, progress, resolve, reject) {
+                // Read and process task data
+                console.log("Now Processing: ");
+                console.dir(data);
+                //If we are supposed to download
+                if (args.download > 0) {
+                    //Add to how many we've done
+                    nth += 1;
+                    //Write JSON to file 
+                    fs.writeFileSync("./workloads/" + getWorkloadKey(data) + ".workload", JSON.stringify(data), 'utf8');
+                    //Resolve, mark that we will do it.
+                    resolve();
+                    //Set the progress to -1
+                    progress(-1)
+                    if (nth >= args.download) {
+                        //If we have saved the amount.
+                        console.log("Done saving workloads to ./workloads/");
+                        shutdown();
+                    }
+                //If we are shutting down, or it is over max time, we mark it so that the backend can process it
+                } else if (isShutdown || (usrPrefs.time && usrPrefs.time >= 0 && new Date().getTime() - startMill >= usrPrefs.time * 60 * 1000)) {
+                    console.log("Past the max time specified. Quitting");
+                    if (!isShutdown) {
+                        shutdown();
+                    }
+                } else {
+                //Create a data afterwards
+                var data_t = data;
+                //Set the timestamp
+                data_t.timestamp = new Date().getTime();
+                //Add to active workloads
+                var wref = db.ref('/user_data/' + usr.uid + "/current_workloads/").push(data_t);
+                //Add the reject to an array so it can be called by shutdown
+                rejectFuncs.push(reject);
+
+                //Our callback
+                var oncomplete = function() {
+                    //Remove it from reject funcs
+                    rejectFuncs.splice(rejectFuncs.indexOf(reject), 1);
+                    //Create a time elapsed
+                    var timeElapsed = new Date().getTime() - data_t.timestamp;
+                    //Appedn this to output
+                    fs.appendFile('./output/output.txt', "\nWorkload done in " + timeElapsed + "ms\n", 'utf8');
+                    //Set the time elapsed
+                    data_t["timespent"] = timeElapsed;
+                    //Push ref - Left commented now.
+                    //db.ref('/user_data/' + usr.uid + "/workloads/").push(data_t);
+                    //Get value
+                    db.ref("/user_data/" + usr.uid + "/timespent").once('value').then(function(snapshot) {
+                        var data_v = snapshot.val();
+                        //Get time spent
+                        db.ref('/user_data/' + usr.uid + "/timespent").set(data_v + timeElapsed);
+                            //Get blocks
+                            db.ref("/user_data/" + usr.uid + "/blocksdone").once('value').then(function(i_snapshot) {
+                                var i_data_v = i_snapshot.val();
+                                //Update both
+                                db.ref('/user_data/' + usr.uid + "/blocksdone").set(i_data_v + 1);
+                                db.ref('/user_data/' + usr.uid + "/timespent").set(data_v + timeElapsed);
+                                //Remove the current workloads
+                                wref.remove();
+                                //Resolve
+                                resolve(data_t);
+                                //If we have passed the max time
+                                if (usrPrefs.time && usrPrefs.time >= 0 && new Date().getTime() - startMill >= usrPrefs.time * 60 * 1000) {
+                                    console.log("Past the max time specified. Quitting");
+                                    shutdown();
+                                }
+                        });
+                    });
+                };
+                //Start at 0
+                progress(0);
+                //Invoke the process
+                doWorkload(data, false, oncomplete, progress); 
+                }  
+            });
+        }
     });
 }
 
@@ -246,29 +273,7 @@ function doWorkload(workload, offline, oncomplete, progFunc) {
     
     //The process should print out info.
     proc.stdout.on('data', function (data) {
-        var output = data.toString().split("\n");
-        var jsons = [];
-        //Strips down things that start with keyworkds
-        for (var i = 0;i < output.length; ++i) {
-            if (output[i].startsWith("PGSO:")) {
-                console.dir(jsonFunc(output[i]));
-                jsons.push(jsonFunc(output[i]));
-                //Log to finds.txt
-                fs.appendFile('./output/output.txt', output[i] + "\n" + getFuncKey(jsonFunc(output[i])) + "\n", 'utf8');
-                fs.appendFile('./output/finds.txt', output[i] + "\n", 'utf8');
-            }
-            if (output[i].startsWith("PGSP:")) {
-                console.dir(output[i]);
-                progFunc(parseInt(output[i].replace("PGSP:", "")));
-                fs.appendFile('./output/output.txt', output[i] + "\n");
-            }
-        }
-        if (!offline) {
-            if (jsons.length > 0) {
-                console.log("Putting in firebase");
-                putFunctionInFirebase(jsons);
-            }     
-        }
+        submitOutput(data, offline, progFunc);
     });
 
     //On error, we print and log
@@ -288,6 +293,32 @@ function doWorkload(workload, offline, oncomplete, progFunc) {
     });
 }
 
+//Handles string output normally from stdout, but could be from file
+function submitOutput(data, offline, progFunc) {
+    var output = data.toString().split("\n");
+    var jsons = [];
+    //Strips down things that start with keyworkds
+    for (var i = 0;i < output.length; ++i) {
+        if (output[i].startsWith("PGSO:")) {
+            console.dir(jsonFunc(output[i]));
+            jsons.push(jsonFunc(output[i]));
+            //Log to finds.txt
+            fs.appendFile('./output/output.txt', output[i] + "\n" + getFuncKey(jsonFunc(output[i])) + "\n", 'utf8');
+            fs.appendFile('./output/finds.txt', output[i] + "\n", 'utf8');
+        }
+        if (output[i].startsWith("PGSP:")) {
+            console.dir(output[i]);
+            progFunc(parseInt(output[i].replace("PGSP:", "")));
+            fs.appendFile('./output/output.txt', output[i] + "\n");
+        }
+    }
+    if (!offline) {
+        if (jsons.length > 0) {
+            console.log("Putting in firebase");
+            putFunctionInFirebase(jsons);
+        }     
+    }
+}
 
 //Gets a list of workloads
 function getWorkloads() {
@@ -378,17 +409,23 @@ function signin(email, password, callback) {
     callback();
 }
 
+//Shutsdown
 function shutdown() {
     isShutdown = true;
     console.log("Shutting down");
-    console.log('Starting queue shutdown');
-    for (f in rejectFuncs) {
-        rejectFuncs[f]("Shut down");
-    }
-    queue.shutdown().then(function() {
-        console.log('Finished queue shutdown');
+    if (queue && queue.shutdown) {
+        console.log('Starting queue shutdown');
+        for (f in rejectFuncs) {
+            rejectFuncs[f]("Shut down");
+        }
+        queue.shutdown().then(function() {
+            console.log('Finished queue shutdown');
+            process.exit(0);
+        });
+    } else {
+        console.log("Exiting");
         process.exit(0);
-  });
+    }
 }
 
 process.on('SIGINT', function() {
