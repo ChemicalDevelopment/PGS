@@ -18,6 +18,9 @@ else
     BUILD_OS=$1
 fi
 
+#EncloseJS
+npm install --save enclose
+
 #Push and pop directories to compile these files
 cd CPGS
 ./compile.sh
