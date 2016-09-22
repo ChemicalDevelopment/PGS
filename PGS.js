@@ -129,8 +129,14 @@ function runOnline() {
             var findsTxt = "./output/finds.txt";
             console.log("Submitting finds: " + findsTxt);
             if (fileExists(findsTxt)) {
-                setTimeout(function () {submitOutput(fs.readFileSync(findsTxt), false, function () {}) }, 2000);
-                //setTimeout(function() {console.log('test')}, 5000);
+                var output = fs.readFileSync(findsTxt).toString().split("\n");
+                setTimeout(function() {
+                    for (var i = 0; i < output.length; ++i) {
+                        if (output[i] && jsonFunc(output[i]) && jsonFunc(output[i]) != {}) {
+                            putFunctionInFirebase([jsonFunc(output[i])]);
+                        }
+                    }
+                }, 1000);
             } else {
                 console.log(findsTxt + " does not exist!");
                 process.exit(1);
@@ -245,7 +251,7 @@ function runOffline() {
     console.log("Found workloads:");
     console.dir(workloads_json);
     var i = 0;
-    var currentThreads;
+    var currentThreads = 0;
     var ee = new eventEmitter;
     var complete = function () {
         currentThreads -= 1;
@@ -401,6 +407,9 @@ function putFunctionInFirebase(func) {
     var i = 0;
     //      console.dir(func);
     for (i = 0; i < func.length; ++i) {
+        console.log("Putting function online: ");
+        console.dir(func[i]);
+        console.log("\n");
         dbr.child(getFuncKey(func[i])).set(func[i]);
     }
 }
