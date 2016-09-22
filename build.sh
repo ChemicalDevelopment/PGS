@@ -19,7 +19,9 @@ else
 fi
 
 #EncloseJS
-npm install --save enclose
+if [[ `npm list enclose | grep -c enclose` == "0" ]]; then
+    npm install --save enclose
+fi
 
 #Push and pop directories to compile these files
 cd CPGS
