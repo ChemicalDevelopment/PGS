@@ -1,6 +1,6 @@
 #!/bin/bash
 #Detect OS, and set the build os, unless they enter in the first argument
-if [[ "$1" == ""]]; then
+if [[ "$1" == "" ]]; then
     if [[ "$OSTYPE" == "linux-gnu" ]]; then
         BUILD_OS="linux"
     elif [[ "$OSTYPE" == "darwin"* ]]; then

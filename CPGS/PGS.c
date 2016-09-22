@@ -73,6 +73,7 @@ void test_quadratic(int i, int j, int k)
 
 //Sets pr buf to bitset of primes, calculated by bitset
 void get_primes(const char *primefile) {
+    //How many reads
     const int NUM_READS = 31250000;
     FILE *f = fopen(primefile, "r");
     pr = (int *)malloc(sizeof(int) * NUM_READS);
@@ -100,7 +101,7 @@ int main(int argc, char *argv[])
     if (argc > 6) o1 = strtol(argv[6], NULL, 0);
     if (argc > 7) o2 = strtol(argv[7], NULL, 0);
     int i, j, k;
-    //1 billion should be default
+    //2 billion should be default
     get_primes(fn);
     printf("Read in primes\n");
     int ti = (int)time(NULL);

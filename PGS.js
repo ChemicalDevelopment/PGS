@@ -251,6 +251,7 @@ function runOffline() {
         currentThreads -= 1;
         if (currentThreads == 0 && i >= workloads_json.length) {
             console.log("Done with all workloads");
+            shutdown();
         } else {
             ee.emit('next');
         }
