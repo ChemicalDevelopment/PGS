@@ -100,6 +100,7 @@ fs.access(usrPrefs.PRIME_FILE, fs.F_OK, function(err) {
 
 //Runs and updates the database
 function runOnline() {
+    console.log("Running online, using " + usrPrefs.threads + " threads.");
     //Updated user data
     //Firebase configuration
     var config = {
@@ -227,6 +228,8 @@ function runOnline() {
 //Runs without looking for online jobs
 function runOffline() {
     var work = getWorkloads();
+    var threads = usrPrefs.threads;
+    console.log("Running offline, using " + threads + " threads.");
     if (work.length == 0) { 
         console.log("No workloads found");
         console.log("   Try running without --offline");
@@ -239,7 +242,6 @@ function runOffline() {
     for (var s in work) {
         workloads_json.push(JSON.parse(fs.readFileSync("./workloads/" + work[s])));
     }
-    var threads = usrPrefs.threads;
     console.log("Found workloads:");
     console.dir(workloads_json);
     var i = 0;
@@ -248,16 +250,18 @@ function runOffline() {
     var complete = function () {
         currentThreads -= 1;
         if (currentThreads == 0 && i >= workloads_json.length) {
-            console.log("Done with all");
+            console.log("Done with all workloads");
         } else {
             ee.emit('next');
         }
     }
     var next = function() {
-        currentThreads += 1;
         if (i < workloads_json.length) {
             doWorkload(workloads_json[i], work[i], complete, function (x) {  });
             ++i;
+            currentThreads += 1;
+        } else {
+            console.log("This thread finished. " + currentThreads + " threads are still running.");
         }
     };
     ee.on('next', next);
