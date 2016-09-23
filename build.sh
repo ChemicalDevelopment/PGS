@@ -39,8 +39,8 @@ mkdir -p $INSTALL_DIR
 #Copy files
 cp $BASE_DIR/CPGS/CPGS.o $INSTALL_DIR/CPGS.o
 cp $BASE_DIR/lib/lib.o $INSTALL_DIR/lib.o
-cp $BASE_DIR/run.sh $INSTALL_DIR/run.sh
 cp $BASE_DIR/example.prefs $INSTALL_DIR/my.prefs
+cp $BASE_DIR/run_final.sh $INSTALL_DIR/run.sh
 chmod +x $INSTALL_DIR/run.sh
 
 #Make directory for output and worklodas
