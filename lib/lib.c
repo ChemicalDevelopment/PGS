@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-int set_bit(v, index, x) {
+int set_bit(int v, int index, int x) {
     int mask = 1 << index;
     v &= ~mask;
     if (x == 1) {
@@ -11,7 +11,7 @@ int set_bit(v, index, x) {
     return v;
 }
 
-int get_bit(v, index) {
+int get_bit(int v, int index) {
     return (v >> index) & 1;
 }
 
