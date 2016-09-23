@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
     //Offsets
     int o0 = 0, o1 = 0, o2 = 0;
     char *fn = "./primes.dat";
-    if (argc > 1) r0 = strtol(argv[1], NULL, 0);
+    if (argc > 1) fn = argv[1];
     if (argc > 2) r0 = strtol(argv[2], NULL, 0);
     if (argc > 3) r1 = strtol(argv[3], NULL, 0);
     if (argc > 4) r2 = strtol(argv[4], NULL, 0);
