@@ -67,7 +67,7 @@ var usrPrefs = JSON.parse(fs.readFileSync(args.prefs, 'utf8'));
 var usr;
 var db;
 var isShutdown = false;
-var queue = {};
+var queue_arr = [];
 var rejectFuncs = [];
 
 fs.access(usrPrefs.PRIME_FILE, fs.F_OK, function(err) {
@@ -152,7 +152,7 @@ function runOnline() {
                 'numWorkers': usrPrefs.threads,
             };
             //Init the global var
-            queue = new Queue(ref, options, function(data, progress, resolve, reject) {
+            queue_arr.push(new Queue(ref, options, function(data, progress, resolve, reject) {
                 // Read and process task data
                 console.log("Now Processing: ");
                 console.dir(data);
@@ -174,12 +174,12 @@ function runOnline() {
                 //If we are shutting down, or it is over max time, we mark it so that the backend can process it
                 } else if (isShutdown || (usrPrefs.time && usrPrefs.time >= 0 && new Date().getTime() - startMill >= usrPrefs.time * 60 * 1000)) {
                     console.log("Past the max time specified. Not getting another workload");
-                    shutdownWorker();
-                    if (!isShutdown && getWorkerCount() == 0) {
+                    //shutdownWorker();
+                    if (!isShutdown) {
                         shutdown();
                     }
                 } else {
-                console.log(getWorkerCount() + " queue workers running.");
+                //console.log(getWorkerCount() + " queue workers running.");
                 //Create a data afterwards
                 var data_t = data;
                 //Set the timestamp
@@ -229,7 +229,7 @@ function runOnline() {
                 //Invoke the process
                 doWorkload(data, "", oncomplete, progress); 
                 }  
-            });
+            }));
         }
     });
 }
@@ -440,18 +440,14 @@ function shutdown() {
     isShutdown = true;
     console.log("Shutting down");
     fs.appendFileSync('./output/output.txt', "\nShutting down.", 'utf8');
-    if (queue && queue.shutdown) {
-        console.log('Starting queue shutdown');
-        for (f in rejectFuncs) {
-            rejectFuncs[f]("Shut down");
-        }
-        queue.shutdown().then(function() {
-            console.log('Finished queue shutdown');
-            process.exit(0);
+    console.log('Starting queue shutdown');
+    for (f in rejectFuncs) {
+        rejectFuncs[f]("Shut down");
+    }
+    for (var i = 0; i < queue_arr.length; ++i) {
+        queue_arr[i].shutdown().then(function() {
+            console.log('Shut down queue ' + i);
         });
-    } else {
-        console.log("Exiting");
-        process.exit(0);
     }
 }
 
