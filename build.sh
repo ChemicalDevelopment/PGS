@@ -23,14 +23,8 @@ if [[ `npm list enclose | grep -c enclose` == "0" ]]; then
     npm install --save enclose
 fi
 
-#Push and pop directories to compile these files
-cd CPGS
-./compile.sh
-cd ..
-#Do the same with lib
-cd lib
-./compile.sh
-cd ..
+#update
+./update.sh
 
 #Declare base dir and install dir
 BASE_DIR=$PWD
