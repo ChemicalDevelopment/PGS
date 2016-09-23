@@ -178,6 +178,7 @@ function runOnline() {
                         shutdown();
                     }
                 } else {
+                console.log(getWorkerCount() + " queue workers running.");
                 //Create a data afterwards
                 var data_t = data;
                 //Set the timestamp
@@ -252,13 +253,17 @@ function runOffline() {
     console.log("Found workloads:");
     console.dir(workloads_json);
     var i = 0;
+    var startMill = new Date().getTime();
     var currentThreads = 0;
     var ee = new eventEmitter;
     var complete = function () {
         currentThreads -= 1;
         if (currentThreads == 0 && i >= workloads_json.length) {
-            console.log("Done with all workloads");
+            console.log("Done with all workloads. Shutting down.");
             shutdown();
+        }
+        else if (new Date().getTime() - startMill >= usrPrefs.time * 60 * 1000) {
+            console.log("Out of time. Not starting another load. There ");
         } else {
             ee.emit('next');
         }
