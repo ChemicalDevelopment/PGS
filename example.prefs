@@ -1,9 +1,9 @@
 {
-    "RUN_FILE": "./run_c.sh",
-    "PRIME_FILE": "./primes.dat",
     "email": "{{email}}",
     "password": "{{password}}",
-    "workload_preference": "random",
-    "threads": 2
+    "threads": 2,
+    "useclock": false,
+    "hourStart": 18,
+    "hourEnd": 4
 }
 

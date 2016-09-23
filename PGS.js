@@ -1,32 +1,42 @@
-//Dependencies
-var fs = require('fs');
-var fileExists = require('file-exists');
-var firebase = require('firebase');
+//Parse our arguments
 var ArgumentParser = require('argparse').ArgumentParser;
-var child_process = require('child_process');
 
-const spawn = child_process.spawn;
+//File depends
+var fs = require('fs');
 
+
+//Firebase related depends
+var firebase = require('firebase');
 var Queue = require('firebase-queue');
+
+//Event emitter - like local queue
+var EventEmitter = require('events').EventEmitter;
+
+
+//Process related depends
+const spawn = require('child_process').spawn;
+
+/*
+
+Constants
+
+*/
+const PRIME_FILE = "./primes.dat";
+
 
 //Create Parser
 var parser = new ArgumentParser({
-  version: '0.0.0',
+  version: '2.0.0',
   addHelp: true,
   description: 'PGS - Prime Gen Search'
 });
-//Default values
-var defaults = {
-    "prefs": 'my.prefs',
-    "online": true,
-};
 
 //Add our Args
 parser.addArgument(
-  [ '-p', '--prefs' ],
+  [ '-prefs', '--prefs' ],
   {
-    help: 'Prefs file. Default: ' + defaults.prefs,
-    defaultValue: defaults.prefs
+    help: 'Prefs file. Default: my.prefs',
+    defaultValue: 'my.prefs'
   }
 );
 parser.addArgument(
@@ -58,214 +68,78 @@ parser.addArgument(
   }
 );
 
-//We store our parsed args
-var args = parser.parseArgs();
-var startMill = new Date().getTime();
+fs.accessSync(PRIME_FILE, fs.F_OK, function(err) {
+    if (err) {
+        //Run error
+        error("Error no prime file! Generating one now.");
+        //Spawn
+        const pp = spawn("./lib.o", [PRIME_FILE]);
 
-//Store prefs file
-var usrPrefs = JSON.parse(fs.readFileSync(args.prefs, 'utf8'));
-var usr;
-var db;
-var isShutdown = false;
-var queue_arr = [];
-var rejectFuncs = [];
-
-fs.access(usrPrefs.PRIME_FILE, fs.F_OK, function(err) {
-    if (!(!err)) {
-
-        console.log("Error no prime file! Generating one now.");
-        const pp = spawn("./lib.o", [usrPrefs.PRIME_FILE]);
-
+        //Log all output
         pp.stdout.on('data', (data) => {
-            console.log(data.toString());
+            log(data.toString());
         });
 
-        pp.on('close', (code) => {
-            console.log(`PGSlib Has Finished`);
-                if (!Boolean(args.offline)) {
-                    runOnline();
-                } else {
-                    runOffline();
-                }
-            //process.exit(code)
+        //When it closes, handle it
+        pp.on('close', function (code) {
+            log(`lib Has Finished`);
+            run();
         });
     } else {
-        if (!Boolean(args.offline)) {
-            runOnline();
-        } else {
-            runOffline();
-        }
+        run();
     }
 });
 
-//Runs and updates the database
-function runOnline() {
-    fs.appendFileSync('./output/output.txt', "\nRunning online at " + new Date().getTime() + "ms\n", 'utf8');
-    console.log("Running online, using " + usrPrefs.threads + " threads.");
-    //Updated user data
-    //Firebase configuration
-    var config = {
-        //Public key for my project
-        apiKey: "AIzaSyC6R2fqZN9eRFzr88nebDqvA_VwNKtzJQY",
-        authDomain: "pgsdb-c4faf.firebaseapp.com",
-        databaseURL: "https://pgsdb-c4faf.firebaseio.com",
-        storageBucket: "pgsdb-c4faf.appspot.com",
-    };
-    //Whole application
-    var app = firebase.initializeApp(config);
-    //update user prefs.
-    firebase.auth().onAuthStateChanged(function (user) {
-        console.log("Auth changed");
-        usr = user;
-    });
-    //Create  a reference
-    db = firebase.database();
-    //Signin with callback
-    signin(usrPrefs.email, usrPrefs.password, function(e) {
-        if (e) {
-            console.log("error");
-            console.dir(e);
-        }
-        if (args.submit) {
-            var findsTxt = "./output/finds.txt";
-            console.log("Submitting finds: " + findsTxt);
-            if (fileExists(findsTxt)) {
-                var output = fs.readFileSync(findsTxt).toString().split("\n");
-                setTimeout(function() {
-                    for (var i = 0; i < output.length; ++i) {
-                        if (output[i] && jsonFunc(output[i]) && jsonFunc(output[i]) != {}) {
-                            putFunctionInFirebase([jsonFunc(output[i])]);
-                        }
-                    }
-                }, 1000);
-            } else {
-                console.log(findsTxt + " does not exist!");
-                process.exit(1);
-            }
-        } else {
-            //Get our workloads ref. Used with queue
-            var ref = db.ref('workloads');
-            //Used for downloading workloads
-            var nth = 0;
-            //Set the number of workers
+//We store our parsed args
+var args = parser.parseArgs();
+var prefs = JSON.parse(fs.readFileSync(args.prefs, 'utf8'));
 
-            for (var th = 0; th < usrPrefs.threads; ++th) {
-                queue_arr.push(new Queue(ref, function(data, progress, resolve, reject) {
-                    // Read and process task data
-                    console.log("Now Processing: ");
-                    console.dir(data);
-                    //If we are supposed to download
-                    if (args.download > 0) {
-                        //Add to how many we've done
-                        nth += 1;
-                        //Write JSON to file 
-                        fs.writeFileSync("./workloads/" + getWorkloadKey(data) + ".workload", JSON.stringify(data), 'utf8');
-                        //Resolve, mark that we will do it.
-                        resolve();
-                        //Set the progress to -1
-                        progress(-1)
-                        if (nth >= args.download) {
-                            //If we have saved the amount.
-                            console.log("Done saving workloads to ./workloads/");
-                            shutdown();
-                        }
-                    //If we are shutting down, or it is over max time, we mark it so that the backend can process it
-                    } else {
-                    //console.log(getWorkerCount() + " queue workers running.");
-                    //Create a data afterwards
-                    var data_t = data;
-                    //Set the timestamp
-                    data_t.timestamp = new Date().getTime();
-                    //Add to active workloads
-                    var wref = db.ref('/user_data/' + usr.uid + "/current_workloads/").push(data_t);
-                    //Add the reject to an array so it can be called by shutdown
-                    rejectFuncs.push(reject);
+//Firebase objects
+var usr;
+var db;
+var queue;
 
-                    //Our callback
-                    var oncomplete = function() {
-                        //Remove it from reject funcs
-                        rejectFuncs.splice(rejectFuncs.indexOf(reject), 1);
-                        //Create a time elapsed
-                        var timeElapsed = new Date().getTime() - data_t.timestamp;
-                        //Appedn this to output
-                        fs.appendFileSync('./output/output.txt', "\nWorkload done in " + timeElapsed + "ms\n", 'utf8');
-                        //Set the time elapsed
-                        data_t["timespent"] = timeElapsed;
-                        //Push ref - Left commented now.
-                        //db.ref('/user_data/' + usr.uid + "/workloads/").push(data_t);
-                        //Get value
-                        db.ref("/user_data/" + usr.uid + "/timespent").once('value').then(function(snapshot) {
-                            var data_v = snapshot.val();
-                            //Get time spent
-                            db.ref('/user_data/' + usr.uid + "/timespent").set(data_v + timeElapsed);
-                                //Get blocks
-                                db.ref("/user_data/" + usr.uid + "/blocksdone").once('value').then(function(i_snapshot) {
-                                    var i_data_v = i_snapshot.val();
-                                    //Update both
-                                    db.ref('/user_data/' + usr.uid + "/blocksdone").set(i_data_v + 1);
-                                    db.ref('/user_data/' + usr.uid + "/timespent").set(data_v + timeElapsed);
-                                    //Remove the current workloads
-                                    wref.remove();
-                                    //Resolve
-                                    resolve(data_t);
-                                    //If we have passed the max time
-                                    /*if (usrPrefs.time && usrPrefs.time >= 0 && new Date().getTime() - startMill >= usrPrefs.time * 60 * 1000) {
-                                        console.log("Past the max time specified. Quitting");
-                                        shutdown();
-                                    }*/
-                            });
-                        });
-                    };
-                    //Start at 0
-                    progress(0);
-                    //Invoke the process
-                    doWorkload(data, "", oncomplete, progress); 
-                    }  
-                }));
-            }
-        }
+//Progress functions
+var reject_funcs;
+
+if (args.download > 0) {
+    initFirebase(function () {
+        downloadWorkloads(args.download)
     });
+} else if (!args.offline) {
+    initFirebase(runOnline);
+} else {
+    runOffline();
 }
 
-//Runs without looking for online jobs
+//Main run function
 function runOffline() {
-    fs.appendFileSync('./output/output.txt', "\nRunning offline at " + new Date().getTime() + "ms\n", 'utf8');
-    var work = getWorkloads();
-    var threads = usrPrefs.threads;
-    console.log("Running offline, using " + threads + " threads.");
-    if (work.length == 0) { 
-        console.log("No workloads found");
-        console.log("   Try running without --offline");
-        return;
+    log("Running offline using " + prefs.threads + " threads");
+    var work_names = getLocalWorkloads();
+    var workloads = [];
+    for (f in work_names) {
+        var workload_str = fs.readFileSync("./workloads/" + work_names[f]);
+        workloads.push(JSON.parse(workload_str));
     }
-    console.log("Found files: ");
-    console.dir(work);
-    var eventEmitter = require('events').EventEmitter;
-    var workloads_json = [];
-    for (var s in work) {
-        workloads_json.push(JSON.parse(fs.readFileSync("./workloads/" + work[s])));
-    }
-    console.log("Found workloads:");
-    console.dir(workloads_json);
-    var i = 0;
-    var startMill = new Date().getTime();
+    var ee = new EventEmitter;
     var currentThreads = 0;
-    var ee = new eventEmitter;
-    var complete = function () {
+    var i = 0;
+    var oncomplete = function () {
         currentThreads -= 1;
-        if (currentThreads == 0 && i >= workloads_json.length) {
-            console.log("Done with all workloads. Shutting down.");
-            shutdown();
-        }
-        /*else if (new Date().getTime() - startMill >= usrPrefs.time * 60 * 1000) {
-            console.log("Out of time. Not starting another load.");
-        } */else {
+        if (i >= workloads.length) {
+            log("No more workloads");
+            if (currentThreads == 0) {
+                log("Last thread has finished");
+                shutdown();
+            }
+        } else {
             ee.emit('next');
         }
     }
     var next = function() {
-        if (i < workloads_json.length) {
-            doWorkload(workloads_json[i], work[i], complete, function (x) {  });
+        if (i < workloads.length) {
+            log("Now running workload: " + JSON.stringify(workloads[i]));
+            doWorkload(workloads[i], true, oncomplete, function() {});
             ++i;
             currentThreads += 1;
         } else {
@@ -273,118 +147,72 @@ function runOffline() {
         }
     };
     ee.on('next', next);
-
-    for (var j = 0; j < threads; ++j) {
+    for (var j = 0; j < prefs.threads; ++j) {
         ee.emit('next');
     }
 }
 
-//Runs workload from filename
-function doWorkload(workload, path, oncomplete, progFunc) {
-    var execPath = usrPrefs.RUN_FILE;
+function runOnline() {
+    var ref = db.ref("/workloads/");
+    var options = {
+        numWorkers: prefs.threads
+    };
+    reject_funcs = [];
+    queue = new Queue(ref, options, function(data, progress, resolve, reject) {
+        reject_funcs.push(reject);
+        var oncomplete = function () {
+            log("Done with workload " + data);
+            reject_funcs.remove(reject_funcs.indexOf(reject));
+            resolve();
+        }
+        doWorkload(data, false, oncomplete, progress);
+    });
+    //log(queue.numWorkers());
+}
+
+//Runs json workload
+function doWorkload(workload, offline, oncomplete, progFunc) {
+    log("Staring workload: " + JSON.stringify(workload));
     //We spawn a process
-    const proc = spawn(execPath, [usrPrefs.PRIME_FILE, workload.ranges[0], workload.ranges[1], workload.ranges[2],
+    const proc = spawn("./run.sh", [PRIME_FILE, workload.ranges[0], workload.ranges[1], workload.ranges[2],
                                   workload.offsets[0], workload.offsets[1], workload.offsets[2]])
-    
+
     //The process should print out info.
     proc.stdout.on('data', function (data) {
-        submitOutput(data, path != "", progFunc);
+        handleOutput(data, offline, progFunc);
     });
 
     //On error, we print and log
     proc.stderr.on('data', function (data) {
-        console.log(data.toString());
-        fs.appendFileSync('./output/error.txt', data.toString() + "\n", 'utf8');
+        error(data.toString());
     });
+
     //On close, we delete the workload if the flag is set, and then we call our callback
     proc.on('close', function(code) {
-        console.log(`PGS Has Finished`);
-        fs.appendFileSync('./output/output.txt', "\nFinished workload: " + JSON.stringify(workload) + "\n");
-        if (path != "" && args.remove) {
-            fs.appendFileSync('./output/output.txt', "Deleting...\n");
-            console.log("Deleting workload");
-            fs.unlinkSync("./workloads/" + path);
-        }
+        log('Finished workload: ' + JSON.stringify(workload));
         oncomplete();
     });
 }
-
 //Handles string output normally from stdout, but could be from file
-function submitOutput(data, offline, progFunc) {
+function handleOutput(data, offline, progFunc) {
     var output = data.toString().split("\n");
-    var jsons = [];
     //Strips down things that start with keyworkds
-    for (var i = 0;i < output.length; ++i) {
+    for (var i = 0; i < output.length; ++i) {
         if (output[i].startsWith("PGSO:")) {
-            console.dir(jsonFunc(output[i]));
-            jsons.push(jsonFunc(output[i]));
-            //Log to finds.txt
-            fs.appendFileSync('./output/output.txt', output[i] + "\n" + getFuncKey(jsonFunc(output[i])) + "\n", 'utf8');
-            fs.appendFileSync('./output/finds.txt', output[i] + "\n", 'utf8');
-        }
-        if (output[i].startsWith("PGSP:")) {
-            console.dir(output[i]);
-            progFunc(parseInt(output[i].replace("PGSP:", "")));
-            fs.appendFileSync('./output/output.txt', output[i] + "\n");
-        }
-    }
-    if (!offline) {
-        if (jsons.length > 0) {
-            console.log("Putting in firebase: ");
-            putFunctionInFirebase(jsons);
-        }     
-    }
-}
-
-//Gets a list of workloads
-function getWorkloads() {
-    var files = fs.readdirSync("./workloads/");
-    var workloads = [];
-    for (var i = 0; i < files.length; ++i) {
-        if (files[i].endsWith('.workload')) {
-            workloads.push(files[i]);
+            var jsonFunc = getFunctionFromString(output[i]);
+            log_find(output[i]);
+            if (!offline) {
+                submitFunction(getFunctionFromString(output[i]));
+            }
+        } else if (output[i].startsWith("PGSP:")) {
+            var prog = output[i].replace("PGSP:", "");
+            log_progress(prog);
+            progFunc(prog);
         }
     }
-    return workloads;
 }
-
-//Returns function in json format
-function jsonFunc(func) {
-    func = func.replace("PGSO:", "");
-    var parts = func.split(";");
-    var part1 = parts[0].split(",");
-    var cons = parseInt(part1[0]);
-    var dist = parseInt(part1[1]);
-    var equa = parts[1];
-    equa = equa.replace("[", "");
-    equa = equa.replace("]", "");
-    var coef_str = equa.split(',');
-    var coef_num = [];
-    for (var i = 0; i < coef_str.length; ++i) {
-        coef_num.push(parseInt(coef_str[i]));
-    }
-    var jsonFunc = {
-        consecutive: cons,
-        distinct: dist,
-        equation: coef_num
-    };
-    return jsonFunc;
-}
-
-//Gets function key in firebase
-function getFuncKey(func) {
-    var nm = "";
-    for (var k = 0; k < func.equation.length; ++k) {
-        nm += "(" + func.equation[k] + ")";
-        if (k != func.equation.length - 1) {
-            nm += "-";
-        }
-    }
-    return nm;
-}
-
-//Returns workload key
-function getWorkloadKey(work) {
+//Get a string ID used in firebase
+function getWorkloadIdentifier(work) {
     var nm = "";
     var k;
     for (k = 0; k < work.offsets.length ; ++k) {
@@ -402,54 +230,136 @@ function getWorkloadKey(work) {
     }
     return nm;
 }
-
-//Puts function in firebase
-function putFunctionInFirebase(func) {
-    var dbr = db.ref("/user_data/" + usr.uid + "/functions/");
-    var i = 0;
-    //      console.dir(func);
-    for (i = 0; i < func.length; ++i) {
-        console.log("Putting function online: ");
-        console.dir(func[i]);
-        console.log("\n");
-        dbr.child(getFuncKey(func[i])).set(func[i]);
-    }
-}
-
-//Attempts to sign in
-function signin(email, password, callback) {
-    firebase.auth().signInWithEmailAndPassword(email, password).catch(function (error) {
-        // Handle Errors here.
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        //Log the message
-        console.log(errorMessage);
+//Downloads and stores workloads
+function downloadWorkloads(n) {
+    log("Downloading " + n  + " workloads");
+    var workloadsDownloaded = 0;
+    var ref = db.ref("/workloads/");
+    queue = new Queue(ref, function(data, progress, resolve, reject) {
+        workloadsDownloaded += 1;
+        log("Downloaded " + getWorkloadIdentifier(data));
+        fs.writeFileSync("./workloads/" + getWorkloadIdentifier(data) + ".workload", JSON.stringify(data), 'utf8');
+        resolve();
+        if (workloadsDownloaded >= n) {
+            log("Downloaded workloads");
+            shutdown();
+        }
     });
-    callback();
 }
-
-//Shutsdown
+//Gets a list of workloads
+function getLocalWorkloads() {
+    var files = fs.readdirSync("./workloads/");
+    var workloads = [];
+    for (var i = 0; i < files.length; ++i) {
+        if (files[i].endsWith('.workload')) {
+            workloads.push(files[i]);
+        }
+    }
+    return workloads;
+}
+//Deletes a workload
+function deleteLocalWorkload(path) {
+    log("Deleting workload");
+    fs.unlinkSync("./workloads/" + path);
+}
+//Get an string ID
+function getFunctionIdentifier(func) {
+    var nm = "";
+    for (var k = 0; k < func.equation.length; ++k) {
+        nm += "(" + func.equation[k] + ")";
+        if (k != func.equation.length - 1) {
+            nm += "-";
+        }
+    }
+    return nm;
+}
+//Returns function in json format
+function getFunctionFromString(text) {
+    text = text.replace("PGSO:", "");
+    var parts = text.split(";");
+    var part1 = parts[0].split(",");
+    var cons = parseInt(part1[0]);
+    var dist = parseInt(part1[1]);
+    var equa = parts[1];
+    equa = equa.replace("[", "");
+    equa = equa.replace("]", "");
+    var coef_str = equa.split(',');
+    var coef_num = [];
+    for (var i = 0; i < coef_str.length; ++i) {
+        coef_num.push(parseInt(coef_str[i]));
+    }
+    return {
+        consecutive: cons,
+        distinct: dist,
+        equation: coef_num
+    };
+}
+//Logs function to firebase
+function submitFunction(func) {
+    var dbr = db.ref("/user_data/" + usr.uid + "/functions/");
+    for (var i = 0; i < func.length; ++i) {
+        log("Adding function to firebase: " + JSON.stringify(func[i]));
+        dbr.child(getFunctionIdentifier(func[i])).set(func[i]);
+    }
+}
+function initFirebase(callback) {
+    var config = {
+        //Public key for my project
+        apiKey: "AIzaSyC6R2fqZN9eRFzr88nebDqvA_VwNKtzJQY",
+        authDomain: "pgsdb-c4faf.firebaseapp.com",
+        databaseURL: "https://pgsdb-c4faf.firebaseio.com",
+        storageBucket: "pgsdb-c4faf.appspot.com",
+    };
+    var app = firebase.initializeApp(config);
+    firebase.auth().onAuthStateChanged(function (user) {
+        console.log("Auth changed");
+        usr = user;
+    });
+    db = firebase.database();
+    signin(prefs.email, prefs.password, callback);
+}
+//Attempts to sign in, then runs callback
+function signin(email, password, callback) {
+    firebase.auth().signInWithEmailAndPassword(email, password).then(function (data) {
+        usr = data;
+        callback();
+    });
+}
+//Logs info
+function log(txt) {
+    console.log(txt);
+    fs.appendFileSync('./output/output.txt', txt + "\n", 'utf8');
+}
+//Logs error info
+function error(txt) {
+    log("error: "+ txt);
+    fs.appendFileSync('./output/error.txt', txt + "\n", 'utf8');
+}
+//Logs a found function
+function log_find(txt) {
+    log("found: "+ txt);
+    fs.appendFileSync('./output/finds.txt', txt + "\n", 'utf8');
+}
+//Logs progress
+function log_progress(txt) {
+    log("Progress: " + txt + "%");
+}
 function shutdown() {
-    isShutdown = true;
-    console.log("Shutting down");
-    fs.appendFileSync('./output/output.txt', "\nShutting down.", 'utf8');
-    console.log('Starting queue shutdown');
-    for (f in rejectFuncs) {
-        rejectFuncs[f]("Shut down");
-    }
-    for (var i = 0; i < queue_arr.length; ++i) {
-        console.log("Shutting down queue " + i);
-        queue_arr[i].shutdown().then(function() {
-            if (i == queue_arr.length - 1) {
-                console.log("Last one shut down. Exiting");
-                process.exit(0);
-            }
+    log("Shutting down");
+    if (queue) {
+        for (var f in prog_funcs) {
+            reject_funcs[f]("Shut down");
+        }
+        queue.shutdown().then(function () {
+            process.exit(0);
         });
+    } else {
+        process.exit(0);
     }
 }
 
+//Handle sig int
 process.on('SIGINT', function() {
-    console.log("SIGINT sent");
-    fs.appendFileSync('./output/output.txt', "\nSIGINT sent\n", 'utf8');
+    error("SIGINT sent");
     shutdown();
 });
