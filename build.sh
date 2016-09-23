@@ -36,6 +36,9 @@ cd ..
 BASE_DIR=$PWD
 INSTALL_DIR=$BASE_DIR/build/$BUILD_OS
 
+#Delete old build
+rm -rf $INSTALL_DIR
+
 #Make directory recursively
 mkdir -p $INSTALL_DIR
 
