@@ -22,7 +22,7 @@ fi
 if [[ "$2" == "" ]]; then
     BUILD_VERSION=`date +%Y-%m-%d`
 else
-    BUILD_VERSION=$1
+    BUILD_VERSION=$2
 fi
 
 #call ./zip.sh language OS version
