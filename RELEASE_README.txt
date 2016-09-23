@@ -11,7 +11,7 @@
 
 Thank you for downloading PGS. This is the C version for Linux
 
-If you haven't already, create an account here: http://chemicaldevelopment.us/pgs/account
+If you haven't already, create an account here: http://chemicaldevelopment.us/pgs/client
 
 Once you've done that, double click `my.prefs`, and change `{{email}}` and `{{password}}`. 
 
