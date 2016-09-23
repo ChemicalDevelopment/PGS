@@ -67,28 +67,27 @@ parser.addArgument(
     action: 'storeTrue'
   }
 );
+try {
+    fs.accessSync(PRIME_FILE);
+    run();
+} catch (e) {
+    //Run error
+    error("Error no prime file! Generating one now.");
+    error(JSON.stringify(e));
+    //Spawn
+    const pp = spawn("./lib.o", [PRIME_FILE]);
 
-fs.accessSync(PRIME_FILE, fs.F_OK, function(err) {
-    if (err) {
-        //Run error
-        error("Error no prime file! Generating one now.");
-        //Spawn
-        const pp = spawn("./lib.o", [PRIME_FILE]);
+    //Log all output
+    pp.stdout.on('data', (data) => {
+        log(data.toString());
+    });
 
-        //Log all output
-        pp.stdout.on('data', (data) => {
-            log(data.toString());
-        });
-
-        //When it closes, handle it
-        pp.on('close', function (code) {
-            log(`lib Has Finished`);
-            run();
-        });
-    } else {
+    //When it closes, handle it
+    pp.on('close', function (code) {
+        log(`lib Has Finished`);
         run();
-    }
-});
+    });
+}
 
 //We store our parsed args
 var args = parser.parseArgs();
