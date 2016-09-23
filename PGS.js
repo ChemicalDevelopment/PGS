@@ -80,14 +80,6 @@ var queue;
 //Progress functions
 var reject_funcs;
 
-error("Started running at " + new Date().toString());
-
-if (args.download > 0) {
-    initFirebase(function () {
-        downloadWorkloads(args.download)
-    });
-}
-
 //Callback to run.
 var callback = function () {
     if (args.download > 0) {
@@ -100,23 +92,34 @@ var callback = function () {
     }
 }
 
-
-try {
-    fs.accessSync(PRIME_FILE);
-    callback();
-} catch (e) {
-    //Run error
-    error("Error no prime file! Generating one now.");
-    error(JSON.stringify(e));
-    //Spawn
-    const pp = spawn("./lib.o", [PRIME_FILE]);
-
-    //When it closes, handle it
-    pp.on('close', function (code) {
-        log(`lib Has finished generating primes.dat`);
+var start_run = function() {
+    try {
+        fs.accessSync(PRIME_FILE);
         callback();
-    });
+    } catch (e) {
+        //Run error
+        error("Error no prime file! Generating one now.");
+        error(JSON.stringify(e));
+        //Spawn
+        const pp = spawn("./lib.o", [PRIME_FILE]);
+        //When it closes, handle it
+        pp.on('close', function (code) {
+            log(`lib Has finished generating primes.dat`);
+            callback();
+        });
+    }
 }
+
+error("Started running at " + new Date().toString());
+
+if (args.download > 0) {
+    initFirebase(function () {
+        downloadWorkloads(args.download);
+    });
+} else {
+    start_run();
+}
+
 
 //Main run function
 function runOffline() {
@@ -247,7 +250,7 @@ function downloadWorkloads(n) {
         fs.writeFileSync("./workloads/" + getWorkloadIdentifier(data) + ".workload", JSON.stringify(data), 'utf8');
         resolve();
         if (workloadsDownloaded >= n) {
-            log("Downloaded workloads");
+            log("Downloaded all workloads");
             shutdown();
         }
     });
@@ -373,3 +376,6 @@ process.on('SIGINT', function() {
     error("SIGINT sent");
     shutdown();
 });
+
+//Keep alive
+setInterval(function(){}, Number.POSITIVE_INFINITY);
