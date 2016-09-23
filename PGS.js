@@ -80,6 +80,7 @@ var queue;
 //Progress functions
 var reject_funcs;
 
+error("Started running at " + new Date().toString());
 
 if (args.download > 0) {
     initFirebase(function () {
@@ -110,14 +111,9 @@ try {
     //Spawn
     const pp = spawn("./lib.o", [PRIME_FILE]);
 
-    //Log all output
-    pp.stdout.on('data', (data) => {
-        log(data.toString());
-    });
-
     //When it closes, handle it
     pp.on('close', function (code) {
-        log(`lib Has Finished`);
+        log(`lib Has finished generating primes.dat`);
         callback();
     });
 }
@@ -355,16 +351,20 @@ function log_progress(txt) {
     log("Progress: " + txt + "%");
 }
 function shutdown() {
+    var final = function () {
+        error("Stopped running at " + new Date().toString());
+        process.exit(0);
+    }
     log("Shutting down");
     if (queue) {
         for (var f in prog_funcs) {
             reject_funcs[f]("Shut down");
         }
         queue.shutdown().then(function () {
-            process.exit(0);
+            final();
         });
     } else {
-        process.exit(0);
+        final();
     }
 }
 
