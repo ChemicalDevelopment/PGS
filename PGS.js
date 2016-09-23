@@ -26,7 +26,7 @@ const PRIME_FILE = "./primes.dat";
 
 //Create Parser
 var parser = new ArgumentParser({
-  version: '2.0.0',
+  version: 'v2.0.0',
   addHelp: true,
   description: 'PGS - Prime Gen Search'
 });
@@ -67,9 +67,42 @@ parser.addArgument(
     action: 'storeTrue'
   }
 );
+
+//We store our parsed args
+var args = parser.parseArgs();
+var prefs = JSON.parse(fs.readFileSync(args.prefs, 'utf8'));
+
+//Firebase objects
+var usr;
+var db;
+var queue;
+
+//Progress functions
+var reject_funcs;
+
+
+if (args.download > 0) {
+    initFirebase(function () {
+        downloadWorkloads(args.download)
+    });
+}
+
+//Callback to run.
+var callback = function () {
+    if (args.download > 0) {
+        log("Downloaded all. Exiting");
+        process.exit(0);
+    } else if (!args.offline) {
+        initFirebase(runOnline);
+    } else {
+        runOffline();
+    }
+}
+
+
 try {
     fs.accessSync(PRIME_FILE);
-    run();
+    callback();
 } catch (e) {
     //Run error
     error("Error no prime file! Generating one now.");
@@ -85,30 +118,8 @@ try {
     //When it closes, handle it
     pp.on('close', function (code) {
         log(`lib Has Finished`);
-        run();
+        callback();
     });
-}
-
-//We store our parsed args
-var args = parser.parseArgs();
-var prefs = JSON.parse(fs.readFileSync(args.prefs, 'utf8'));
-
-//Firebase objects
-var usr;
-var db;
-var queue;
-
-//Progress functions
-var reject_funcs;
-
-if (args.download > 0) {
-    initFirebase(function () {
-        downloadWorkloads(args.download)
-    });
-} else if (!args.offline) {
-    initFirebase(runOnline);
-} else {
-    runOffline();
 }
 
 //Main run function
@@ -142,7 +153,7 @@ function runOffline() {
             ++i;
             currentThreads += 1;
         } else {
-            console.log("This thread finished. " + currentThreads + " threads are still running.");
+            log("Thread finished. There are " + currentThreads + " threads are still running.");
         }
     };
     ee.on('next', next);
@@ -311,7 +322,7 @@ function initFirebase(callback) {
     };
     var app = firebase.initializeApp(config);
     firebase.auth().onAuthStateChanged(function (user) {
-        console.log("Auth changed");
+        log("Auth changed");
         usr = user;
     });
     db = firebase.database();
@@ -332,7 +343,7 @@ function log(txt) {
 //Logs error info
 function error(txt) {
     log("error: "+ txt);
-    fs.appendFileSync('./output/error.txt', txt + "\n", 'utf8');
+    fs.appendFileSync('./output/error.txt', "\n" + txt + "\n", 'utf8');
 }
 //Logs a found function
 function log_find(txt) {

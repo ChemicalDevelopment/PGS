@@ -1,9 +1,6 @@
 {
     "email": "{{email}}",
     "password": "{{password}}",
-    "threads": 2,
-    "useclock": false,
-    "hourStart": 18,
-    "hourEnd": 4
+    "threads": 2
 }
 
