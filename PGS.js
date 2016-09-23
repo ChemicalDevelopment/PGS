@@ -358,6 +358,7 @@ function log_progress(txt) {
 var isShutdown = false;
 
 function shutdown() {
+    log("Shutting down");
     if (isShutdown) {
         process.exit(0);
     }
@@ -366,7 +367,6 @@ function shutdown() {
         error("Stopped running at " + new Date().toString());
         process.exit(0);
     }
-    log("Shutting down");
     if (queue) {
         for (var f in reject_funcs) {
             reject_funcs[f]("Shut down");
