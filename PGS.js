@@ -439,7 +439,12 @@ function shutdown() {
     }
     for (var i = 0; i < queue_arr.length; ++i) {
         console.log("Shutting down queue " + i);
-        queue_arr[i].shutdown();
+        queue_arr[i].shutdown().then(function() {
+            if (i == queue_arr.length - 1) {
+                console.log("Last one shut down. Exiting");
+                process.exit(0);
+            }
+        });
     }
 }
 
