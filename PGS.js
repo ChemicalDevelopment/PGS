@@ -263,7 +263,7 @@ function runOffline() {
             shutdown();
         }
         else if (new Date().getTime() - startMill >= usrPrefs.time * 60 * 1000) {
-            console.log("Out of time. Not starting another load. There ");
+            console.log("Out of time. Not starting another load.");
         } else {
             ee.emit('next');
         }
@@ -306,7 +306,7 @@ function doWorkload(workload, path, oncomplete, progFunc) {
         console.log(`PGS Has Finished`);
         fs.appendFile('./output/output.txt', "\nFinished workload: " + JSON.stringify(workload) + "\n");
         if (path != "" && args.remove) {
-            fs.appendFile('./output/output.txt', "Deleting...");
+            fs.appendFile('./output/output.txt', "Deleting...\n");
             console.log("Deleting workload");
             fs.unlinkSync("./workloads/" + path);
         }
