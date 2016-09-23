@@ -368,10 +368,10 @@ function shutdown() {
         process.exit(0);
     }
     if (queue) {
-        for (var f in reject_funcs) {
-            reject_funcs[f]("Shut down");
-        }
         queue.shutdown().then(function () {
+            for (var f in reject_funcs) {
+                reject_funcs[f]("Shut down");
+            }
             final();
         });
     } else {
