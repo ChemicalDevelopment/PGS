@@ -445,9 +445,7 @@ function shutdown() {
         rejectFuncs[f]("Shut down");
     }
     for (var i = 0; i < queue_arr.length; ++i) {
-        queue_arr[i].shutdown().then(function() {
-            console.log('Shut down queue ' + i);
-        });
+        queue_arr[i].shutdown();
     }
 }
 
