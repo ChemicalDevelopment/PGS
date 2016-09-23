@@ -386,4 +386,6 @@ process.on('SIGINT', function() {
 });
 
 //Keep alive
-setInterval(function(){}, Number.POSITIVE_INFINITY);
+setInterval(function(){
+    log("Ooh ooh ooh ooh stayin` alive, stayin` alive");
+}, 4 * 60 * 1000);
