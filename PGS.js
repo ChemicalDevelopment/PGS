@@ -248,10 +248,11 @@ function downloadWorkloads(n) {
         workloadsDownloaded += 1;
         log("Downloaded " + getWorkloadIdentifier(data));
         fs.writeFileSync("./workloads/" + getWorkloadIdentifier(data) + ".workload", JSON.stringify(data), 'utf8');
-        resolve();
         if (workloadsDownloaded >= n) {
             log("Downloaded all workloads");
             shutdown();
+        } else {
+            resolve();
         }
     });
 }
@@ -353,14 +354,21 @@ function log_find(txt) {
 function log_progress(txt) {
     log("Progress: " + txt + "%");
 }
+
+var isShutdown = false;
+
 function shutdown() {
+    if (isShutdown) {
+        process.exit(0);
+    }
+    isShutdown = true;
     var final = function () {
         error("Stopped running at " + new Date().toString());
         process.exit(0);
     }
     log("Shutting down");
     if (queue) {
-        for (var f in prog_funcs) {
+        for (var f in reject_funcs) {
             reject_funcs[f]("Shut down");
         }
         queue.shutdown().then(function () {
