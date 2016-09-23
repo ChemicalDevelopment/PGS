@@ -100,6 +100,7 @@ fs.access(usrPrefs.PRIME_FILE, fs.F_OK, function(err) {
 
 //Runs and updates the database
 function runOnline() {
+    fs.appendFile('./output/output.txt', "\nRunning online at " + new Date().getTime() + "ms\n", 'utf8');
     console.log("Running online, using " + usrPrefs.threads + " threads.");
     //Updated user data
     //Firebase configuration
@@ -235,6 +236,7 @@ function runOnline() {
 
 //Runs without looking for online jobs
 function runOffline() {
+    fs.appendFile('./output/output.txt', "\nRunning offline at " + new Date().getTime() + "ms\n", 'utf8');
     var work = getWorkloads();
     var threads = usrPrefs.threads;
     console.log("Running offline, using " + threads + " threads.");
