@@ -170,12 +170,6 @@ function runOnline() {
                             shutdown();
                         }
                     //If we are shutting down, or it is over max time, we mark it so that the backend can process it
-                    } else if (isShutdown || (usrPrefs.time && usrPrefs.time >= 0 && new Date().getTime() - startMill >= usrPrefs.time * 60 * 1000)) {
-                        console.log("Past the max time specified. Not getting another workload");
-                        //shutdownWorker();
-                        if (!isShutdown) {
-                            shutdown();
-                        }
                     } else {
                     //console.log(getWorkerCount() + " queue workers running.");
                     //Create a data afterwards
@@ -215,10 +209,10 @@ function runOnline() {
                                     //Resolve
                                     resolve(data_t);
                                     //If we have passed the max time
-                                    if (usrPrefs.time && usrPrefs.time >= 0 && new Date().getTime() - startMill >= usrPrefs.time * 60 * 1000) {
+                                    /*if (usrPrefs.time && usrPrefs.time >= 0 && new Date().getTime() - startMill >= usrPrefs.time * 60 * 1000) {
                                         console.log("Past the max time specified. Quitting");
                                         shutdown();
-                                    }
+                                    }*/
                             });
                         });
                     };
@@ -263,9 +257,9 @@ function runOffline() {
             console.log("Done with all workloads. Shutting down.");
             shutdown();
         }
-        else if (new Date().getTime() - startMill >= usrPrefs.time * 60 * 1000) {
+        /*else if (new Date().getTime() - startMill >= usrPrefs.time * 60 * 1000) {
             console.log("Out of time. Not starting another load.");
-        } else {
+        } */else {
             ee.emit('next');
         }
     }

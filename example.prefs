@@ -4,7 +4,6 @@
     "email": "{{email}}",
     "password": "{{password}}",
     "workload_preference": "random",
-    "threads": 2,
-    "time": -1
+    "threads": 2
 }
 
