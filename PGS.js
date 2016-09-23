@@ -437,6 +437,7 @@ function signin(email, password, callback) {
 function shutdown() {
     isShutdown = true;
     console.log("Shutting down");
+    fs.appendFile('./output/output.txt', "\nShutting down.", 'utf8');
     if (queue && queue.shutdown) {
         console.log('Starting queue shutdown');
         for (f in rejectFuncs) {
@@ -453,5 +454,7 @@ function shutdown() {
 }
 
 process.on('SIGINT', function() {
+    console.log("SIGINT sent");
+    fs.appendFile('./output/output.txt', "\nSIGINT sent\n", 'utf8');
     shutdown();
 });
