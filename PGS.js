@@ -148,88 +148,87 @@ function runOnline() {
             //Used for downloading workloads
             var nth = 0;
             //Set the number of workers
-            var options = {
-                'numWorkers': usrPrefs.threads,
-            };
-            //Init the global var
-            queue_arr.push(new Queue(ref, options, function(data, progress, resolve, reject) {
-                // Read and process task data
-                console.log("Now Processing: ");
-                console.dir(data);
-                //If we are supposed to download
-                if (args.download > 0) {
-                    //Add to how many we've done
-                    nth += 1;
-                    //Write JSON to file 
-                    fs.writeFileSync("./workloads/" + getWorkloadKey(data) + ".workload", JSON.stringify(data), 'utf8');
-                    //Resolve, mark that we will do it.
-                    resolve();
-                    //Set the progress to -1
-                    progress(-1)
-                    if (nth >= args.download) {
-                        //If we have saved the amount.
-                        console.log("Done saving workloads to ./workloads/");
-                        shutdown();
-                    }
-                //If we are shutting down, or it is over max time, we mark it so that the backend can process it
-                } else if (isShutdown || (usrPrefs.time && usrPrefs.time >= 0 && new Date().getTime() - startMill >= usrPrefs.time * 60 * 1000)) {
-                    console.log("Past the max time specified. Not getting another workload");
-                    //shutdownWorker();
-                    if (!isShutdown) {
-                        shutdown();
-                    }
-                } else {
-                //console.log(getWorkerCount() + " queue workers running.");
-                //Create a data afterwards
-                var data_t = data;
-                //Set the timestamp
-                data_t.timestamp = new Date().getTime();
-                //Add to active workloads
-                var wref = db.ref('/user_data/' + usr.uid + "/current_workloads/").push(data_t);
-                //Add the reject to an array so it can be called by shutdown
-                rejectFuncs.push(reject);
 
-                //Our callback
-                var oncomplete = function() {
-                    //Remove it from reject funcs
-                    rejectFuncs.splice(rejectFuncs.indexOf(reject), 1);
-                    //Create a time elapsed
-                    var timeElapsed = new Date().getTime() - data_t.timestamp;
-                    //Appedn this to output
-                    fs.appendFileSync('./output/output.txt', "\nWorkload done in " + timeElapsed + "ms\n", 'utf8');
-                    //Set the time elapsed
-                    data_t["timespent"] = timeElapsed;
-                    //Push ref - Left commented now.
-                    //db.ref('/user_data/' + usr.uid + "/workloads/").push(data_t);
-                    //Get value
-                    db.ref("/user_data/" + usr.uid + "/timespent").once('value').then(function(snapshot) {
-                        var data_v = snapshot.val();
-                        //Get time spent
-                        db.ref('/user_data/' + usr.uid + "/timespent").set(data_v + timeElapsed);
-                            //Get blocks
-                            db.ref("/user_data/" + usr.uid + "/blocksdone").once('value').then(function(i_snapshot) {
-                                var i_data_v = i_snapshot.val();
-                                //Update both
-                                db.ref('/user_data/' + usr.uid + "/blocksdone").set(i_data_v + 1);
-                                db.ref('/user_data/' + usr.uid + "/timespent").set(data_v + timeElapsed);
-                                //Remove the current workloads
-                                wref.remove();
-                                //Resolve
-                                resolve(data_t);
-                                //If we have passed the max time
-                                if (usrPrefs.time && usrPrefs.time >= 0 && new Date().getTime() - startMill >= usrPrefs.time * 60 * 1000) {
-                                    console.log("Past the max time specified. Quitting");
-                                    shutdown();
-                                }
+            for (var th = 0; th < usrPrefs.threads; ++th) {
+                queue_arr.push(new Queue(ref, function(data, progress, resolve, reject) {
+                    // Read and process task data
+                    console.log("Now Processing: ");
+                    console.dir(data);
+                    //If we are supposed to download
+                    if (args.download > 0) {
+                        //Add to how many we've done
+                        nth += 1;
+                        //Write JSON to file 
+                        fs.writeFileSync("./workloads/" + getWorkloadKey(data) + ".workload", JSON.stringify(data), 'utf8');
+                        //Resolve, mark that we will do it.
+                        resolve();
+                        //Set the progress to -1
+                        progress(-1)
+                        if (nth >= args.download) {
+                            //If we have saved the amount.
+                            console.log("Done saving workloads to ./workloads/");
+                            shutdown();
+                        }
+                    //If we are shutting down, or it is over max time, we mark it so that the backend can process it
+                    } else if (isShutdown || (usrPrefs.time && usrPrefs.time >= 0 && new Date().getTime() - startMill >= usrPrefs.time * 60 * 1000)) {
+                        console.log("Past the max time specified. Not getting another workload");
+                        //shutdownWorker();
+                        if (!isShutdown) {
+                            shutdown();
+                        }
+                    } else {
+                    //console.log(getWorkerCount() + " queue workers running.");
+                    //Create a data afterwards
+                    var data_t = data;
+                    //Set the timestamp
+                    data_t.timestamp = new Date().getTime();
+                    //Add to active workloads
+                    var wref = db.ref('/user_data/' + usr.uid + "/current_workloads/").push(data_t);
+                    //Add the reject to an array so it can be called by shutdown
+                    rejectFuncs.push(reject);
+
+                    //Our callback
+                    var oncomplete = function() {
+                        //Remove it from reject funcs
+                        rejectFuncs.splice(rejectFuncs.indexOf(reject), 1);
+                        //Create a time elapsed
+                        var timeElapsed = new Date().getTime() - data_t.timestamp;
+                        //Appedn this to output
+                        fs.appendFileSync('./output/output.txt', "\nWorkload done in " + timeElapsed + "ms\n", 'utf8');
+                        //Set the time elapsed
+                        data_t["timespent"] = timeElapsed;
+                        //Push ref - Left commented now.
+                        //db.ref('/user_data/' + usr.uid + "/workloads/").push(data_t);
+                        //Get value
+                        db.ref("/user_data/" + usr.uid + "/timespent").once('value').then(function(snapshot) {
+                            var data_v = snapshot.val();
+                            //Get time spent
+                            db.ref('/user_data/' + usr.uid + "/timespent").set(data_v + timeElapsed);
+                                //Get blocks
+                                db.ref("/user_data/" + usr.uid + "/blocksdone").once('value').then(function(i_snapshot) {
+                                    var i_data_v = i_snapshot.val();
+                                    //Update both
+                                    db.ref('/user_data/' + usr.uid + "/blocksdone").set(i_data_v + 1);
+                                    db.ref('/user_data/' + usr.uid + "/timespent").set(data_v + timeElapsed);
+                                    //Remove the current workloads
+                                    wref.remove();
+                                    //Resolve
+                                    resolve(data_t);
+                                    //If we have passed the max time
+                                    if (usrPrefs.time && usrPrefs.time >= 0 && new Date().getTime() - startMill >= usrPrefs.time * 60 * 1000) {
+                                        console.log("Past the max time specified. Quitting");
+                                        shutdown();
+                                    }
+                            });
                         });
-                    });
-                };
-                //Start at 0
-                progress(0);
-                //Invoke the process
-                doWorkload(data, "", oncomplete, progress); 
-                }  
-            }));
+                    };
+                    //Start at 0
+                    progress(0);
+                    //Invoke the process
+                    doWorkload(data, "", oncomplete, progress); 
+                    }  
+                }));
+            }
         }
     });
 }
