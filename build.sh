@@ -52,9 +52,6 @@ touch $INSTALL_DIR/output/output.txt
 touch $INSTALL_DIR/output/finds.txt
 touch $INSTALL_DIR/output/error.txt
 
-#Give them a default workloads
-cp $BASE_DIR/workloads/example.workload $INSTALL_DIR/workloads/example.workload
-
 #Copy the readme
 cp $BASE_DIR/RELEASE_README.txt $INSTALL_DIR/README.txt
 
