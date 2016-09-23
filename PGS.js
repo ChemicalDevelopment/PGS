@@ -100,7 +100,7 @@ fs.access(usrPrefs.PRIME_FILE, fs.F_OK, function(err) {
 
 //Runs and updates the database
 function runOnline() {
-    fs.appendFile('./output/output.txt', "\nRunning online at " + new Date().getTime() + "ms\n", 'utf8');
+    fs.appendFileSync('./output/output.txt', "\nRunning online at " + new Date().getTime() + "ms\n", 'utf8');
     console.log("Running online, using " + usrPrefs.threads + " threads.");
     //Updated user data
     //Firebase configuration
@@ -196,7 +196,7 @@ function runOnline() {
                     //Create a time elapsed
                     var timeElapsed = new Date().getTime() - data_t.timestamp;
                     //Appedn this to output
-                    fs.appendFile('./output/output.txt', "\nWorkload done in " + timeElapsed + "ms\n", 'utf8');
+                    fs.appendFileSync('./output/output.txt', "\nWorkload done in " + timeElapsed + "ms\n", 'utf8');
                     //Set the time elapsed
                     data_t["timespent"] = timeElapsed;
                     //Push ref - Left commented now.
@@ -236,7 +236,7 @@ function runOnline() {
 
 //Runs without looking for online jobs
 function runOffline() {
-    fs.appendFile('./output/output.txt', "\nRunning offline at " + new Date().getTime() + "ms\n", 'utf8');
+    fs.appendFileSync('./output/output.txt', "\nRunning offline at " + new Date().getTime() + "ms\n", 'utf8');
     var work = getWorkloads();
     var threads = usrPrefs.threads;
     console.log("Running offline, using " + threads + " threads.");
@@ -301,14 +301,14 @@ function doWorkload(workload, path, oncomplete, progFunc) {
     //On error, we print and log
     proc.stderr.on('data', function (data) {
         console.log(data.toString());
-        fs.appendFile('./output/error.txt', data.toString() + "\n", 'utf8');
+        fs.appendFileSync('./output/error.txt', data.toString() + "\n", 'utf8');
     });
     //On close, we delete the workload if the flag is set, and then we call our callback
     proc.on('close', function(code) {
         console.log(`PGS Has Finished`);
-        fs.appendFile('./output/output.txt', "\nFinished workload: " + JSON.stringify(workload) + "\n");
+        fs.appendFileSync('./output/output.txt', "\nFinished workload: " + JSON.stringify(workload) + "\n");
         if (path != "" && args.remove) {
-            fs.appendFile('./output/output.txt', "Deleting...\n");
+            fs.appendFileSync('./output/output.txt', "Deleting...\n");
             console.log("Deleting workload");
             fs.unlinkSync("./workloads/" + path);
         }
@@ -326,13 +326,13 @@ function submitOutput(data, offline, progFunc) {
             console.dir(jsonFunc(output[i]));
             jsons.push(jsonFunc(output[i]));
             //Log to finds.txt
-            fs.appendFile('./output/output.txt', output[i] + "\n" + getFuncKey(jsonFunc(output[i])) + "\n", 'utf8');
-            fs.appendFile('./output/finds.txt', output[i] + "\n", 'utf8');
+            fs.appendFileSync('./output/output.txt', output[i] + "\n" + getFuncKey(jsonFunc(output[i])) + "\n", 'utf8');
+            fs.appendFileSync('./output/finds.txt', output[i] + "\n", 'utf8');
         }
         if (output[i].startsWith("PGSP:")) {
             console.dir(output[i]);
             progFunc(parseInt(output[i].replace("PGSP:", "")));
-            fs.appendFile('./output/output.txt', output[i] + "\n");
+            fs.appendFileSync('./output/output.txt', output[i] + "\n");
         }
     }
     if (!offline) {
@@ -439,7 +439,7 @@ function signin(email, password, callback) {
 function shutdown() {
     isShutdown = true;
     console.log("Shutting down");
-    fs.appendFile('./output/output.txt', "\nShutting down.", 'utf8');
+    fs.appendFileSync('./output/output.txt', "\nShutting down.", 'utf8');
     if (queue && queue.shutdown) {
         console.log('Starting queue shutdown');
         for (f in rejectFuncs) {
@@ -457,6 +457,6 @@ function shutdown() {
 
 process.on('SIGINT', function() {
     console.log("SIGINT sent");
-    fs.appendFile('./output/output.txt', "\nSIGINT sent\n", 'utf8');
+    fs.appendFileSync('./output/output.txt', "\nSIGINT sent\n", 'utf8');
     shutdown();
 });
