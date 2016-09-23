@@ -172,8 +172,9 @@ function runOnline() {
                     }
                 //If we are shutting down, or it is over max time, we mark it so that the backend can process it
                 } else if (isShutdown || (usrPrefs.time && usrPrefs.time >= 0 && new Date().getTime() - startMill >= usrPrefs.time * 60 * 1000)) {
-                    console.log("Past the max time specified. Quitting");
-                    if (!isShutdown) {
+                    console.log("Past the max time specified. Not getting another workload");
+                    shutdownWorker();
+                    if (!isShutdown && getWorkerCount() == 0) {
                         shutdown();
                     }
                 } else {
@@ -298,10 +299,11 @@ function doWorkload(workload, path, oncomplete, progFunc) {
     //On close, we delete the workload if the flag is set, and then we call our callback
     proc.on('close', function(code) {
         console.log(`PGS Has Finished`);
-        fs.appendFile('./output/output.txt', "\nFinished workload: " + JSON.stringify(workload) + "\n\n");
+        fs.appendFile('./output/output.txt', "\nFinished workload: " + JSON.stringify(workload) + "\n");
         if (path != "" && args.remove) {
+            fs.appendFile('./output/output.txt', "Deleting...");
             console.log("Deleting workload");
-            fs.unlink("./workloads/" + path);
+            fs.unlinkSync("./workloads/" + path);
         }
         oncomplete();
     });
