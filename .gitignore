@@ -32,4 +32,4 @@
 /tmp/
 
 #My release update script
-./release.sh
+release.sh
