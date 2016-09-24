@@ -36,7 +36,7 @@ INSTALL_DIR=$BASE_DIR/build/$BUILD_OS
 ./compile.sh
 
 #Delete old build
-rm -rf $INSTALL_DIR
+rm -r $INSTALL_DIR
 
 #Make directory recursively
 mkdir -p $INSTALL_DIR
@@ -60,7 +60,7 @@ touch $INSTALL_DIR/output/finds.txt
 touch $INSTALL_DIR/output/error.txt
 
 #Include node modules
-cp $BASE_DIR/node_modules/ $INSTALL_DIR/node_modules/ -rf
+cp $BASE_DIR/node_modules/ $INSTALL_DIR/node_modules/ -r
 
 #Copy the readme
 cp $BASE_DIR/RELEASE_README.txt $INSTALL_DIR/README.txt
@@ -77,7 +77,7 @@ if [ ! -d "$NODE_CACHE" ]; then
     #Copy the binary to cache
     cp $NODE_CACHE/tmp/$NODE_TAR/bin/node $NODE_CACHE/node
     #Remove tmp dir
-    rm $NODE_CACHE/tmp/ -rf
+    rm $NODE_CACHE/tmp/ -r
 fi
 #Copy it to install
 cp $NODE_CACHE/node $INSTALL_DIR/node
