@@ -104,7 +104,7 @@ var start_run = function() {
         const pp = spawn("./lib.o", [PRIME_FILE]);
         //When it closes, handle it
         pp.on('close', function (code) {
-            log(`lib Has finished generating primes.dat`);
+            log("lib Has finished generating primes.dat");
             callback();
         });
     }
