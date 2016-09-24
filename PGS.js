@@ -27,7 +27,7 @@ const RUN_FILE = "./CPGS.sh";
 
 //Create Parser
 var parser = new ArgumentParser({
-  version: 'v2.0.0',
+  version: 'v2.1.0',
   addHelp: true,
   description: 'PGS - Prime Gen Search'
 });
@@ -71,6 +71,8 @@ parser.addArgument(
 
 //We store our parsed args
 var args = parser.parseArgs();
+
+//We store our prefs
 var prefs = JSON.parse(fs.readFileSync(args.prefs, 'utf8'));
 
 //Firebase objects
@@ -81,10 +83,12 @@ var queue;
 //Progress functions
 var reject_funcs;
 
+//Print out their args
 console.dir(args);
 
 //Callback to run.
 var callback = function () {
+    //We know we've downloaded them all
     if (args.download > 0) {
         log("Downloaded all. Exiting");
         process.exit(0);
@@ -115,7 +119,12 @@ var start_run = function() {
 
 error("Started running at " + new Date().toString());
 
-if (args.download > 0) {
+if (args.submit) {
+    log("Submitting");
+    initFirebase(function () {
+        submitAllFromLocal();
+    });
+} else if (args.download > 0) {
     log("Downloading");
     initFirebase(function () {
         downloadWorkloads(args.download);
@@ -123,7 +132,6 @@ if (args.download > 0) {
 } else {
     start_run();
 }
-
 
 //Main run function
 function runOffline() {
@@ -139,7 +147,7 @@ function runOffline() {
     var ee = new EventEmitter;
     var currentThreads = 0;
     var i = 0;
-    var oncomplete = function () {
+    var oncomplete = function (time) {
         currentThreads -= 1;
         if (i >= workloads.length) {
             log("No more workloads");
@@ -173,21 +181,40 @@ function runOnline() {
     };
     reject_funcs = [];
     queue = new Queue(ref, options, function(data, progress, resolve, reject) {
-        var startTime = new Date().getTime() / 1000;
+        var uref = db.ref("/user_data/" + usr.uid);
+        var wref = db.ref("/user_data/" + usr.uid + "/workloads/").child(getWorkloadIdentifier(data));
+        wref.set(data);
         reject_funcs.push(reject);
-        var oncomplete = function () {
-            var endTime = new Date().getTime() / 1000;
-            reject_funcs.splice(reject_funcs.indexOf(reject), 1);
-            resolve();
+        var oncomplete = function (time) {
+            uref.child("timespent").once("value", function(snap) {
+                uref.child("polynomialschecked").once("value", function(snapi) {
+                    var totalTime = snap.val() + time;
+                    var totalPoly = snapi.val() + data.ranges[0] * data.ranges[1] * data.ranges[2];
+                    if (!totalTime || isNaN(totalTime)) {
+                        totalTime = time;
+                    }
+                    if (!totalPoly || isNaN(totalPoly)) {
+                        totalPoly = data.ranges[0] * data.ranges[1] * data.ranges[2];
+                    }
+                    uref.child("timespent").set(totalTime);
+                    uref.child("polynomialschecked").set(totalPoly)
+                    reject_funcs.splice(reject_funcs.indexOf(reject), 1);
+                    resolve();
+                });
+            });
+        };
+        var onprogress = function (pinfo) {
+            wref.child("progress").set(pinfo);
+            progress(pinfo);
         }
-        doWorkload(data, false, oncomplete, progress);
+        doWorkload(data, false, oncomplete, onprogress);
     });
-    //log(queue.numWorkers());
 }
 
 //Runs json workload
 function doWorkload(workload, offline, oncomplete, progFunc) {
     log("Staring workload: " + JSON.stringify(workload));
+    var startTime = new Date().getTime() / 1000;
     //We spawn a process
     const proc = spawn(RUN_FILE, [PRIME_FILE, workload.ranges[0], workload.ranges[1], workload.ranges[2],
                                   workload.offsets[0], workload.offsets[1], workload.offsets[2]])
@@ -204,11 +231,12 @@ function doWorkload(workload, offline, oncomplete, progFunc) {
 
     //On close, we delete the workload if the flag is set, and then we call our callback
     proc.on('close', function(code) {
-        log('Finished workload: ' + JSON.stringify(workload));
+        var endTime = new Date().getTime() / 1000;
         if (offline) {
             deleteLocalWorkload(workload.path);
         }
-        oncomplete();
+        log('Finished workload: ' + JSON.stringify(workload) + " in " + (endTime - startTime) + "s");
+        oncomplete(endTime - startTime);
     });
 }
 //Handles string output normally from stdout, but could be from file
@@ -254,10 +282,11 @@ function downloadWorkloads(n) {
     var workloadsDownloaded = 0;
     var ref = db.ref("/workloads/");
     queue = new Queue(ref, function(data, progress, resolve, reject) {
-        workloadsDownloaded += 1;
         log("Downloaded " + getWorkloadIdentifier(data));
         fs.writeFileSync("./workloads/" + getWorkloadIdentifier(data) + ".workload", JSON.stringify(data), 'utf8');
-        if (workloadsDownloaded >= n) {
+        workloadsDownloaded += 1;
+        addPendingWorkload(data);
+        if (workloadsDownloaded >= n - 1) {
             log("Downloaded all workloads");
             shutdown();
         } else {
@@ -315,6 +344,21 @@ function getFunctionFromString(text) {
         equation: coef_num
     };
 }
+function submitAllFromLocal() {
+    try {
+        var finding_arr = fs.readFileSync("./output/finds.txt", 'utf8').split("\n");
+        for (var i = 0; i < finding_arr.length; ++i) {
+            submitFunction(getFunctionFromString(finding_arr[i]))
+        }
+        var pending_arr = fs.readFileSync("./workloads/pending.txt", 'utf8').split("\n");
+        for (var i = 0; i < pending_arr.length; ++i) {
+            log("Submitting workload: " + pending_arr[i]);
+            db.ref("/workloads/tasks/" + pending_arr[i]).set({});
+        }
+    } catch (e) {
+        error("While reading pending and findings: "+ e);
+    }
+}
 //Logs function to firebase
 function submitFunction(func) {
     var dbr = db.ref("/user_data/" + usr.uid + "/functions/");
@@ -362,6 +406,11 @@ function log_find(txt) {
 //Logs progress
 function log_progress(txt) {
     log("Progress: " + txt + "%");
+}
+//Adds workload to downloaded list.
+function addPendingWorkload(workload) {
+    log("Claiming workload " + JSON.stringify(workload));
+    fs.appendFileSync("./workloads/pending.txt", getWorkloadIdentifier(workload) + "\n");
 }
 
 var isShutdown = false;

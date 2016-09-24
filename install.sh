@@ -4,6 +4,12 @@ npm install
 #copies example prefs
 cp ./example.prefs ./my.prefs
 
+#Make sure you have a copy
+touch workloads/pending.txt
+touch output/output.txt
+touch output/error.txt
+touch output/finds.txt
+
 #Set exec flag
 chmod +x ./update.sh
 
