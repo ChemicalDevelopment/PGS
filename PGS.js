@@ -130,9 +130,11 @@ function runOffline() {
     log("Running offline using " + prefs.threads + " threads");
     var work_names = getLocalWorkloads();
     var workloads = [];
-    for (f in work_names) {
+    workloads.length = work_names.length;
+    for (var f = 0; f < work_names.length; ++f) {
         var workload_str = fs.readFileSync("./workloads/" + work_names[f]);
-        workloads.push(JSON.parse(workload_str));
+        workloads[f] = JSON.parse(workload_str);
+        workloads[f].path = work_names[f];
     }
     var ee = new EventEmitter;
     var currentThreads = 0;
@@ -202,6 +204,9 @@ function doWorkload(workload, offline, oncomplete, progFunc) {
     //On close, we delete the workload if the flag is set, and then we call our callback
     proc.on('close', function(code) {
         log('Finished workload: ' + JSON.stringify(workload));
+        if (offline) {
+            deleteLocalWorkload(workload.path);
+        }
         oncomplete();
     });
 }
@@ -272,8 +277,10 @@ function getLocalWorkloads() {
 }
 //Deletes a workload
 function deleteLocalWorkload(path) {
-    log("Deleting workload");
-    fs.unlinkSync("./workloads/" + path);
+    if (args.remove) {
+        error("Deleting workload: " + path);
+        fs.unlinkSync("./workloads/" + path);
+    }
 }
 //Get an string ID
 function getFunctionIdentifier(func) {
