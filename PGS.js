@@ -317,10 +317,8 @@ function getFunctionFromString(text) {
 //Logs function to firebase
 function submitFunction(func) {
     var dbr = db.ref("/user_data/" + usr.uid + "/functions/");
-    for (var i = 0; i < func.length; ++i) {
-        log("Adding function to firebase: " + JSON.stringify(func[i]));
-        dbr.child(getFunctionIdentifier(func[i])).set(func[i]);
-    }
+    log("Adding function to firebase: " + JSON.stringify(func[i]));
+    dbr.child(getFunctionIdentifier(func[i])).set(func[i]);
 }
 function initFirebase(callback) {
     var config = {
