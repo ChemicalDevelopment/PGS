@@ -54,17 +54,24 @@ touch $INSTALL_DIR/output/output.txt
 touch $INSTALL_DIR/output/finds.txt
 touch $INSTALL_DIR/output/error.txt
 
+#Include node modules
+cp $BASE_DIR/node_modules/ $INSTALL_DIR/node_modules/ -rf
+
 #Copy the readme
 cp $BASE_DIR/RELEASE_README.txt $INSTALL_DIR/README.txt
 
 #Copy node binary in
-if [[ "$(/usr/local/bin/node -v | grep -c v)" == "1" ]]; then
-    cp /usr/local/bin/node $INSTALL_DIR/node
-else
-    cp /usr/bin/node $INSTALL_DIR/node
-fi
-
-cp $BASE_DIR/node_modules/ $INSTALL_DIR/node_modules/ -rf
+#if [[ "$(/usr/local/bin/node -v | grep -c v)" == "1" ]]; then
+#    cp /usr/local/bin/node $INSTALL_DIR/node
+#else
+#    cp /usr/bin/node $INSTALL_DIR/node
+#fi
+#
+mkdir $INSTALL_DIR/tmp/
+curl https://nodejs.org/download/release/v5.10.1/node-v5.10.1-linux-x64.tar.xz > $INSTALL_DIR/tmp/node.tar.xz
+tar xf $INSTALL_DIR/tmp/node.tar.xz -C $INSTALL_DIR/tmp/
+cp $INSTALL_DIR/tmp/node-v5.10.1-linux-x64/bin/node $INSTALL_DIR/node
+rm -rf $INSTALL_DIR/tmp/
 
 # Enclose (needs to do npm install -g enclose)
 #enclose PGS.js
