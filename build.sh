@@ -56,7 +56,7 @@ touch $INSTALL_DIR/output/error.txt
 cp $BASE_DIR/RELEASE_README.txt $INSTALL_DIR/README.txt
 
 #Copy node binary in
-if [[ `/usr/local/bin/node -v | grep -c v` == '1']]; then
+if [[ "$(/usr/local/bin/node -v | grep -c v)" == "1" ]]; then
     cp /usr/local/bin/node $INSTALL_DIR/node
 else
     cp /usr/bin/node $INSTALL_DIR/node
