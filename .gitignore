@@ -30,3 +30,6 @@
 
 # Builds
 /tmp/
+
+#My release update script
+./release.sh
