@@ -15,13 +15,6 @@
 # Zipped and compiled versions
 /build/
 
-# JavaPGS netbeans and whatnot
-/JPGS/build/
-/JPGS/nbproject/
-/JPGS/test/
-/nbproject/private/
-/JPGS/dist/
-
 # Ignore all npm installed packages
 /node_modules/
 

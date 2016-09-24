@@ -1,25 +1,29 @@
 #!/bin/bash
-#Detect OS, and set the build os, unless they enter in the first argument
-if [[ "$1" == "" ]]; then
+#Detect OS, and set the build os, unless they enter in the first argument. Use `auto` to autodetect
+if [ "$1" == "" ] || [ "$1" == "auto" ]; then
     if [[ "$OSTYPE" == "linux-gnu" ]]; then
         BUILD_OS="linux"
+        NODE_TAR="node-v5.10.1-linux-x64"
     elif [[ "$OSTYPE" == "darwin"* ]]; then
         BUILD_OS="mac"
-    elif [[ "$OSTYPE" == "cygwin" ]]; then
-        BUILD_OS="cygwin"
-    elif [[ "$OSTYPE" == "msys" ]]; then
-        BUILD_OS="win-lite"
+        NODE_TAR="node-v5.10.1-darwin-x64"
     elif [[ "$OSTYPE" == "freebsd"* ]]; then
-        BUILD_OS="freebsd"
+        echo "Error! freebsd not supported yet"
+        exit 1
+    elif [ "$OSTYPE" == "cygwin" ] || [ "$OSTYPE" == "msys" ]; then
+        echo "Error! Cygwin not supported"
+        exit 1
     else
         BUILD_OS="default"
+        echo "Warning: OS not found. Storing in ./build/default"
     fi
 else
     BUILD_OS=$1
+    NODE_TAR="node-v5.10.1-$1"
 fi
 
 #Set version to dev unless
-if [[ "$2" == "" ]]; then
+if [ "$2" == "" ] || [ "$2" == "auto" ]; then
     BUILD_VERSION=`date +%Y-%m-%d`
 else
     BUILD_VERSION=$2
