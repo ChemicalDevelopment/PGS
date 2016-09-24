@@ -19,9 +19,9 @@ else
 fi
 
 #EncloseJS
-if [[ `npm list enclose | grep -c enclose` == "0" ]]; then
-    npm install --save enclose
-fi
+#if [[ `npm list enclose | grep -c enclose` == "0" ]]; then
+#    npm install --save enclose
+#fi
 
 #update
 ./update.sh
@@ -55,8 +55,11 @@ touch $INSTALL_DIR/output/error.txt
 #Copy the readme
 cp $BASE_DIR/RELEASE_README.txt $INSTALL_DIR/README.txt
 
-#Enclose (needs to do npm install -g enclose)
-enclose PGS.js
+# Enclose (needs to do npm install -g enclose)
+#enclose PGS.js
+jx package PGS.js PGS -native
+rm $BASE_DIR/PGS.jxp
+
 #Copy it
 cp $BASE_DIR/PGS $INSTALL_DIR/PGS
 #Remove compiled file

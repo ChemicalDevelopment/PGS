@@ -80,6 +80,8 @@ var queue;
 //Progress functions
 var reject_funcs;
 
+console.dir(args);
+
 //Callback to run.
 var callback = function () {
     if (args.download > 0) {
@@ -94,12 +96,13 @@ var callback = function () {
 
 var start_run = function() {
     try {
-        fs.accessSync(PRIME_FILE);
-        callback();
+        fs.access(PRIME_FILE).then(function() {
+            callback();
+        });
     } catch (e) {
         //Run error
         error("Error no prime file! Generating one now.");
-        error(JSON.stringify(e));
+        error(e);
         //Spawn
         const pp = spawn("./lib.o", [PRIME_FILE]);
         //When it closes, handle it
@@ -171,7 +174,7 @@ function runOnline() {
         reject_funcs.push(reject);
         var oncomplete = function () {
             log("Done with workload " + data);
-            reject_funcs.remove(reject_funcs.indexOf(reject));
+            reject_funcs.splice(reject_funcs.indexOf(reject), 1);
             resolve();
         }
         doWorkload(data, false, oncomplete, progress);
