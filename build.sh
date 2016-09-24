@@ -56,7 +56,11 @@ touch $INSTALL_DIR/output/error.txt
 cp $BASE_DIR/RELEASE_README.txt $INSTALL_DIR/README.txt
 
 #Copy node binary in
-cp /usr/local/bin/node $INSTALL_DIR/node
+if [[ `/usr/local/bin/node -v | grep -c v` == '1']]; then
+    cp /usr/local/bin/node $INSTALL_DIR/node
+else
+    cp /usr/bin/node $INSTALL_DIR/node
+fi
 cp $BASE_DIR/node_modules/ $INSTALL_DIR/node_modules/ -rf
 
 # Enclose (needs to do npm install -g enclose)
