@@ -27,3 +27,6 @@
 
 # VScode editor
 *.vscode
+
+# Builds
+/tmp/
