@@ -96,9 +96,8 @@ var callback = function () {
 
 var start_run = function() {
     try {
-        fs.access(PRIME_FILE).then(function() {
-            callback();
-        });
+        fs.accessSync(PRIME_FILE);
+        callback();
     } catch (e) {
         //Run error
         error("Error no prime file! Generating one now.");
