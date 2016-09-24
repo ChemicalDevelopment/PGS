@@ -24,7 +24,7 @@ fi
 #fi
 
 #update
-./update.sh
+./compile.sh
 
 #Declare base dir and install dir
 BASE_DIR=$PWD
@@ -37,10 +37,12 @@ rm -rf $INSTALL_DIR
 mkdir -p $INSTALL_DIR
 
 #Copy files
-cp $BASE_DIR/CPGS/CPGS.o $INSTALL_DIR/CPGS.o
-cp $BASE_DIR/lib/lib.o $INSTALL_DIR/lib.o
+cp $BASE_DIR/CPGS.o $INSTALL_DIR/CPGS.o
+cp $BASE_DIR/lib.o $INSTALL_DIR/lib.o
 cp $BASE_DIR/example.prefs $INSTALL_DIR/my.prefs
-cp $BASE_DIR/run_final.sh $INSTALL_DIR/run.sh
+cp $BASE_DIR/CPGS.sh $INSTALL_DIR/CPGS.sh
+chmod +x $INSTALL_DIR/CPGS.sh
+cp $BASE_DIR/run.sh $INSTALL_DIR/run.sh
 chmod +x $INSTALL_DIR/run.sh
 
 #Make directory for output and worklodas
@@ -61,6 +63,7 @@ if [[ "$(/usr/local/bin/node -v | grep -c v)" == "1" ]]; then
 else
     cp /usr/bin/node $INSTALL_DIR/node
 fi
+
 cp $BASE_DIR/node_modules/ $INSTALL_DIR/node_modules/ -rf
 
 # Enclose (needs to do npm install -g enclose)

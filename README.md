@@ -74,13 +74,13 @@ The next part may change based on what platform you use.
 
 #### Windows
 
-Double click `PGS.exe`
+Coming soon
 
 #### Mac & Linux
 
-Double click `PGS`
+Double click `run.sh`
 
-Run a shell in any OS, and run `./PGS` or `./PGS.exe` with some flags found on the (wiki)[https://github.com/ChemicalDevelopment/PGS/wiki].
+Run a shell in any OS, and run `./node PGS.js` with some flags found on the (wiki)[https://github.com/ChemicalDevelopment/PGS/wiki].
 
 
 

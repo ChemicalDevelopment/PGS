@@ -22,6 +22,7 @@ Constants
 
 */
 const PRIME_FILE = "./primes.dat";
+const RUN_FILE = "./CPGS.sh";
 
 
 //Create Parser
@@ -103,7 +104,7 @@ var start_run = function() {
         error("Error no prime file! Generating one now.");
         error(e);
         //Spawn
-        const pp = spawn("./lib.o", [PRIME_FILE]);
+        const pp = spawn("./lib.o", [ PRIME_FILE ]);
         //When it closes, handle it
         pp.on('close', function (code) {
             log("lib Has finished generating primes.dat");
@@ -150,7 +151,6 @@ function runOffline() {
     }
     var next = function() {
         if (i < workloads.length) {
-            log("Now running workload: " + JSON.stringify(workloads[i]));
             doWorkload(workloads[i], true, oncomplete, function() {});
             ++i;
             currentThreads += 1;
@@ -186,7 +186,7 @@ function runOnline() {
 function doWorkload(workload, offline, oncomplete, progFunc) {
     log("Staring workload: " + JSON.stringify(workload));
     //We spawn a process
-    const proc = spawn("./run.sh", [PRIME_FILE, workload.ranges[0], workload.ranges[1], workload.ranges[2],
+    const proc = spawn(RUN_FILE, [PRIME_FILE, workload.ranges[0], workload.ranges[1], workload.ranges[2],
                                   workload.offsets[0], workload.offsets[1], workload.offsets[2]])
 
     //The process should print out info.

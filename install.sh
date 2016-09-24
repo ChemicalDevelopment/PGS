@@ -4,9 +4,6 @@ npm install
 #copies example prefs
 cp ./example.prefs ./my.prefs
 
-# Goes to lib, and creates sieve
-cd lib
-
 #Set exec flag
 chmod +x ./update.sh
 
