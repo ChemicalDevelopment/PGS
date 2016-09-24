@@ -115,6 +115,7 @@ var start_run = function() {
 error("Started running at " + new Date().toString());
 
 if (args.download > 0) {
+    log("Downloading");
     initFirebase(function () {
         downloadWorkloads(args.download);
     });

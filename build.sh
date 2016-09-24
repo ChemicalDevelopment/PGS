@@ -55,14 +55,19 @@ touch $INSTALL_DIR/output/error.txt
 #Copy the readme
 cp $BASE_DIR/RELEASE_README.txt $INSTALL_DIR/README.txt
 
+#Copy node binary in
+cp /usr/local/bin/node $INSTALL_DIR/node
+cp $BASE_DIR/node_modules/ $INSTALL_DIR/node_modules/ -rf
+
 # Enclose (needs to do npm install -g enclose)
 #enclose PGS.js
-jx package PGS.js PGS -native
-rm $BASE_DIR/PGS.jxp
+#jx package PGS.js PGS -native
+#rm $BASE_DIR/PGS.jxp
 
 #Copy it
-cp $BASE_DIR/PGS $INSTALL_DIR/PGS
+cp $BASE_DIR/PGS.js $INSTALL_DIR/PGS.js
+#cp $BASE_DIR/PGS $INSTALL_DIR/PGS
 #Remove compiled file
-rm ./PGS
+#rm ./PGS
 #Go to head folder
-cd $INSTALL_DIR/../
+#cd $INSTALL_DIR/../
