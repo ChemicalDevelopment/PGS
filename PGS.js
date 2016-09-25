@@ -127,7 +127,7 @@ if (args.submit) {
 } else if (args.download > 0) {
     log("Downloading");
     initFirebase(function () {
-        downloadWorkloads(args.download);
+        downloadWorkloads(parseInt(args.download));
     });
 } else {
     start_run();
