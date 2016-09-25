@@ -414,6 +414,7 @@ function log_progress(txt) {
 //Adds workload to downloaded list.
 function addPendingWorkload(workload) {
     log("Claiming workload " + JSON.stringify(workload));
+    db.ref("/user_data/" + usr.uid + "/workloads/" + getWorkloadIdentifier(workload)).set(workload);
     fs.appendFileSync("./workloads/pending.txt", getWorkloadIdentifier(workload) + "\n");
 }
 
