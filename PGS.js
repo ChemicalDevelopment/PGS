@@ -348,12 +348,16 @@ function submitAllFromLocal() {
     try {
         var finding_arr = fs.readFileSync("./output/finds.txt", 'utf8').split("\n");
         for (var i = 0; i < finding_arr.length; ++i) {
-            submitFunction(getFunctionFromString(finding_arr[i]))
+            if (finding_arr[i]) {
+                submitFunction(getFunctionFromString(finding_arr[i]));
+            }
         }
         var pending_arr = fs.readFileSync("./workloads/pending.txt", 'utf8').split("\n");
         for (var i = 0; i < pending_arr.length; ++i) {
-            log("Submitting workload: " + pending_arr[i]);
-            db.ref("/workloads/tasks/" + pending_arr[i]).set({});
+            if (pending_arr[i]) {
+                log("Submitting workload: " + pending_arr[i]);
+                db.ref("/workloads/tasks/" + pending_arr[i]).set({});
+            }
         }
     } catch (e) {
         error("While reading pending and findings: "+ e);
@@ -426,12 +430,12 @@ function shutdown() {
         process.exit(0);
     }
     if (queue) {
-        queue.shutdown().then(function () {
-            for (var f in reject_funcs) {
-                reject_funcs[f]("Shut down");
-            }
-            final();
-        });
+        for (var f in reject_funcs) {
+            reject_funcs[f]("Shut down");
+        }
+            queue.shutdown().then(function () {
+                final();
+            });
     } else {
         final();
     }

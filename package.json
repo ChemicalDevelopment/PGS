@@ -26,6 +26,9 @@
     "firebase": "^3.4.0",
     "firebase-queue": "^1.5.0",
     "fs": "0.0.1-security",
+    "jade": "^1.11.0",
+    "mailgun-js": "^0.7.12",
+    "pug": "^2.0.0-beta6",
     "utf8": "^2.1.1"
   }
 }
