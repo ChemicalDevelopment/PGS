@@ -360,6 +360,8 @@ function submitAllFromLocal() {
                 db.ref("/user_data/" + usr.uid + "/workloads/" + pending_arr[i] + "/done").set(true);
             }
         }
+        fs.unlinkSync("./workloads/pending.txt");
+        //fs.unlinkSync("./output/finds.txt");
     } catch (e) {
         error("While reading pending and findings: "+ e);
     }
