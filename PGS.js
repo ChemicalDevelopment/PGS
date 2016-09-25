@@ -357,6 +357,7 @@ function submitAllFromLocal() {
             if (pending_arr[i]) {
                 log("Submitting workload: " + pending_arr[i]);
                 db.ref("/workloads/tasks/" + pending_arr[i]).set({});
+                db.ref("/user_data/" + usr.uid + "/workloads/" + pending_arr[i] + "/done").set(true);
             }
         }
     } catch (e) {
@@ -414,6 +415,9 @@ function log_progress(txt) {
 //Adds workload to downloaded list.
 function addPendingWorkload(workload) {
     log("Claiming workload " + JSON.stringify(workload));
+    var workload_online = workload;
+    workload_online.downloaded = true;
+    workload_online.done = false;
     db.ref("/user_data/" + usr.uid + "/workloads/" + getWorkloadIdentifier(workload)).set(workload);
     fs.appendFileSync("./workloads/pending.txt", getWorkloadIdentifier(workload) + "\n");
 }
