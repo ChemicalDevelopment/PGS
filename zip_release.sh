@@ -30,4 +30,6 @@ else
 fi
 
 #call ./zip.sh language OS version
-cd ./build/$BUILD_OS/ && zip -r ../$BUILD_OS-$BUILD_VERSION.zip ./
+cd ./build/$BUILD_OS/C/ && zip -r ../../$BUILD_OS-$BUILD_VERSION.zip ./
+cd ../../../
+cd ./build/$BUILD_OS/OpenCL/ && zip -r ../../$BUILD_OS-OpenCL-$BUILD_VERSION.zip ./

@@ -30,7 +30,8 @@ echo "Building for $BUILD_OS using tar: $NODE_TAR"
 
 #Declare base dir and install dir
 BASE_DIR=$PWD
-INSTALL_DIR=$BASE_DIR/build/$BUILD_OS
+INSTALL_DIR=$BASE_DIR/build/$BUILD_OS/C/
+CL_INSTALL_DIR=$BASE_DIR/build/$BUILD_OS/OpenCL/
 
 #Update binaries
 ./compile.sh
@@ -42,11 +43,8 @@ rm -r $INSTALL_DIR
 mkdir -p $INSTALL_DIR
 
 #Copy files
-cp $BASE_DIR/CPGS.o $INSTALL_DIR/CPGS.o
 cp $BASE_DIR/lib.o $INSTALL_DIR/lib.o
 cp $BASE_DIR/example.prefs $INSTALL_DIR/my.prefs
-cp $BASE_DIR/CPGS.sh $INSTALL_DIR/CPGS.sh
-chmod +x $INSTALL_DIR/CPGS.sh
 cp $BASE_DIR/run.sh $INSTALL_DIR/run.sh
 chmod +x $INSTALL_DIR/run.sh
 
@@ -84,3 +82,18 @@ cp $NODE_CACHE/node $INSTALL_DIR/node
 
 #Copy it
 cp $BASE_DIR/PGS.js $INSTALL_DIR/PGS.js
+
+cp -rf $INSTALL_DIR $CL_INSTALL_DIR
+
+#Copy specifics to each install dir
+cp $BASE_DIR/CPGS.sh $INSTALL_DIR/CPGS.sh
+chmod +x $INSTALL_DIR/CPGS.sh
+cp $BASE_DIR/CPGS.o $INSTALL_DIR/CPGS.o
+
+cp $BASE_DIR/CLPGS.sh $CL_INSTALL_DIR/CLPGS.sh
+chmod +x $CL_INSTALL_DIR/CLPGS.sh
+cp $BASE_DIR/CLPGS.o $CL_INSTALL_DIR/CLPGS.o
+#REplace changes
+sed -i -e 's/CPGS.sh/CLPGS.sh/g' $CL_INSTALL_DIR/my.prefs
+sed -i -e 's/2/1/g' $CL_INSTALL_DIR/my.prefs
+
