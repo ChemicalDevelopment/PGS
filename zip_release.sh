@@ -32,4 +32,5 @@ fi
 #call ./zip.sh language OS version
 cd ./build/$BUILD_OS/C/ && zip -r ../../$BUILD_OS-$BUILD_VERSION.zip ./
 cd ../../../
+cp ./kernel.cl ./build/$BUILD_OS/OpenCL/kernel.cl
 cd ./build/$BUILD_OS/OpenCL/ && zip -r ../../$BUILD_OS-OpenCL-$BUILD_VERSION.zip ./

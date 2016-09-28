@@ -150,30 +150,35 @@ function runOffline() {
     var ee = new EventEmitter;
     var currentThreads = 0;
     var i = 0;
-    var oncomplete = function (time) {
-        currentThreads -= 1;
-        if (i >= workloads.length) {
-            log("No more workloads");
-            if (currentThreads == 0) {
-                log("Last thread has finished");
-                shutdown();
+    if (workloads.length == 0) {
+        log("No workloads found.");
+        shutdown();
+    } else {
+        var oncomplete = function (time) {
+            currentThreads -= 1;
+            if (i >= workloads.length) {
+                log("No more workloads");
+                if (currentThreads == 0) {
+                    log("Last thread has finished");
+                    shutdown();
+                }
+            } else {
+                ee.emit('next');
             }
-        } else {
+        }
+        var next = function() {
+            if (i < workloads.length) {
+                doWorkload(workloads[i], true, oncomplete, function() {});
+                ++i;
+                currentThreads += 1;
+            } else {
+                log("Thread finished. There are " + currentThreads + " threads are still running.");
+            }
+        };
+        ee.on('next', next);
+        for (var j = 0; j < prefs.threads; ++j) {
             ee.emit('next');
         }
-    }
-    var next = function() {
-        if (i < workloads.length) {
-            doWorkload(workloads[i], true, oncomplete, function() {});
-            ++i;
-            currentThreads += 1;
-        } else {
-            log("Thread finished. There are " + currentThreads + " threads are still running.");
-        }
-    };
-    ee.on('next', next);
-    for (var j = 0; j < prefs.threads; ++j) {
-        ee.emit('next');
     }
 }
 
