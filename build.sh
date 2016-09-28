@@ -38,6 +38,7 @@ CL_INSTALL_DIR=$BASE_DIR/build/$BUILD_OS/OpenCL/
 
 #Delete old build
 rm -r $INSTALL_DIR
+rm -r $CL_INSTALL_DIR
 
 #Make directory recursively
 mkdir -p $INSTALL_DIR
