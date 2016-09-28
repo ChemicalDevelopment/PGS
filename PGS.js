@@ -22,7 +22,6 @@ Constants
 
 */
 const PRIME_FILE = "./primes.dat";
-const RUN_FILE = "./CPGS.sh";
 
 
 //Create Parser
@@ -74,6 +73,10 @@ var args = parser.parseArgs();
 
 //We store our prefs
 var prefs = JSON.parse(fs.readFileSync(args.prefs, 'utf8'));
+
+//Read in run file
+var RUN_FILE = prefs.run_file;
+
 
 //Firebase objects
 var usr;
@@ -186,6 +189,7 @@ function runOnline() {
         wref.set(data);
         reject_funcs.push(reject);
         var oncomplete = function (time) {
+            progress(100);
             uref.child("timespent").once("value", function(snap) {
                 uref.child("polynomialschecked").once("value", function(snapi) {
                     var totalTime = snap.val() + time;
