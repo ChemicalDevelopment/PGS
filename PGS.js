@@ -240,12 +240,17 @@ function doWorkload(workload, offline, oncomplete, progFunc) {
 
     //On close, we delete the workload if the flag is set, and then we call our callback
     proc.on('close', function(code) {
-        var endTime = new Date().getTime() / 1000;
-        if (offline) {
-            deleteLocalWorkload(workload.path);
+        if (code != 0) {
+            error("Encountered error code: " + code + " while running child process.");
+            shutdown();
+        } else {
+            var endTime = new Date().getTime() / 1000;
+            if (offline) {
+                deleteLocalWorkload(workload.path);
+            }
+            log('Finished workload: ' + JSON.stringify(workload) + " in " + (endTime - startTime) + "s");
+            oncomplete(endTime - startTime);
         }
-        log('Finished workload: ' + JSON.stringify(workload) + " in " + (endTime - startTime) + "s");
-        oncomplete(endTime - startTime);
     });
 }
 //Handles string output normally from stdout, but could be from file
