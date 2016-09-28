@@ -16,12 +16,11 @@
 ### Implemented
   * Multithreaded - Specify `in my.prefs`
   * Link with DB for users to help search
-  * OpenCL - Look in folder `JPGS`.
+  * OpenCL - Look at file `CLPGS.c`
 
 ### Removed
   * JavaPGS
   * GUI Application (Also going to be implemented)
-  * OpenCL - Too buggy, and multithreaded is better performance
   
 
 ## What is this?
@@ -107,6 +106,10 @@ Then,
 ```
 node PGS.js
 ```
+
+### OpenCL
+Please view the $wiki for info on OpenCL.
+
 
 ## More Info
 More info can be found on our wiki (https://github.com/ChemicalDevelopment/PGS/wiki)
