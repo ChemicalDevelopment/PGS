@@ -59,7 +59,7 @@ touch $INSTALL_DIR/output/finds.txt
 touch $INSTALL_DIR/output/error.txt
 
 #Include node modules
-cp $BASE_DIR/node_modules/ $INSTALL_DIR/node_modules/ -r
+cp -r $BASE_DIR/node_modules/ $INSTALL_DIR/node_modules/
 
 #Copy the readme
 cp $BASE_DIR/RELEASE_README.txt $INSTALL_DIR/README.txt
@@ -76,7 +76,7 @@ if [ ! -d "$NODE_CACHE" ]; then
     #Copy the binary to cache
     cp $NODE_CACHE/tmp/$NODE_TAR/bin/node $NODE_CACHE/node
     #Remove tmp dir
-    rm $NODE_CACHE/tmp/ -r
+    rm -r $NODE_CACHE/tmp/
 fi
 #Copy it to install
 cp $NODE_CACHE/node $INSTALL_DIR/node
