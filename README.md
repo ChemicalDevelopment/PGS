@@ -1,5 +1,4 @@
-<img src="/ChemicalDevelopment/PGS/raw/master/logo.png" alt="PGS" style="width:100px;">
-    
+<img src="https://raw.githubusercontent.com/ChemicalDevelopment/PGS/master/logo.png" alt="PGS" width="50%" height="50%">
 
 ## Features
 
