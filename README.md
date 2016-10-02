@@ -1,4 +1,4 @@
-![#PGS](logo.png | width=100)
+<img src="/ChemicalDevelopment/PGS/raw/master/logo.png" alt="PGS" style="width:100px;">
     
 
 ## Features
