@@ -1,4 +1,4 @@
-![#PGS](logo.png)
+![#PGS](logo.png | width=100)
     
 
 ## Features
