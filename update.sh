@@ -1,4 +1,4 @@
 # Compile both executables
 ./compile.sh
 # Compute sieve
-./lib.o
+./lib.o 4000000000
