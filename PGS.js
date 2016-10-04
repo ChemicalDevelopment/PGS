@@ -111,7 +111,7 @@ var start_run = function() {
         error("Error no prime file! Generating one now.");
         error(e);
         //Spawn
-        const pp = spawn("./lib.o", [ PRIME_FILE ]);
+        const pp = spawn("./lib.o", [ 4000000000 ]);
         //When it closes, handle it
         pp.on('close', function (code) {
             log("lib Has finished generating primes.dat");

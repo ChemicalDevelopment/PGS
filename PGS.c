@@ -73,9 +73,9 @@ void test_quadratic(int i, int j, int k)
 
 //Sets pr buf to bitset of primes, calculated by bitset
 void get_primes(const char *primefile) {
-    //How many reads
-    const int NUM_READS = 31250000;
     FILE *f = fopen(primefile, "r");
+    fseek(f, 0L, SEEK_END);
+    int NUM_READS = ftell(fp) / 4;
     pr = (int *)malloc(sizeof(int) * NUM_READS);
     printf("Init prime buf\n");
     int i;

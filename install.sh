@@ -15,7 +15,7 @@ chmod +x ./update.sh
 
 #Generates sieve of primes
 echo "This part may take up to 2 minutes"
-./update.sh
+./update.sh 4000000000
 
 #Give people a reminder
 echo "! Remember to edit ./my.prefs !"

@@ -16,7 +16,7 @@ int get_bit(int v, int index) {
 }
 
 int main(int argc, char *argv[]) {
-    long x = 2000000000;//strtoll(argv[1], NULL, 10);
+    long x = strtoll(argv[1], NULL, 10);
     int *bitset = (int *)malloc(sizeof(int) * (x / 32 + 1));
     if (x % 32 != 0) {
         x += 32 - (x % 32);
