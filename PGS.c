@@ -75,12 +75,12 @@ void test_quadratic(int i, int j, int k)
 void get_primes(const char *primefile) {
     FILE *fp = fopen(primefile, "r");
     fseek(fp, 0L, SEEK_END);
-    int NUM_READS = ftell(fp) / 4;
+    long NUM_READS = ftell(fp) / 4;
     fclose(fp);
     FILE *f = fopen(primefile, "r");
     pr = (int *)malloc(sizeof(int) * NUM_READS);
     printf("Init prime buf\n");
-    int i;
+    long i;
     for (i = 0; i < NUM_READS; ++i) {
         fread(&pr[i], sizeof(int), 1, f);
     }

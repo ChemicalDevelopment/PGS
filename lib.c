@@ -16,12 +16,12 @@ int get_bit(int v, int index) {
 }
 
 int main(int argc, char *argv[]) {
-    long x = strtoll(argv[1], NULL, 10);
+    long long x = strtoll(argv[1], NULL, 10);
     int *bitset = (int *)malloc(sizeof(int) * (x / 32 + 1));
     if (x % 32 != 0) {
         x += 32 - (x % 32);
     }
-    int i, j, bound;
+    long long i, j, bound;
     for (i = 0; i < x / 32; ++i) {
         bitset[i] = ~0;
     }
