@@ -9,6 +9,9 @@ int chbit(int x, int b) {
     return (x >> b) & 1;
 }
 
+#pragma OPENCL EXTENSION cl_amd_printf : enable
+#pragma OPENCL EXTENSION cl_intel_printf : enable
+
 /*
 
 Kernel for testing quadratics against a prime array.
@@ -59,7 +62,7 @@ __kernel void test_quadratics(__constant int *pr) {
             }
         }
     }
-    if ((inarow >= 60 || distinct >= 40) && distinct > 1) {
+//    if ((inarow >= 60 || distinct >= 40) && distinct > 1) {
         printf("PGSO: %d, %d; [%d, %d, %d]\n", inarow, distinct, i, j, k);
-    }
+  //  }
 }
