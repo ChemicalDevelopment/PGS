@@ -2,7 +2,7 @@
 *.prefs
 !example.prefs
 
-private/
+*private*
 
 *.o
 *.out
