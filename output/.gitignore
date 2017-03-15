@@ -1,6 +1,3 @@
-# Ignore everything in this directory
+# Ignore everything in this directory, except gitignore
 *
-# Except this file
 !.gitignore
-
-# This way, cloners will have a output directory

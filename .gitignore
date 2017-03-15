@@ -1,25 +1,19 @@
-# Ignore all prefs except the example one
+
 *.prefs
 !example.prefs
 
-# All compiled C programs
+private/
+
 *.o
 *.out
+*.pyc
+*.pyo
+*.pyd
 
-# Prime sieve
 *.dat
 
-# Ignore tmp directory for building
 /tmp/
 
-# Zipped and compiled versions
 /build/
 
-# Ignore all npm installed packages
-/node_modules/
-
-# VScode editor
 *.vscode
-
-# Builds
-/tmp/
