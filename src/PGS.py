@@ -45,7 +45,7 @@ def main():
 			for wl in extra.get_workloads(args.download):
 				fp = open("workloads/{0}".format(wl[0]), "w+")
 				fp.write(json.dumps(wl[1].__dict__))
-				findsp.write("\n" + wl[0] + "\n")
+				findsp.write("\n" + wl[0])
 				fp.close()
 			findsp.close()
 		elif args.submit:
