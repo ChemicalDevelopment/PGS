@@ -1,5 +1,5 @@
 /*
- * PGS.c -- main file for CPGS, an implementation of the kernel of PGS
+ * lib.c -- library for calculating primes
  *
  * C ChemicalDevelopment 2017
  *   Part of the PGS project.
@@ -8,7 +8,9 @@
  * Authors:
  *   Cade Brown <cade@cade.site>
  *
- * PGS is free software; you can redistribute it and/or modify it under the terms of the GNU GPL v3 or later, at your choice. See details in LICENSE.txt
+ * PGS is free software; you can redistribute it and/or modify 
+ * it under the terms of the GNU GPL v3 or later, at your choice. 
+ * See details in LICENSE.txt
  *
  */
 
