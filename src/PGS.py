@@ -13,17 +13,19 @@
 ###
 
 import os
+os.environ["REQUESTS_CA_BUNDLE"] = "cacert.pem"
 import argparse
 import json
 import time
 from datetime import datetime    
+import pyrebase
 
 from extra import extra
 import glbl
 import pgslog
 
 def main():
-	parser = argparse.ArgumentParser(description="PGS - Prime Generator Search", version="2.2.5", add_help=True)
+	parser = argparse.ArgumentParser(description="PGS - Prime Generator Search", add_help=True)
 	parser.add_argument('-p', '--prefs', type=str, default="my.prefs", help='Preferences file')
 	parser.add_argument('-off', '--offline', action='store_true', help='Offline mode')
 	parser.add_argument('-f', '--file', type=str, default="workloads/pending.txt", help='File for local workloads')
@@ -37,7 +39,9 @@ def main():
 
 	pgslog.info("Args entered: \n" + str(vars(args)))
 
-	prefs = extra.DictToObject(**json.load(open(args.prefs)))
+	prefs = json.load(open(args.prefs))
+	prefs = { str(k): str(v) for k, v in prefs.items()}
+	prefs = extra.DictToObject(**prefs)
 	glbl.init()
 
 	def assure_primefile():
@@ -54,18 +58,21 @@ def main():
 	if args.offline:
 		assure_primefile()
 		runners = []
-		for i in range(0, prefs.threads):
+		for i in range(0, int(prefs.threads)):
 			runners.append(extra.Runner(prefs.run_file, args.primefile, False, args.file))
 		while True:
 			time.sleep(10)
 	else:
+		"""
 		try:
-			import pyrebase
+			
 		except:
 			pgslog.error("Pyrebase not installed. Trying to install now")
 			import pip
 			pip.main(['install', 'pyrebase', '--user'])
 			import pyrebase
+		
+		"""
 		appConfig = {
 			# public API key
 			"apiKey": "AIzaSyC6R2fqZN9eRFzr88nebDqvA_VwNKtzJQY",
@@ -74,6 +81,7 @@ def main():
 			"storageBucket": "pgsdb-c4faf.appspot.com"
 		}
 		glbl.firebase = pyrebase.initialize_app(appConfig)
+		print (prefs)
 		glbl.usr = glbl.firebase.auth().sign_in_with_email_and_password(prefs.email, prefs.password)
 		refresh = extra.AutoRefresh()
 		refresh.refresh()
@@ -87,7 +95,6 @@ def main():
 			findsp.close()
 		elif args.submit:
 			findsp = open(pgslog.FINDS)
-			print glbl.usr.keys()
 			for x in findsp.read().split("\n"):
 				glbl.firebase.database().child("user_data").child(glbl.usr["userId"]).child("finds").child(hash(x)).set(x, token=glbl.usr["idToken"])
 			findsp.close()
@@ -101,12 +108,12 @@ def main():
 			assure_primefile()
 			
 			runners = []
-			for i in range(0, prefs.threads):
+			for i in range(0, int(prefs.threads)):
 				runners.append(extra.Runner(prefs.run_file, args.primefile))
 			
 			while True:
 				time.sleep(10)
 
 if __name__ == "__main__":
-	exit(main())
+	main()
 

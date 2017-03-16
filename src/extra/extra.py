@@ -79,7 +79,7 @@ class AutoRefresh:
 				time.sleep(self.interval)
 				self.refresh()
 			except Exception as e:
-				print str(e)
+				pgslog.error(str(e))
 
 class Runner:
 	def __init__(self, runFile, primeFile, online=True, workloadFile=None):
@@ -106,6 +106,7 @@ class Runner:
 	
 	def handle_pipe(self, name, pipe):
 		for line in iter(pipe.readline, ""):
+			line = line.decode()
 			line = line.strip().replace("\n", "")
 			if "(O)" in line:
 				pgslog.find(line)
@@ -117,7 +118,7 @@ class Runner:
 					glbl.firebase.database().child("workloads").child(self.wl[0]).child("_changed").set(int(time.time() * 1000))
 			elif "(P)" in line:
 				pgslog.info(line)
-				percent = int(line.split(":")[-1])
+				percent = int(line.split(":")[-1].replace("\\n", "").replace("'", "").strip())
 				if self.online:
 					glbl.firebase.database().child("workloads").child(self.wl[0]).child("_changed").set(int(time.time() * 1000))
 					glbl.firebase.database().child("workloads").child(self.wl[0]).child("_progress").set(percent)

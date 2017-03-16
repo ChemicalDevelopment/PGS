@@ -68,3 +68,12 @@ bundle: CPGS libpgs
 
 	zip -r PGS.zip $(BUILD_DIR)
 	tar cfJ PGS.tar.xz $(BUILD_DIR)
+
+freeze:
+	bbfreeze src/PGS.py
+	mkdir dist/output
+	mkdir dist/workloads
+	cp output/* dist/output/
+	cp workloads/pending.txt dist/workloads
+	cp example.prefs dist/my.prefs
+	cp cacert.pem dist/
