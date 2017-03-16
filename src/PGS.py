@@ -12,6 +12,7 @@
 #
 ###
 
+import os
 import argparse
 import json
 import time
@@ -26,6 +27,7 @@ def main():
 	parser.add_argument('-p', '--prefs', type=str, default="my.prefs", help='Preferences file')
 	parser.add_argument('-off', '--offline', action='store_true', help='Offline mode')
 	parser.add_argument('-f', '--file', type=str, default="workloads/pending.txt", help='File for local workloads')
+	parser.add_argument('-pf', '--primefile', type=str, default="./primes.dat", help='Prime file (normally .dat)')
 	parser.add_argument('-sm', '--submit', action='store_true', help='Submit output/finds.txt to the server')
 	parser.add_argument('-dl', '--download', type=int, default=-1, help='Downloads workloads into workloads/')
 
@@ -38,10 +40,22 @@ def main():
 	prefs = extra.DictToObject(**json.load(open(args.prefs)))
 	glbl.init()
 
+	def assure_primefile():
+		if not os.path.isfile(args.primefile):
+			try:
+				num_primef = open("./NUM_PRIMES")
+				num_primes = int(num_primef.read())
+				num_primef.close()
+			except:
+				num_primes = 1000000000
+			pgslog.error("No prime file. Generating one now.")
+			os.system("./libpgs.o {0} {1}".format(args.primefile, num_primes))
+
 	if args.offline:
+		assure_primefile()
 		runners = []
 		for i in range(0, prefs.threads):
-			runners.append(extra.Runner(prefs.run_file, False, args.file))
+			runners.append(extra.Runner(prefs.run_file, args.primefile, False, args.file))
 		while True:
 			time.sleep(10)
 	else:
@@ -78,9 +92,11 @@ def main():
 			findsp.close()
 
 		else:
+			assure_primefile()
+			
 			runners = []
 			for i in range(0, prefs.threads):
-				runners.append(extra.Runner(prefs.run_file))
+				runners.append(extra.Runner(prefs.run_file, args.primefile))
 			
 			while True:
 				time.sleep(10)

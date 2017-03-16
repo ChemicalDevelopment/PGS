@@ -82,9 +82,10 @@ class AutoRefresh:
 				print str(e)
 
 class Runner:
-	def __init__(self, runFile, online=True, workloadFile=None):
+	def __init__(self, runFile, primeFile, online=True, workloadFile=None):
 		self.online = online
 		self.runFile = runFile
+		self.primeFile = primeFile
 		self.workloadFile = workloadFile
 		self.wl = None
 
@@ -143,10 +144,11 @@ class Runner:
 			if self.wl is None:
 				pgslog.info("\nRan out of workloads!\n")
 				break
-			cmd = [self.runFile] + ["./primes.dat"] + list(map(str, self.wl[1].offsets)) + list(map(str, self.wl[1].ranges))
+			cmd = [self.runFile] + [self.primeFile] + list(map(str, self.wl[1].offsets)) + list(map(str, self.wl[1].ranges))
 			start_time = time.time()
-			proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 			pgslog.info("Running cmd: " + str(cmd))
+			
+			proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 			threading.Thread(target=self.handle_pipe, args=("stdout", proc.stdout,)).start()
 			threading.Thread(target=self.handle_pipe, args=("stderr", proc.stderr,)).start()
 			proc.wait()
