@@ -62,6 +62,9 @@ bundle: CPGS libpgs
 	touch $(BUILD_DIR)output/finds.txt
 
 	find . -name "*.pyc" -exec rm -f {} \;
+
+	tar -C $(BUILD_DIR)src -xf pip.tar.xz
+
+
 	zip -r PGS.zip $(BUILD_DIR)
 	tar cfJ PGS.tar.xz $(BUILD_DIR)
-	tar -C $(BUILD_DIR)src -xf pip.tar.xz
