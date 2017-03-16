@@ -3,15 +3,16 @@
 ## Features
 
 ### Planned
+  * Multithreaded - Specify `in my.prefs`
   * GUI Application (Was removed)
 
 ### Implemented
-  * Multithreaded - Specify `in my.prefs`
   * Link with DB for users to help search
   * OpenCL - Look at file `CLPGS.c`
 
 ### Removed
   * JavaPGS
+  * NodeJS
   * GUI Application (Also going to be implemented)
   
 
@@ -71,21 +72,21 @@ Coming soon
 
 Double click `run.sh`
 
-Run a shell in any OS, and run `./node PGS.js` with some flags found on the (wiki)[https://github.com/ChemicalDevelopment/PGS/wiki].
+Run a shell in any OS, and run `python src/PGS.py` with some flags found on the (wiki)[https://github.com/ChemicalDevelopment/PGS/wiki].
 
 
 
 ### Development Build
-To use development build, you will need `gcc` and `node`
+To use development build, you will need `cc` and `python`
 
 For the default install script, run
 ```
-./install.sh
+make setup && make install
 ```
 
 To run the program:
 ```
-node PGS.js --offline
+python src/PGS.py -h
 ```
 
 Or, if you would like to run a version that reports the the server,
@@ -96,7 +97,7 @@ Use your text editor to open `./my.prefs`, and change the email and password
 
 Then,
 ```
-node PGS.js
+python src/PGS.py -p my.prefs
 ```
 
 ### OpenCL

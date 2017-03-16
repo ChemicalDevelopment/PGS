@@ -1,9 +1,21 @@
+###
+# PGS.py -- main file for the PGS project
+#
+# C ChemicalDevelopment 2017
+#   Part of the PGS project.
+#   <http://pgs.chemicaldevelopment.us/>
+#
+# Authors:
+#   Cade Brown <cade@cade.site>
+#
+# PGS is free software; you can redistribute it and/or modify it under the terms of the GNU GPL v3 or later, at your choice. See details in LICENSE.txt
+#
+###
+
 import argparse
 import json
 import time
 from datetime import datetime    
-
-import pyrebase
 
 from extra import extra
 import glbl
@@ -19,16 +31,21 @@ def main():
 
 	args = parser.parse_args()
 
-	pgslog.info("---------------------\nStarting at: " + datetime.now().replace(microsecond=0).isoformat())
+	pgslog.info("\n\n------------------------------------------\n\nStarting at: " + datetime.now().replace(microsecond=0).isoformat())
+
+	pgslog.info("Args entered: \n" + str(vars(args)))
 
 	prefs = extra.DictToObject(**json.load(open(args.prefs)))
 	glbl.init()
 
 	if args.offline:
-		extra.Runner(prefs.run_file, False, args.file)
+		runners = []
+		for i in range(0, prefs.threads):
+			runners.append(extra.Runner(prefs.run_file, False, args.file))
 		while True:
 			time.sleep(10)
 	else:
+		import pyrebase
 		appConfig = {
 			# public API key
 			"apiKey": "AIzaSyC6R2fqZN9eRFzr88nebDqvA_VwNKtzJQY",
@@ -61,7 +78,10 @@ def main():
 			findsp.close()
 
 		else:
-			extra.Runner(prefs.run_file)
+			runners = []
+			for i in range(0, prefs.threads):
+				runners.append(extra.Runner(prefs.run_file))
+			
 			while True:
 				time.sleep(10)
 

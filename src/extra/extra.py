@@ -1,4 +1,5 @@
 ###
+# extra/extra.py -- Most of the work in PGS
 #
 # C ChemicalDevelopment 2017
 #   Part of the PGS project.
@@ -33,9 +34,10 @@ def get_workloads(max=1):
 	ret = []
 	so_far = 0
 	for wlk in vv.keys():
-		if vv[wlk]["_state"] == "none":
+		if vv[wlk]["_state"] == "none" and wlk not in glbl.workloadids:
 			if so_far < max:
 				ret.append([wlk, DictToObject(**vv[wlk])])
+				glbl.workloadids.append(wlk)
 				so_far += 1
 	return ret
 
@@ -103,6 +105,7 @@ class Runner:
 	
 	def handle_pipe(self, name, pipe):
 		for line in iter(pipe.readline, ""):
+			line = line.strip().replace("\n", "")
 			if "(O)" in line:
 				pgslog.find(line)
 				find = line.split(":")[-1]
@@ -126,9 +129,12 @@ class Runner:
 		while True:
 			if self.to_find:
 				if self.to_find_idx < len(self.to_find):
+				
+					while self.to_find[self.to_find_idx] in glbl.workloadids:
+						self.to_find_idx = 1 + self.to_find_idx
+					glbl.workloadids.append(self.to_find[self.to_find_idx])
 					self.wl = get_workload("workloads/" + self.to_find[self.to_find_idx])
 					self.file = self.to_find[self.to_find_idx]
-					self.to_find_idx = 1 + self.to_find_idx
 				else: 
 					break
 			else:
@@ -140,7 +146,7 @@ class Runner:
 			cmd = [self.runFile] + ["./primes.dat"] + list(map(str, self.wl[1].offsets)) + list(map(str, self.wl[1].ranges))
 			start_time = time.time()
 			proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-			pgslog.info("\nRunning cmd: " + str(cmd))
+			pgslog.info("Running cmd: " + str(cmd))
 			threading.Thread(target=self.handle_pipe, args=("stdout", proc.stdout,)).start()
 			threading.Thread(target=self.handle_pipe, args=("stderr", proc.stderr,)).start()
 			proc.wait()

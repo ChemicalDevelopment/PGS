@@ -1,6 +1,19 @@
+/*
+ * PGS.c -- main file for CPGS, an implementation of the kernel of PGS
+ *
+ * C ChemicalDevelopment 2017
+ *   Part of the PGS project.
+ *   <http://pgs.chemicaldevelopment.us/>
+ *
+ * Authors:
+ *   Cade Brown <cade@cade.site>
+ *
+ * PGS is free software; you can redistribute it and/or modify it under the terms of the GNU GPL v3 or later, at your choice. See details in LICENSE.txt
+ *
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/time.h>
 
 int *pr;
 
@@ -77,8 +90,6 @@ int main(int argc, char *argv[])
         
     int i, j, k;
     get_primes(fn);
-    //printf("Read in primes\n");
-    int ti = (int)time(NULL);
     for (i = o0; i < r0 + o0; ++i)
     {
         for (j = o1; j < r1 + o1; ++j)
@@ -94,7 +105,6 @@ int main(int argc, char *argv[])
             fflush(stdout);
         }
     }
-    printf("\nPGS (I): Took %d\n", (int)time(NULL) - ti);
 
     fflush(stdout);
     fflush(stderr);
