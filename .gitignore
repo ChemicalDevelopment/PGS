@@ -4,6 +4,9 @@
 
 *private*
 
+# build dir
+PGS/
+
 *.o
 *.out
 *.pyc
@@ -12,8 +15,4 @@
 
 *.dat
 
-/tmp/
-
-/build/
-
-*.vscode
+*tar*

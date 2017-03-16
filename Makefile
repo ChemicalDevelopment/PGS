@@ -18,7 +18,8 @@ CC=cc
 # these should probably not change
 PRIME_FILE=primes.dat
 NUM_PRIMES=$(shell cat NUM_PRIMES)
-BUILD_DIR=tmp/
+BUILD_DIR=PGS/
+
 
 setup: CPGS libpgs
 	cp ./example.prefs ./output/my.prefs
@@ -41,8 +42,9 @@ libpgs: src-libpgs/lib.c
 	gcc $< -o libpgs.o
 
 bundle: CPGS libpgs
-	mkdir $(BUILD_DIR)
-	mkdir $(BUILD_DIR)workloads/
+	mkdir -p $(BUILD_DIR)
+	mkdir -p $(BUILD_DIR)workloads/
+	mkdir -p $(BUILD_DIR)output/
 	
 	cp -Rf src/ $(BUILD_DIR)src
 	cp CPGS.o $(BUILD_DIR)CPGS.o
@@ -56,3 +58,6 @@ bundle: CPGS libpgs
 	touch $(BUILD_DIR)output/output.txt
 	touch $(BUILD_DIR)output/error.txt
 	touch $(BUILD_DIR)output/finds.txt
+
+	find . -name "*.pyc" -exec rm -f {} \;
+	tar cfJ PGS.tar.xz $(BUILD_DIR)

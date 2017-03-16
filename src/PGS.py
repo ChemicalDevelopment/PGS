@@ -59,7 +59,13 @@ def main():
 		while True:
 			time.sleep(10)
 	else:
-		import pyrebase
+		try:
+			import pyrebase
+		except:
+			pgslog.error("Pyrebase not installed. Trying to install now")
+			import pip
+			pip.main(['install', 'pyrebase', '--user'])
+			import pyrebase
 		appConfig = {
 			# public API key
 			"apiKey": "AIzaSyC6R2fqZN9eRFzr88nebDqvA_VwNKtzJQY",
