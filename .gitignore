@@ -15,4 +15,5 @@ PGS/
 
 *.dat
 
-*tar*
+*.tar*
+*.zip
