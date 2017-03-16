@@ -3,18 +3,17 @@
 ## Features
 
 ### Planned
-  * Multithreaded - Specify `in my.prefs`
   * GUI Application (Was removed)
 
 ### Implemented
+  * Multithreaded - Specify `in my.prefs`
   * Link with DB for users to help search
-  * OpenCL - Look at file `CLPGS.c`
 
 ### Removed
   * JavaPGS
   * NodeJS
   * GUI Application (Also going to be implemented)
-  
+  * OpenCL - May add back
 
 ## What is this?
 This is a project that searches for functions that are prime for the first few values of input. It is a **P**rime **G**enerator **S**earch. It looks through polynomials, and reports it's findings to the server.
@@ -25,9 +24,9 @@ Primes have both practical and novel purposes. Primes are in all forms of crypto
 There has been a small amount of modernized research on prime generating polynomials, and I believe there is a gap of where we are and where we should be. PrimeGrid (http://www.primegrid.com/) is one example, and they have found a linear function that is prime for x = [0, 25]. We are looking for polynomials (especially quadratics) that have the same property
 
 ## Want to help out?
-We have a website (http://chemicaldevelopment.us/pgs/client) where you can create an account, view records, and manage your account.
+We have a website (http://chemicaldevelopment.us/software/pgs/client) where you can create an account, view records, and manage your account.
 
-To download the project, please check out (http://chemicaldevelopment.us/pgs).
+To download the project, please check out (http://chemicaldevelopment.us/software/pgs).
 
 If you would like to help develop the project, you can reach me at info@chemicaldevelopment.us
 
@@ -72,7 +71,7 @@ Coming soon
 
 Double click `run.sh`
 
-Run a shell in any OS, and run `python src/PGS.py` with some flags found on the (wiki)[https://github.com/ChemicalDevelopment/PGS/wiki].
+Run a shell in any OS, and run `python src/PGS.py -h` with some flags found on the (wiki)[https://github.com/ChemicalDevelopment/PGS/wiki].
 
 
 
@@ -81,8 +80,9 @@ To use development build, you will need `cc` and `python`
 
 For the default install script, run
 ```
-make setup && make install
+make setup
 ```
+
 
 To run the program:
 ```
@@ -96,6 +96,13 @@ You need to create an account at (http://chemicaldevelopment.us/pgs/client)
 Use your text editor to open `./my.prefs`, and change the email and password
 
 Then,
+
+```
+make install
+```
+
+Now, you can run without --offline:
+
 ```
 python src/PGS.py -p my.prefs
 ```
@@ -103,14 +110,16 @@ python src/PGS.py -p my.prefs
 ### OpenCL
 Please view the $wiki for info on OpenCL.
 
+Currently not implemented
+
 
 ## More Info
 More info can be found on our wiki (https://github.com/ChemicalDevelopment/PGS/wiki)
 
 The thread on mersenneforums (http://mersenneforum.org/showthread.php?t=21200)
 
-Website: (http://chemicaldevelopment.us/pgs)
+Website: (http://chemicaldevelopment.us/software/pgs)
 
-Online Client: (http://chemicaldevelopment.us/pgs/client/)
+Online Client: (http://chemicaldevelopment.us/software/pgs/client/)
 
-Account Manager: (http://chemicaldevelopment.us/pgs/client/account/)
+Account Manager: (http://chemicaldevelopment.us/software/pgs/client/account/)
