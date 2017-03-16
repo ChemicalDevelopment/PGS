@@ -55,11 +55,13 @@ This program looks for larger and longer examples of this, and does it over the 
 ### Releases (Default)
 [Sign Up](http://chemicaldevelopment.us/pgs/account) for an account
 
-To download an executable, check out the [Releases](https://github.com/ChemicalDevelopment/PGS/releases)
+To download an executable, check out the [Releases](https://github.com/ChemicalDevelopment/PGS/releases).
 
 Unzip the folder, and edit `my.prefs` and enter in your email and password.
 
 You can also change `threads` to whatever value you'd like.
+
+Check out the `README.txt` file for more info.
 
 The next part may change based on what platform you use.
 

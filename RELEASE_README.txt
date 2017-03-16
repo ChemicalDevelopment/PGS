@@ -15,7 +15,7 @@ If you haven't already, create an account here: http://chemicaldevelopment.us/pg
 
 Once you've done that, double click `my.prefs`, and change `{{email}}` and `{{password}}`. 
 
-Make sure to save the file, now double-click `run.sh`, or run it in a terminal
+Make sure to save the file, now double-click `run.sh`, or run it in a terminal with `./run.sh`
 
 
 
@@ -35,7 +35,6 @@ To run using the terminal, run `./run.sh` or `./run.bat` for windows.
 To just download workloads, run `./run.sh --download $n` to download and store $n workloads. You can run these later using `--offline`
 
 To run downloaded workloads, run `./run.sh --offline`. Their results will be stored in `./output/finds.txt`.
-Additionally, you can run  `./run.sh --offline --remove` to remove workload files as they are completed.
 
 To submit stored results, run `./run.sh --submit`. The results will be stored online.
 
@@ -82,6 +81,6 @@ My email: info@chemicaldevelopment.us
 
 Website: chemicaldevelopment.us
 
-PGS section: chemicaldevelopment.us/pgs/client/
+PGS section: chemicaldevelopment.us/software/pgs/client/
 
 PGS Wiki: https://github.com/ChemicalDevelopment/pgs/wiki

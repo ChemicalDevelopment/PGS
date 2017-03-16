@@ -47,6 +47,7 @@ bundle: CPGS libpgs
 	mkdir -p $(BUILD_DIR)output/
 	
 	cp -Rf src/ $(BUILD_DIR)src
+	cp run.sh $(BUILD_DIR)run.sh
 	cp CPGS.o $(BUILD_DIR)CPGS.o
 	cp libpgs.o $(BUILD_DIR)libpgs.o
 	cp example.prefs $(BUILD_DIR)example.prefs
