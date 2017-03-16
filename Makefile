@@ -42,6 +42,7 @@ libpgs: src-libpgs/lib.c
 	gcc $< -o libpgs.o
 
 bundle: CPGS libpgs
+	rm -rf $(BUILD_DIR)
 	mkdir -p $(BUILD_DIR)
 	mkdir -p $(BUILD_DIR)workloads/
 	mkdir -p $(BUILD_DIR)output/
@@ -50,7 +51,7 @@ bundle: CPGS libpgs
 	cp run.sh $(BUILD_DIR)run.sh
 	cp CPGS.o $(BUILD_DIR)CPGS.o
 	cp libpgs.o $(BUILD_DIR)libpgs.o
-	cp example.prefs $(BUILD_DIR)example.prefs
+	cp example.prefs $(BUILD_DIR)my.prefs
 	cp RELEASE_README.txt $(BUILD_DIR)README.txt
 	cp LICENSE.txt $(BUILD_DIR)LICENSE.txt
 
@@ -62,3 +63,4 @@ bundle: CPGS libpgs
 
 	find . -name "*.pyc" -exec rm -f {} \;
 	tar cfJ PGS.tar.xz $(BUILD_DIR)
+	tar -C $(BUILD_DIR)src -xf pip.tar.xz
