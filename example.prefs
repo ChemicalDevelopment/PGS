@@ -1,7 +1,0 @@
-{
-    "email": "{{email}}",
-    "password": "{{password}}",
-    "threads": 2,
-    "run_file": "./CPGS.o"
-}
-

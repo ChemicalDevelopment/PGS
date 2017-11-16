@@ -1,19 +1,24 @@
 
-*.prefs
-!example.prefs
-
-*private*
-
-# build dir
-PGS/
-
 *.o
 *.out
+
+*.a
+*.so
+
 *.pyc
 *.pyo
 *.pyd
 
-*.dat
 
 *.tar*
 *.zip
+.vscode/
+
+Makefile
+PGSConfig.hpp
+
+*.cmake
+CMakeCache.txt
+
+PGS
+PGS.hpp
