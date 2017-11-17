@@ -24,3 +24,8 @@ CMakeCache.txt
 
 PGS
 PGS.hpp
+
+
+build/
+resources/
+

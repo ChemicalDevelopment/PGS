@@ -21,15 +21,13 @@ using namespace std;
 #include "PGSConfig.hpp"
 #include "compute.hpp"
 
+#include "firebase/app.h"
+
 int main(int argc, char ** argv) {
 
+    firebase::App* app = firebase::App::Create(firebase::AppOptions());
 
-    cout << "PGS v" << PGS_VERSION_MAJOR << "." << PGS_VERSION_MINOR << endl;
-
-    // print out how many arguments there are
-    cout << "arguments: " << argc << endl;
-    
-    cout << "test: " << Compute::add(2, 3) << endl;
+    cout << app->name() << endl;
 
     return 0;
 }
