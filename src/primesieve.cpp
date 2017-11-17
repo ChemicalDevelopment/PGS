@@ -1,6 +1,6 @@
 
 
-#include "compute.hpp"
+#include "primesieve.hpp"
 
 #include <stdlib.h>
 
@@ -46,7 +46,7 @@ void Compute::PrimeSieve::ensure_holds(long long max) {
         this->max = max;
         int wanted_bytes = SIEVE_LEN(max);
         // possible future feature, only realloc and recompute the additional needed.
-        free(this->data);
+        if (this->data != NULL) free(this->data);
         this->data = (SIEVE_DTYPE *)malloc(wanted_bytes);
         if (this->data == NULL) {
             _ERROR("malloc result was NULL");

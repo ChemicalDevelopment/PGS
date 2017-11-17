@@ -19,15 +19,35 @@
 using namespace std;
 
 #include "PGSConfig.hpp"
-#include "compute.hpp"
+#include "primesieve.hpp"
 
-#include "firebase/app.h"
+#include <iostream>
+#include <fstream>
+
+#include <unistd.h>
+
 
 int main(int argc, char ** argv) {
 
-    firebase::App* app = firebase::App::Create(firebase::AppOptions());
 
-    cout << app->name() << endl;
+    char c;
+
+    opterr = 0;
+
+    while ((c = getopt (argc, argv, "a:b:c:")) != (char)-1)
+    switch (c) {
+        case 'a':
+            
+            break;
+        case '?':
+            cout << "Unknown option `" << optopt << "'.\n" << endl;
+            return 1;
+        default:
+            cout << "Error while parsing arguments" << endl;
+            exit (1);
+    }
+
+
 
     return 0;
 }
