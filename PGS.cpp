@@ -19,6 +19,7 @@
 using namespace std;
 
 #include "PGSConfig.hpp"
+#include "compute.hpp"
 
 int main(int argc, char ** argv) {
 
@@ -28,6 +29,7 @@ int main(int argc, char ** argv) {
     // print out how many arguments there are
     cout << "arguments: " << argc << endl;
     
+    cout << "test: " << Compute::add(2, 3) << endl;
 
     return 0;
 }
