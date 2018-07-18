@@ -1,35 +1,47 @@
 cmake_minimum_required (VERSION 2.6)
 
-project (PGS)
 set (PGS_VERSION_MAJOR 0)
-set (PGS_VERSION_MINOR 0)
+set (PGS_VERSION_MINOR 1)
 
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread ")
+set (CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-if (CMAKE_VERSION VERSION_LESS "3.1")
-  if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set (CMAKE_CXX_FLAGS "-std=gnu++11 ${CMAKE_CXX_FLAGS}")
-  endif ()
-else ()
-  set (CMAKE_CXX_STANDARD 11)
-endif ()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__FILENAME__='\"$(subst ${CMAKE_SOURCE_DIR}/,,$(abspath $<))\"'")
+#find_package(OpenCL)
+
+
+#optimized
+#-Ofast -ffast-math -finline-functions
+set (CMAKE_C_FLAGS "-Ofast -ffast-math -finline-functions -g -Wall -pedantic -std=c99 ${CMAKE_C_FLAGS}")
+set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D__FILENAME__='\"$(subst ${CMAKE_SOURCE_DIR}/,,$(abspath $<))\"'")
+
+
+#if (OpenCL_FOUND)
+#    include_directories(${OpenCL_INCLUDE_DIRS})
+#    add_definitions(-DHAVE_OPENCL)
+#endif()
+
+
+set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}")
+
 
 configure_file (
-  "${PROJECT_SOURCE_DIR}/PGSConfig.hpp.in"
-  "${PROJECT_BINARY_DIR}/PGSConfig.hpp"
+  "${PROJECT_SOURCE_DIR}/pgsconfig.h.in"
+  "${PROJECT_BINARY_DIR}/pgsconfig.h"
 )
- 
+
+if (CMAKE_BUILD_TYPE MATCHES RELEASE)
+    message("release mode")
+else()
+    message("dev mode")
+    add_definitions(-DPGS_DEV)
+endif()
+
 include_directories("${PROJECT_BINARY_DIR}")
-include_directories ("${PROJECT_SOURCE_DIR}/src")
+include_directories("${CMAKE_SOURCE_DIR}/src")
 
 add_subdirectory (src) 
 
-add_executable(PGS PGS.cpp)
-target_link_libraries (PGS primesieve)
 
 
-install (TARGETS PGS DESTINATION bin)
-install (FILES "${PROJECT_BINARY_DIR}/PGSConfig.hpp" DESTINATION include)
+install (FILES "${PROJECT_BINARY_DIR}/pgsconfig.h" DESTINATION include)
 

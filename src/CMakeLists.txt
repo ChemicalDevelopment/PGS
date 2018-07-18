@@ -1,8 +1,10 @@
-add_library(primesieve primesieve.cpp primesieve.hpp)
 
+add_library(primelib primelib.c primelib.h)
 
+add_executable(pgs    pgs.c    pgs.h)
 
-install (TARGETS primesieve DESTINATION bin)
-install (FILES primesieve.hpp DESTINATION include)
+target_link_libraries(pgs primelib)
+
+install (TARGETS pgs DESTINATION bin)
 
 
