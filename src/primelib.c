@@ -4,6 +4,21 @@
 
 #include <stdlib.h>
 
+// upper limits on checking methods
+#define PRIMECHECK_BRUTEFORCE_CUTOFF 3000
+
+
+// 'ps' can be NULL
+// guaranteed to work for x < 341,550,071,728,321 (341 trillion)
+bool primelib_isprime(uint64_t x, primesieve_t * ps) {
+    if (ps != NULL && x < ps->N) {
+        return primelib_isprime_primesieve(ps, x);
+    } else if (x < PRIMECHECK_BRUTEFORCE_CUTOFF) {
+        return primelib_isprime_bruteforce(x);
+    } else {
+        return primelib_isprime_MR(x);
+    }
+}
 
 // modular power algorithm using binary decomposition
 uint64_t _MR_modpow(uint64_t a, uint64_t b, uint64_t m) {
@@ -89,32 +104,79 @@ bool primelib_isprime_bruteforce(uint64_t x) {
 }
 
 
-void primesieve_init(primesieve_t * ps) {
+bool _PS_get(primesieve_t * ps, uint64_t x) {
+    if (ps->type == PRIMESIEVE_BYTEPACKED) {
+        return ps->is_prime[x];
+    } else {
+        return 1 & (ps->is_prime[x >> 3] >> (x & 7));
+    }
+}
+
+void _PS_set(primesieve_t * ps, uint64_t x) {
+    if (ps->type == PRIMESIEVE_BYTEPACKED) {
+        ps->is_prime[x] = true;
+    } else {
+        ps->is_prime[x >> 3] |= 1ULL << (x & 7);
+    }
+}
+
+void _PS_clear(primesieve_t * ps, uint64_t x) {
+    if (ps->type == PRIMESIEVE_BYTEPACKED) {
+        ps->is_prime[x] = false;
+    } else {
+        ps->is_prime[x >> 3] &= ~(1ULL << (x & 7));
+    }
+}
+
+
+void primesieve_init(primesieve_t * ps, int type) {
     ps->N = 0;
     ps->is_prime = NULL;
+    if (type == PRIMESIEVE_BITPACKED || type == PRIMESIEVE_BYTEPACKED) {
+        ps->type = type;
+    } else {
+        ps->type = PRIMESIEVE_BYTEPACKED;
+    }
+}
+
+bool primelib_isprime_primesieve(primesieve_t * ps, uint64_t x) {
+    if (x < ps->N) {
+        return _PS_get(ps, x);
+    }
+    return false;
 }
 
 void primesieve_set_eratosthenes(primesieve_t * ps, uint64_t N) {
     ps->N = N;
-    ps->is_prime = (bool *)realloc((void *)ps->is_prime, sizeof(bool) * N);
     uint64_t i;
-    for (i = 0; i < N; ++i) {
-        // set to whether it is odd
-        ps->is_prime[i] = i % 2 == 1;
+
+    if (ps->type == PRIMESIEVE_BITPACKED) {
+        ps->is_prime = (char *)realloc((void *)ps->is_prime, N / 8 + 1);
+        for (i = 0; i < N / 8 + 1; ++i) {
+            // constant to set alternating bits, 0b10101010
+            ps->is_prime[i] = (char)170;
+        }
+    } else {
+        ps->is_prime = (char *)realloc((void *)ps->is_prime, N);
+        for (i = 0; i < N; ++i) {
+            // set to whether it is odd
+            ps->is_prime[i] = i % 2 == 1;
+        }
     }
 
-    ps->is_prime[0] = 0;
-    ps->is_prime[1] = 0;
-    ps->is_prime[2] = 1;
+    _PS_clear(ps, 0);
+    _PS_clear(ps, 1);
+    _PS_set(ps, 2);
 
     for (i = 3; i < N; i += 2) {
-        if (ps->is_prime[i]) {
+        if (_PS_get(ps, i)) {
             uint64_t j;
             for (j = 3 * i; j < N; j += 2 * i) {
-                ps->is_prime[j] = false;
+                _PS_clear(ps, j);
             }
         }
     }
 }
+
 
 
